@@ -1,1 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* By default, remove unnecessary margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Default border box for all elements */
+*::before, *::after {
+  box-sizing: border-box;
+}
+
+/* By default, use the full viewport */
+html, body {
+  min-height: 100%;
+}
+
+/* Default font */
+/*body {*/
+/*  font-family: Roboto, "Helvetica Neue", sans-serif;*/
+/*}*/
