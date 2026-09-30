@@ -4,10 +4,90 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile Settings</title>
-  <link rel="stylesheet" href="profile-settings.css">
-  <!-- -->
+  <link rel="stylesheet" href="./profile-settings.css">
 </head>
+
 <body>
-</body>
+
+  <h2>Profile Settings</h2>
+
+  <!-- Username Section -->
+  <section>
+    <label>Username:</label>
+    <input type="text" id="username" value="itsYaBreadBoi" readonly>
+  </section>
+
+  <!-- First Name Section -->
+  <section>
+    <label>First Name:</label>
+    <input type="text" id="firstName" value="Iakkhos">
+    <button id="changeFirstNameBtn" type="submit">Edit</button>
+  </section>
+
+  <!-- Last Name Section -->
+  <section>
+    <label>Last Name:</label>
+    <input type="text" id="lastName" value="Baker">
+    <button id="changeLastNameBtn" type="submit">Edit</button>
+  </section>
+
+  <!-- Email Section -->
+  <section>
+    <label>Email:</label>
+    <input type="email" id="email" value="bakedBread64@silly.org">
+    <button id="changeEmailBtn" type="submit">Edit</button>
+  </section>
+
+  <!-- Phone Section -->
+  <section>
+    <label>Phone:</label>
+    <input type="tel" id="phone" value="+1 (123) 456-7890">
+    <button id="changePhoneBtn" type="submit">Edit</button>
+  </section>
+
+  <!-- Change Password Button -->
+  <button type="button" onclick="document.getElementById('passwordModal').showModal()">
+    Change Password
+  </button>
+
+  <!-- Password Modal/Dialog Form -->
+    <dialog id="passwordModal">
+
+      <h3>Change Your Password</h3>
+
+      <form method="dialog">
+
+        <!-- Old Password -->
+        <section>
+          <label for="oldPassword">Old Password</label>
+          <input type="password" id="oldPassword" required>
+        </section>
+
+        <!-- New Password -->
+        <section>
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" required>
+        </section>
+
+        <!-- Confirm New Password -->
+        <section>
+          <label for="confirmPassword">Confirm New Password</label>
+          <input type="password" id="confirmPassword" required>
+        </section>
+
+        <!-- Buttons -->
+        <!-- Closes modal by default, will replace later -->
+        <section>
+          <button type="button" onclick="document.getElementById('passwordModal').close()">
+            Cancel
+          </button>
+
+          <button type="submit">Save</button>
+        </section>
+
+      </form>
+    </dialog>
+  </body>
+
 </html>
 
