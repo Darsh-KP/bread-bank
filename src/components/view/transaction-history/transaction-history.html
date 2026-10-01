@@ -1,1 +1,47 @@
-<p>transaction-history works!</p>
+<main class="page">
+  <header class="page-header">
+    <h1>Transaction history</h1>
+    <p class="subtitle">Every deposit, withdrawal, and transfer on your account.</p>
+  </header>
+
+  <section class="card" aria-labelledby="history-heading">
+    <h2 id="history-heading" class="sr-only">Transactions</h2>
+
+    @if (loading()) {
+      <p class="state" role="status">Loading transactions…</p>
+    } @else if (error()) {
+      <p class="state state-error" role="alert">{{ error() }}</p>
+    } @else if (transactions().length === 0) {
+      <p class="state">No transactions yet.</p>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Type</th>
+              <th scope="col" class="num">Amount</th>
+              <th scope="col" class="num">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of transactions(); track t.id) {
+              <tr>
+                <td>{{ t.createdAt | date: 'MMM d, y, h:mm a' }}</td>
+                <td>{{ t.description }}</td>
+                <td>
+                  <span class="badge" [class.badge-out]="isOut(t)">{{ typeLabel[t.type] }}</span>
+                </td>
+                <td class="num amount" [class.out]="isOut(t)" [class.in]="!isOut(t)">
+                  {{ signedAmount(t) | currency }}
+                </td>
+                <td class="num">{{ t.balanceAfter | currency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>
