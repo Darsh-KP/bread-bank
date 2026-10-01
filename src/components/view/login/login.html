@@ -1,26 +1,36 @@
-<main>
-    <div>
-        <h1>Welcome Back</h1>
-        <h3>Log in to your Bread Bank account</h3>
-    </div>
-    <div>
-        <form>
-            <div>
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" placeholder="Enter your username" required />
-            </div>
+<main class="row g-0 min-vh-100">
+    <section class="features-side col-12 col-md-6 d-flex flex-column justify-content-center">
+        <h1 class="text-center">🍞 Bread Bank</h1>
+        <h3 class="text-center">Your everyday banking,<br />a little more wholesome.</h3>
+        <div class="feature-list">
+            <p><strong>🔒 Secure Banking</strong><br /><span>Your information stays protected</span></p>
+            <p><strong>▣ Manage Accounts</strong><br /><span>Check balances, transfer, and more</span></p>
+            <p><strong>▮ Build Your Future</strong><br /><span>Simple tools for your financial goals</span></p>
+        </div>
+    </section>
 
-            <div>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" placeholder="Enter your password" required />
-            </div>
+    <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center">
+        <header>
+            <h1>Welcome Back</h1>
+            <h3>Log in to your Bread Bank account</h3>
+        </header>
+        <div>
+            <form>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input class="form-control" type="text" name="username" id="username" placeholder="Enter your username" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input class="form-control" type="password" name="password" id="password" placeholder="Enter your password" required />
+                </div>
 
 
-            <button type="submit">Login</button>
+                <button type="submit" class="btn btn-primary w-100">Log In</button>
 
-            <hr />
-
-            <a href="" target="_self">Create an Account</a>
-        </form>
-    </div>
+                <p><a class="forgot-link" href="">Forgot username or password?</a> or <a class="create-account" href="" target="_self">Create an Account</a></p>
+            </form>
+        </div>
+    </section>
 </main>
