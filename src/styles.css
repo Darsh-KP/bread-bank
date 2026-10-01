@@ -1,23 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* By default, remove unnecessary margins and paddings */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 /* Default border box for all elements */
-*::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-/* By default, use the full viewport */
-html, body {
+/* By default, full-height application */
+html,
+body {
   min-height: 100%;
 }
 
-/* Default font */
-/*body {*/
-/*  font-family: Roboto, "Helvetica Neue", sans-serif;*/
-/*}*/
+/* Application colors */
+:root {
+  --color-page-background: #f7f3eb;
+  --color-panel: #f8ddb3;
+  --color-panel-accent: #f2c987;
+  --color-surface: #fffefc;
+
+  --color-text-primary: #401507;
+  --color-text-secondary: #77675e;
+  --color-text-muted: #998b82;
+
+  --color-primary: #9a5833;
+  --color-primary-hover: #7d4226;
+
+  --color-border: #d4cbc5;
+
+  --color-accent-red: #e52f32;
+  --color-accent-olive: #77762f;
+}
+
+body {
+  background-color: var(--color-page-background);
+  color: var(--color-text-primary);
+}
