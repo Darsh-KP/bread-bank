@@ -1,1 +1,23 @@
-<p>create-account works!</p>
+<h1>Try one of Breadwinners' products</h1>
+
+<h2>Today's accounts</h2>
+<div id="accgroup">
+    @for (acc of accounts; track acc.name) {
+        <label>
+        <input type="radio" name="product" [value]="acc" onclick="contBtn.disabled=false; clsBtn.disabled=false;">{{acc.name}}
+        </label>
+    }
+</div>
+
+<h2>Today's certificates of deposit</h2>
+<div id="cdgroup">
+    @for (cd of certificateDeposits; track cd.name) {
+        <label>
+        <input type="radio" name="product" [value]="cd" onclick="contBtn.disabled=false; clsBtn.disabled=false;">{{cd.name}}
+        </label>
+    }
+</div>
+
+<button type="button">Exit</button>
+<button type="button" id="clsBtn" disabled="true" (click)="clearSelection();">Clear selection</button>
+<button type="button" id="contBtn" disabled="true">Continue</button>
