@@ -1,23 +1,29 @@
+<div id="createAcct">
 <h1>Try one of Breadwinners' products</h1>
 
 <h2>Today's accounts</h2>
-<div id="accgroup">
+<div>
     @for (acc of accounts; track acc.name) {
-        <label>
-        <input type="radio" name="product" [value]="acc" onclick="contBtn.disabled=false; clsBtn.disabled=false;">{{acc.name}}
+        <label class="group">
+        <input type="radio" name="product" [value]="acc.name" (change)="selectProduct();">{{acc.name}}
         </label>
+        <br />
     }
 </div>
 
 <h2>Today's certificates of deposit</h2>
-<div id="cdgroup">
+<div>
     @for (cd of certificateDeposits; track cd.name) {
-        <label>
-        <input type="radio" name="product" [value]="cd" onclick="contBtn.disabled=false; clsBtn.disabled=false;">{{cd.name}}
+        <label class="group">
+        <input type="radio" name="product" [value]="cd" (click)="selectProduct();">{{cd.name}}
         </label>
+        <br />
     }
 </div>
 
-<button type="button">Exit</button>
+<div class="btnGroup">
+<button type="button" id="exitBtn">Exit</button>
 <button type="button" id="clsBtn" disabled="true" (click)="clearSelection();">Clear selection</button>
 <button type="button" id="contBtn" disabled="true">Continue</button>
+</div>
+</div>
