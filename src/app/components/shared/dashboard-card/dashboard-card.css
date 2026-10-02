@@ -1,0 +1,26 @@
+.card {
+  border: 1px solid #e39f58;
+  border-radius: 5px;
+  padding: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  max-width: 300px;
+  margin: 10px;
+}
+
+.card header {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.card .content {
+  font-size: 1.2em;
+}
+
+.card footer {
+  text-align: right;
+}
+
+.card .container {
+  display: grid;
+}
