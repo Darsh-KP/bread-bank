@@ -1,7 +1,7 @@
 <main class="row g-0 min-vh-100">
     <section class="features-side col-12 col-md-6 d-flex flex-column justify-content-center">
         <h1 class="text-center">Bread Bank</h1>
-        <h5 class="text-center">Your everyday banking,<br />a little more wholesome.</h5>
+        <h3 class="text-body-secondary fw-normal fs-5 mb-0 text-center">Your everyday banking,<br />a little more wholesome.</h3>
         <img class="img-fluid w-50 mx-auto mt-3" src="logo.png" alt="Bread Bank logo" />
         <div class="feature-list d-flex flex-column gap-4 mx-auto mt-4 px-4">
             <div class="d-flex align-items-center gap-3">
@@ -25,27 +25,35 @@
         </div>
     </section>
 
-    <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center">
-        <header>
-            <h1>Welcome Back</h1>
-            <h3>Log in to your Bread Bank account</h3>
+    <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center px-4 py-5">
+        <div class="login-content mx-auto w-75">
+        <header class="mb-5">
+            <h1 class="mb-2">Welcome Back</h1>
+            <h3 class="text-body-secondary fw-normal fs-5 mb-0">Log in to your Bread Bank account</h3>
         </header>
-        <div>
             <form>
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input class="form-control" type="text" name="username" id="username" placeholder="Enter your username" required />
+                    <label for="username" class="form-label fw-semibold">Username</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                        <input class="form-control border-start-0" type="text" name="username" id="username" placeholder="Enter your username" required />
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input class="form-control" type="password" name="password" id="password" placeholder="Enter your password" required />
+                    <label for="password" class="form-label fw-semibold">Password</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
+                        <input class="form-control border-start-0" type="password" name="password" id="password" placeholder="Enter your password" required />
+                        <button class="btn border border-start-0" type="button"><i class="bi bi-eye-slash"></i></button>
+                    </div>
                 </div>
 
-
-                <button type="submit" class="btn btn-primary w-100">Log In</button>
-
-                <p><a class="forgot-link" href="">Forgot username or password?</a> or <a class="create-account" href="" target="_self">Create an Account</a></p>
+                <button type="submit" class="btn login-button btn-lg w-100 mt-3">Log In</button>
+                <!-- stretch goal -->
+                <!-- <div class="text-center mt-3"><a class="forgot-link" href="">Forgot username or password?</a></div> -->
+                <div class="d-flex align-items-center gap-3 my-4 text-body-secondary"><hr class="flex-grow-1" /><span>or</span><hr class="flex-grow-1" /></div>
+                <a class="btn create-account btn-lg w-100" href="">Create an Account</a>
             </form>
         </div>
     </section>
