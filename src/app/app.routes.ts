@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { CreateAccount } from './components/view/create-account/create-account';
+import { ProfileSettings } from './components/view/profile_settings/profile-settings';
 
 export const routes: Routes = [
-    {
-        path: 'create-account',
-        component: CreateAccount
-    }
+  {
+    path: 'history',
+    loadComponent: () =>
+      import('./components/view/transaction-history/transaction-history').then((m) => m.TransactionHistory),
+  },
+  {
+    path: "profile-settings",
+    component: ProfileSettings
+  }
 ];
