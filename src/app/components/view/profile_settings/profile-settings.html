@@ -8,32 +8,38 @@
   </section>
 
   <!-- First Name Section -->
-  <section>
-    <label>First Name:</label>
-    <input type="text" id="firstName" value="Iakkhos">
-    <button id="changeFirstNameBtn" type="submit">Edit</button>
-  </section>
+  <editable-label
+    label="First Name:"
+    [(value)]="user.firstName"
+    type="text"
+    errorMessage="First name cannot be empty.">
+  </editable-label>
 
   <!-- Last Name Section -->
-  <section>
-    <label>Last Name:</label>
-    <input type="text" id="lastName" value="Baker">
-    <button id="changeLastNameBtn" type="submit">Edit</button>
-  </section>
+  <editable-label
+    label="Last Name:"
+    [(value)]="user.lastName"
+    type="text"
+    errorMessage="Last name cannot be empty.">
+  </editable-label>
 
   <!-- Email Section -->
-  <section>
-    <label>Email:</label>
-    <input type="email" id="email" value="bakedBread64@silly.org">
-    <button id="changeEmailBtn" type="submit">Edit</button>
-  </section>
+  <editable-label
+    label="Email:"
+    [(value)]="user.email"
+    [pattern]="emailPattern"
+    errorMessage="Please enter a valid email address (example@example.com)."
+    type="email">
+  </editable-label>
 
   <!-- Phone Section -->
-  <section>
-    <label>Phone:</label>
-    <input type="tel" id="phone" value="+1 (123) 456-7890">
-    <button id="changePhoneBtn" type="submit">Edit</button>
-  </section>
+  <editable-label
+    label="Phone Number:"
+    [(value)]="user.phone"
+    [pattern]="phonePattern"
+    errorMessage="Please enter a valid phone number (10-14 digits)."
+    type="tel">
+  </editable-label>
 
   <!-- Change Password Button -->
   <button type="button" onclick="document.getElementById('passwordModal').showModal()">
