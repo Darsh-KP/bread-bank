@@ -3,6 +3,11 @@ import { ProfileSettings } from './components/view/profile_settings/profile-sett
 
 export const routes: Routes = [
   {
+    path: 'history',
+    loadComponent: () =>
+      import('./components/view/transaction-history/transaction-history').then((m) => m.TransactionHistory),
+  },
+  {
     path: "profile-settings",
     component: ProfileSettings
   }
