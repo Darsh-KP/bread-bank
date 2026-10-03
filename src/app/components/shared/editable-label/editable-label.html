@@ -1,0 +1,14 @@
+<section>
+  <label>{{ label }}</label>
+  <input [type]="type" [(ngModel)]="value" [readonly]="isReadOnly || isSaving" />
+  <button type="button" (click)="toggleEdit()" [disabled]="isSaving">
+    {{ isSaving ? 'Saving...' : isReadOnly ? 'Edit' : 'Save' }}
+  </button>
+
+  @if (displayToast) {
+    <div>
+      <span>{{ toastMessage }}</span>
+      <button type="button" (click)="dismissToastError()">✕</button>
+    </div>
+  }
+</section>

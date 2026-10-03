@@ -1,25 +1,12 @@
 import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject, } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { validate } from '../../../utils/regExps';
+import { validate } from '../../../../utils/regExps';
 
 @Component({
   selector: 'editable-label',
   imports: [FormsModule],
   standalone: true,
-  template: ` <section>
-    <label>{{ label }}</label>
-    <input [type]="type" [(ngModel)]="value" [readonly]="isReadOnly || isSaving" />
-    <button type="button" (click)="toggleEdit()" [disabled]="isSaving">
-      {{ isSaving ? 'Saving...' : isReadOnly ? 'Edit' : 'Save' }}
-    </button>
-
-    @if (displayToast) {
-      <div>
-        <span>{{ toastMessage }}</span>
-        <button type="button" (click)="dismissToastError()">✕</button>
-      </div>
-    }
-  </section>`,
+  templateUrl: 'editable-label.html',
 })
 export class EditableLabelComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
@@ -122,7 +109,7 @@ export class EditableLabelComponent implements OnChanges {
 
   //Used to display error message if phone/email are not properly formatted
   //or if email/phone number is taken.
-  private displayToastError(msg?: string): void {
+  displayToastError(msg?: string): void {
     this.toastMessage = msg || this.errorMessage || 'Invalid input format';
     this.displayToast = true;
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
