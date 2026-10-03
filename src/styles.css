@@ -13,23 +13,19 @@ body {
   min-height: 100%;
 }
 
-body {
-  margin: 0;
-  font-family: Roboto, Arial, sans-serif;
-}
-
 /* Application colors */
 :root {
   --color-page-background: #f7f3eb;
-  --color-panel: #f8dfbd;
-  --color-surface: #fffdfa;
+  --color-panel: #f8ddb3;
+  --color-panel-accent: #f2c987;
+  --color-surface: #fffefc;
 
-  --color-text-primary: #3f2012;
-  --color-text-secondary: #765847;
+  --color-text-primary: #401507;
+  --color-text-secondary: #77675e;
   --color-text-muted: #998b82;
 
-  --color-primary: #9a5d3a;
-  --color-primary-hover: #7f472b;
+  --color-primary: #9a5833;
+  --color-primary-hover: #7d4226;
 
   --color-border: #d4cbc5;
 
