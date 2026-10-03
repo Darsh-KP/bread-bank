@@ -1,87 +1,95 @@
 <main>
   <h2>Profile Settings</h2>
 
-  <!-- Username Section -->
-  <section>
-    <label>Username:</label>
-    <input type="text" id="username" value="itsYaBreadBoi" readonly>
-  </section>
+  <!--Display loading message when fetching user information -->
+  @if (loading()) {
+    <p class="state" role="status">Loading Profile Settings...</p>
+    <!-- Display error message if could not load data from database -->
+  } @else if (initialLoadError()) {
+    <p class="state state-error" role="alert">{{ initialLoadError() }}</p>
+  } @else if (user(); as profile) {
 
-  <!-- First Name Section -->
-  <editable-label
-    label="First Name:"
-    [(value)]="user.firstName"
-    type="text"
-    errorMessage="First name cannot be empty.">
-  </editable-label>
+    <!-- Username Section -->
+    <section>
+      <label for="username">Username:</label>
+      <input type="text" id="username" [value]="profile.userName" readonly />
+    </section>
 
-  <!-- Last Name Section -->
-  <editable-label
-    label="Last Name:"
-    [(value)]="user.lastName"
-    type="text"
-    errorMessage="Last name cannot be empty.">
-  </editable-label>
+    <!-- First Name -->
+    <editable-label
+      label="First Name:"
+      [value]="profile.firstName"
+      [onSave]="saveFirstName"
+      type="text"
+      errorMessage="First name cannot be empty.">
+    </editable-label>
 
-  <!-- Email Section -->
-  <editable-label
-    label="Email:"
-    [(value)]="user.email"
-    [pattern]="emailPattern"
-    errorMessage="Please enter a valid email address (example@example.com)."
-    type="email">
-  </editable-label>
+    <!-- Last Name -->
+    <editable-label
+      label="Last Name:"
+      [value]="profile.lastName"
+      [onSave]="saveLastName"
+      type="text"
+      errorMessage="Last name cannot be empty.">
+    </editable-label>
 
-  <!-- Phone Section -->
-  <editable-label
-    label="Phone Number:"
-    [(value)]="user.phone"
-    [pattern]="phonePattern"
-    errorMessage="Please enter a valid phone number (10-14 digits)."
-    type="tel">
-  </editable-label>
+    <!-- Email -->
+    <editable-label
+      label="Email:"
+      [value]="profile.email"
+      [onSave]="saveEmail"
+      [pattern]="emailPattern"
+      errorMessage="Please enter a valid email address (Ex: example@example.com)."
+      type="email">
+    </editable-label>
 
-  <!-- Change Password Button -->
-  <button type="button" onclick="document.getElementById('passwordModal').showModal()">
-    Change Password
-  </button>
+    <!-- Phone -->
+    <editable-label
+      label="Phone Number:"
+      [value]="profile.phone"
+      [onSave]="savePhone"
+      [pattern]="phonePattern"
+      errorMessage="Please enter a valid phone number from 10-14 digits."
+      type="tel">
+    </editable-label>
 
-  <!-- Password Modal/Dialog Form -->
+    <!-- Change Password Button -->
+    <button type="button" onclick="document.getElementById('passwordModal').showModal()">
+      Change Password
+    </button>
+
+    <!-- Password Modal/Dialog Form -->
     <dialog id="passwordModal">
-
       <h3>Change Your Password</h3>
 
       <form method="dialog">
-
         <!-- Old Password -->
         <section>
           <label for="oldPassword">Old Password</label>
-          <input type="password" id="oldPassword" required>
+          <input type="password" id="oldPassword" required />
         </section>
 
         <!-- New Password -->
         <section>
           <label for="newPassword">New Password</label>
-          <input type="password" id="newPassword" required>
+          <input type="password" id="newPassword" required />
         </section>
 
         <!-- Confirm New Password -->
         <section>
           <label for="confirmPassword">Confirm New Password</label>
-          <input type="password" id="confirmPassword" required>
+          <input type="password" id="confirmPassword" required />
         </section>
 
         <!-- Buttons -->
-        <!-- Closes modal by default, will replace later -->
         <section>
           <button type="button" onclick="document.getElementById('passwordModal').close()">
             Cancel
           </button>
-
           <button type="submit">Save</button>
         </section>
-
       </form>
     </dialog>
-</main>
 
+  }
+</main>
