@@ -1,0 +1,91 @@
+.app-navbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 72px;
+  padding: 0 1.5rem;
+  background: linear-gradient(135deg, #7d4226 0%, #9a5833 100%);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(64, 21, 7, 0.2);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.brand-logo {
+  width: 4.5rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-links .mat-mdc-button {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.nav-links .mat-mdc-button mat-icon {
+  margin-right: 0.35rem;
+  font-size: 1.1rem;
+}
+
+.nav-links .active-link {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.menu-caret {
+  margin-left: 0.15rem;
+  font-size: 1.2rem;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.logout-button {
+  min-width: 118px;
+}
+
+.account-item-label {
+  display: block;
+  font-weight: 600;
+}
+
+.account-item-description {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 720px) {
+  .app-navbar {
+    flex-wrap: wrap;
+    min-height: auto;
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+    overflow-x: auto;
+  }
+}
