@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.toast-info {
+  background-color: #0dcaf0;
+  color: black;
+}
+
+.toast-success {
+  background-color: #198754;
+  color: white;
+}
+
+.toast-warning {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.toast-error {
+  background-color: #dc3545;
+  color: white;
+}
