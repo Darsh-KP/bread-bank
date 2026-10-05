@@ -1,7 +1,7 @@
-export type NotificationType = 'success' | 'info' | 'error';
+export type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
 export interface Notification {
-  id: number;
   message: string;
   type: NotificationType;
+  delay?: number;
 }

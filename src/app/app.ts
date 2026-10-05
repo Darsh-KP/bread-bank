@@ -6,7 +6,7 @@ import { AppToast } from './components/shared/notifications/app-toast/app-toast'
   imports: [RouterOutlet, AppToast],
   selector: 'app-root',
   template: `
-    <app-app-toast></app-app-toast>
+    <app-toast />
     <router-outlet />
   `,
 })

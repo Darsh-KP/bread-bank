@@ -9,7 +9,6 @@ export class NotificationService {
 
   private add(message: string, type: NotificationType): void {
     const notification: Notification = {
-      id: Date.now(),
       message,
       type,
     };
@@ -17,10 +16,14 @@ export class NotificationService {
     this._notifications.update((currentNotifications) => [...currentNotifications, notification]);
   }
 
-  remove(id: number): void {
-    this._notifications.update((notifications) =>
-      notifications.filter(notification => notification.id !== id)
+  remove(notification: Notification): void {
+    this._notifications.update((currentNotifications) =>
+      currentNotifications.filter((n) => n !== notification),
     );
+  }
+
+  clear() {
+    this._notifications.set([]);
   }
 
   success(message: string) {
