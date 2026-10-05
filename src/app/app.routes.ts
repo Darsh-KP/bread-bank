@@ -29,4 +29,11 @@ export const routes: Routes = [
     path: 'create-account',
     component: CreateAccount,
   },
+  {
+  path: 'transfer',
+  loadComponent: () =>
+    import('./components/view/transfer/transfer').then(
+      (m) => m.Transfer,
+    ),
+},
 ];
