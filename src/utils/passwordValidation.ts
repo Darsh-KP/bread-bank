@@ -36,7 +36,7 @@ export function validatePassword(password: String): string[] {
   const errors: string[] = [];
 
   if (password.length < MIN_LENGTH) {
-    errors.push('Password must be at least 8 characters long.');
+    errors.push('Must be at least 8 characters long.');
   }
 
   let digit = false;
@@ -53,13 +53,13 @@ export function validatePassword(password: String): string[] {
   }
 
   if (!digit) {
-    errors.push('Password must include at least 1 digit.');
+    errors.push('Must include at least 1 digit.');
   }
   if (!lower) {
-    errors.push('Password must include at least 1 lowercase character.');
+    errors.push('Must include at least 1 lowercase character.');
   }
   if (!upper) {
-    errors.push('Password must include at least 1 uppercase character.');
+    errors.push('Must include at least 1 uppercase character.');
   }
 
   return errors;
