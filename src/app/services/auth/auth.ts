@@ -14,6 +14,11 @@ export interface RegistrationRequest {
   password: string;
 }
 
+export interface LoginRequest {
+  userName: string;
+  password: string;
+}
+
 export interface RegisteredUser {
   userName: string;
   firstName: string;
@@ -30,6 +35,29 @@ interface MockRegisteredUser extends RegisteredUser {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private users?: Promise<MockRegisteredUser[]>;
+  currentUser: RegisteredUser | null = null;
+
+  async login(request: LoginRequest): Promise<RegisteredUser> {
+    const userName = request.userName.trim().toLowerCase();
+    if (!userName || !request.password) {
+      throw new Error('Please enter your username and password.');
+    }
+
+    await this.delay(500);
+
+    const users = await this.loadUsers();
+
+    const user = users.find(
+      (user) =>
+        user.userName.trim().toLowerCase() === userName && user.passwordHash === request.password,
+    );
+    if (!user) throw new Error('Invalid username or password.');
+
+    const { passwordHash, ...profile } = user;
+    this.currentUser = profile;
+
+    return { ...profile };
+  }
 
   private loadUsers(): Promise<MockRegisteredUser[]> {
     return (this.users ??= firstValueFrom(
