@@ -18,6 +18,7 @@ export class Login {
 
   credentials: LoginRequest = { userName: '', password: '' };
   submitting = signal(false);
+  showPassword = signal(false);
 
   async login(): Promise<void> {
     if (this.submitting()) return;
