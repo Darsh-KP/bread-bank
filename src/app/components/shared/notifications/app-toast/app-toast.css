@@ -18,6 +18,7 @@
 }
 
 .toast-error {
+  white-space: pre-line;
   background-color: #dc3545;
   color: white;
 }
