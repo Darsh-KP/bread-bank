@@ -1,10 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AppToast } from './components/shared/notifications/app-toast/app-toast';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AppToast],
   selector: 'app-root',
-  template: '<router-outlet />',
+  template: `
+    <app-app-toast></app-app-toast>
+    <router-outlet />
+  `,
 })
 export class App {
   protected readonly title = signal('bread-bank');

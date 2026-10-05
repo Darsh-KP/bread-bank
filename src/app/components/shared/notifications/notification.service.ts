@@ -3,7 +3,9 @@ import { Notification, NotificationType } from './notification.types';
 
 @Service()
 export class NotificationService {
-  private notifications = signal<Notification[]>([]);
+  private _notifications = signal<Notification[]>([]);
+
+  readonly notifications = this._notifications.asReadonly();
 
   private add(message: string, type: NotificationType): void {
     const notification: Notification = {
@@ -12,7 +14,13 @@ export class NotificationService {
       type,
     };
 
-    this.notifications.update((currentNotifications) => [...currentNotifications, notification]);
+    this._notifications.update((currentNotifications) => [...currentNotifications, notification]);
+  }
+
+  remove(id: number): void {
+    this._notifications.update((notifications) =>
+      notifications.filter(notification => notification.id !== id)
+    );
   }
 
   success(message: string) {
