@@ -1,26 +1,32 @@
-.card {
-  border: 1px solid #e39f58;
-  border-radius: 5px;
-  padding: 20px;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  max-width: 300px;
-  margin: 10px;
+.account-card {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-.card header {
-  font-size: 1.5em;
-  margin-bottom: 10px;
+.mat-mdc-card-header {
+  padding-bottom: 0;
 }
 
-.card .content {
-  font-size: 1.2em;
+.balance-label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
 }
 
-.card footer {
-  text-align: right;
+.balance {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-.card .container {
-  display: grid;
+.mat-mdc-card-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
 }

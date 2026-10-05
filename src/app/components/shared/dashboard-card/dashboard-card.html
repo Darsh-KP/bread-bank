@@ -1,25 +1,30 @@
-<link rel="stylesheet" href="dashboard-card.css">
+<mat-card class="account-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ account.accountType }}</mat-card-title>
+    <mat-card-subtitle>Account ending in {{ account.lastFour }}</mat-card-subtitle>
+  </mat-card-header>
 
-<div class="card">
-  <header>
-    <h2>Account Balance</h2>
-  </header>
-  <div class="content">
-    <p>$5,000</p>
-    <p>Last updated: September 30, 2026</p>
-  </div>
-  <footer>
-    <flexbox>
-      <button>Deposit</button>
-      <button>Withdraw</button>
-      <button>View Transactions</button>
-    </flexbox>
-  </footer>
-</div>
+  <mat-card-content>
+    <div class="balance-label">Available balance</div>
+    <div class="balance">
+      {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+    </div>
+  </mat-card-content>
 
-<!--<mat-card appearance="outlined">-->
-<!--  <mat-card-header>-->
-<!--    <mat-card-title> Account Details </mat-card-title>-->
-<!--  </mat-card-header>-->
+  <mat-card-actions align="end">
+    <button mat-stroked-button color="primary" routerLink="/deposit">
+      <mat-icon>add</mat-icon>
+      Deposit
+    </button>
 
-<!--</mat-card>-->
+    <button mat-stroked-button color="primary" routerLink="/withdraw">
+      <mat-icon>remove</mat-icon>
+      Withdraw
+    </button>
+
+    <button mat-stroked-button color="primary" routerLink="/transfer">
+      <mat-icon>sync_alt</mat-icon>
+      Transfer
+    </button>
+  </mat-card-actions>
+</mat-card>
