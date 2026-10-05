@@ -1,87 +1,190 @@
 <main class="row g-0 min-vh-100">
-    <app-auth-features />
+  <app-auth-features />
 
-    <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center px-4 py-5">
-        <div class="login-content mx-auto w-75">
-        <header class="mb-5">
-            <h1 class="mb-2">Register</h1>
-            <h3 class="text-body-secondary fw-normal fs-5 mb-0">{{ step() === 1 ? 'Join Bread Bank today' : 'Choose your login details' }}</h3>
-        </header>
-            <form #registrationForm="ngForm">
-              @if (step() === 1) {
-              <div class="registration-step">
-                <div class="row g-3 mb-3">
-                    <div class="col-sm-6">
-                        <label for="first-name" class="form-label fw-semibold">First Name</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
-                            <input class="form-control border-start-0" type="text" name="firstName" id="first-name" placeholder="First name" required />
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label for="last-name" class="form-label fw-semibold">Last Name</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
-                            <input class="form-control border-start-0" type="text" name="lastName" id="last-name" placeholder="Last name" required />
-                        </div>
-                    </div>
+  <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center px-4 py-5">
+    <div class="login-content mx-auto w-75">
+      <header class="mb-5">
+        <h1 class="mb-2">Register</h1>
+        <h3 class="text-body-secondary fw-normal fs-5 mb-0">
+          {{
+            step() === 1
+              ? 'Join Bread Bank today'
+              : 'Choose your login
+          details'
+          }}
+        </h3>
+      </header>
+      <form #registrationForm="ngForm" (ngSubmit)="register()">
+        <fieldset [disabled]="submitting()">
+          @if (step() === 1) {
+            <div class="registration-step">
+              <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                  <label for="first-name" class="form-label fw-semibold">First Name</label>
+                  <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-transparent"
+                      ><i class="bi bi-person"></i
+                    ></span>
+                    <input
+                      class="form-control border-start-0"
+                      type="text"
+                      name="firstName"
+                      id="first-name"
+                      placeholder="First name"
+                      required
+                      [(ngModel)]="registration.firstName"
+                    />
+                  </div>
                 </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label fw-semibold">Email Address</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-envelope"></i></span>
-                        <input class="form-control border-start-0" type="email" name="email" id="email" placeholder="Enter your email address" required />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label fw-semibold">Phone Number</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-telephone"></i></span>
-                        <input class="form-control border-start-0" type="tel" name="phone" id="phone" placeholder="Enter your phone number" required />
-                    </div>
-                </div>
-
-                <button type="button" class="btn login-button btn-lg w-100 mt-3" (click)="nextStep(registrationForm.valid)">Next</button>
-              </div>
-              }
-
-              @if (step() === 2) {
-              <div class="registration-step">
-                <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold">Username</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
-                        <input class="form-control border-start-0" type="text" name="username" id="username" placeholder="Choose a username" required />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label fw-semibold">Password</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
-                        <input class="form-control border-start-0" type="password" name="password" id="password" placeholder="Create a password" required />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="confirm-password" class="form-label fw-semibold">Confirm Password</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
-                        <input class="form-control border-start-0" type="password" name="confirmPassword" id="confirm-password" placeholder="Confirm your password" required />
-                        <button class="btn border border-start-0" type="button"><i class="bi bi-eye-slash"></i></button>
-                    </div>
-                </div>
-
-                <div class="d-flex gap-3 pt-3">
-                    <button type="button" class="btn create-account btn-lg flex-fill" (click)="previousStep()">Back</button>
-                    <button type="submit" class="btn login-button btn-lg flex-fill">Create Account</button>
+                <div class="col-sm-6">
+                  <label for="last-name" class="form-label fw-semibold">Last Name</label>
+                  <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-transparent"
+                      ><i class="bi bi-person"></i
+                    ></span>
+                    <input
+                      class="form-control border-start-0"
+                      type="text"
+                      name="lastName"
+                      id="last-name"
+                      placeholder="Last name"
+                      required
+                      [(ngModel)]="registration.lastName"
+                    />
+                  </div>
                 </div>
               </div>
-              }
-                <div class="text-center mt-4">Already have an account? <a class="forgot-link" routerLink="/">Log in</a></div>
-            </form>
+
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Email Address</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-transparent"
+                    ><i class="bi bi-envelope"></i
+                  ></span>
+                  <input
+                    class="form-control border-start-0"
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Enter your email address"
+                    required
+                    [(ngModel)]="registration.email"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-transparent"
+                    ><i class="bi bi-telephone"></i
+                  ></span>
+                  <input
+                    class="form-control border-start-0"
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    placeholder="Enter your phone number"
+                    required
+                    [(ngModel)]="registration.phone"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn login-button btn-lg w-100 mt-3">Next</button>
+            </div>
+          }
+          @if (step() === 2) {
+            <div class="registration-step">
+              <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+                  <input
+                    class="form-control border-start-0"
+                    type="text"
+                    name="username"
+                    id="username"
+                    placeholder="Choose a username"
+                    required
+                    [(ngModel)]="registration.userName"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
+                  <input
+                    class="form-control border-start-0"
+                    [type]="showPassword() ? 'text' : 'password'"
+                    name="password"
+                    id="password"
+                    placeholder="Create a password"
+                    required
+                    [(ngModel)]="registration.password"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirm-password" class="form-label fw-semibold"
+                  >Confirm Password</label
+                >
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
+                  <input
+                    class="form-control border-start-0"
+                    [type]="showPassword() ? 'text' : 'password'"
+                    name="confirmPassword"
+                    id="confirm-password"
+                    placeholder="Confirm your password"
+                    required
+                    [(ngModel)]="confirmPassword"
+                  />
+                  <button
+                    class="btn border border-start-0"
+                    type="button"
+                    (click)="showPassword.set(!showPassword())"
+                  >
+                    <i
+                      class="bi"
+                      [class.bi-eye]="showPassword()"
+                      [class.bi-eye-slash]="!showPassword()"
+                    ></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3 pt-3">
+                <button
+                  type="button"
+                  class="btn create-account btn-lg flex-fill"
+                  (click)="previousStep()"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  class="btn login-button btn-lg flex-fill"
+                  [disabled]="submitting()"
+                >
+                  @if (submitting()) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>Creating account…
+                  } @else {
+                    Create Account
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </fieldset>
+        <div class="text-center mt-4">
+          Already have an account?
+          <a class="forgot-link" routerLink="/">Log in</a>
         </div>
-    </section>
+      </form>
+    </div>
+  </section>
 </main>
