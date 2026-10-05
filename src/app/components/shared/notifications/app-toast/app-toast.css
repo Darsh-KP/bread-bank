@@ -1,5 +1,10 @@
-toast-container {
-  z-index: 1200;
+:host {
+  display: block;
+}
+
+.toast-info {
+  background-color: #0dcaf0;
+  color: black;
 }
 
 .toast-success {
@@ -7,9 +12,9 @@ toast-container {
   color: white;
 }
 
-.toast-info {
-  background-color: #0dcaf0;
-  color: black;
+.toast-warning {
+  background-color: #f0ad4e;
+  color: white;
 }
 
 .toast-error {

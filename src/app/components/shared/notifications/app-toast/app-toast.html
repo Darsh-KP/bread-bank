@@ -1,12 +1,10 @@
-<div class="toast-container position-fixed top-0 end-0 p-3">
-  @for (notification of notificationService.notifications(); track notification) {
-    <ngb-toast
-      [class]="'toast-' + notification.type"
-      [autohide]="true"
-      [delay]="notification.delay || 5000"
-      (hidden)="notificationService.remove(notification)"
-    >
-      {{ notification.message }}
-    </ngb-toast>
-  }
-</div>
+@for (notification of notificationService.notifications(); track notification.id) {
+  <ngb-toast
+    [class]="'toast-' + notification.type + ' mb-2'"
+    [autohide]="true"
+    [delay]="notification.delay || 5000"
+    (hidden)="notificationService.remove(notification)"
+  >
+    {{ notification.message }}
+  </ngb-toast>
+}
