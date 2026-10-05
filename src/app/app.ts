@@ -3,9 +3,9 @@ import { RouterOutlet } from '@angular/router';
 import { NavigationBar } from './components/shared/navigation-bar/navigation-bar';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [NavigationBar, RouterOutlet],
   selector: 'app-root',
-  template: '<router-outlet />',
+  template: '<app-navigation-bar></app-navigation-bar> <router-outlet />',
 })
 export class App {
   protected readonly title = signal('bread-bank');
