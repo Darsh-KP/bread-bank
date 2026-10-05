@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-export type TransactionType = 'DEPOSIT' | 'WITHDRAW' | 'TRANSFER_IN' | 'TRANSFER_OUT';
+export type TransactionType = 'DEPOSIT' | 'WITHDRAW' | 'TRANSFER_IN' | 'TRANSFER_OUT'; // defines the possible types of transactions
 
-export interface Transaction {
+export interface Transaction { // defines the structure of a transaction object
   id: string;
   accountId: string;
   type: TransactionType;
@@ -34,7 +34,7 @@ const MOCK_TRANSACTIONS: Transaction[] = [
  * Mock service. Later, replace the body of getTransactions() with a real HTTP call
  * (GET /accounts/:id/transactions) without touching the component.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: 'root' }) // marks the service as injectable and available throughout the application
 export class TransactionService {
   async getTransactions(): Promise<Transaction[]> {
     await new Promise((resolve) => setTimeout(resolve, 500)); // fake latency
