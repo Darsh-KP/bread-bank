@@ -31,15 +31,23 @@
               <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
               <input
                 class="form-control border-start-0"
-                type="password"
+                [type]="showPassword() ? 'text' : 'password'"
                 name="password"
                 id="password"
                 placeholder="Enter your password"
                 required
                 [(ngModel)]="credentials.password"
               />
-              <button class="btn border border-start-0" type="button">
-                <i class="bi bi-eye-slash"></i>
+              <button
+                class="btn border border-start-0"
+                type="button"
+                (click)="showPassword.set(!showPassword())"
+              >
+                <i
+                  class="bi"
+                  [class.bi-eye]="showPassword()"
+                  [class.bi-eye-slash]="!showPassword()"
+                ></i>
               </button>
             </div>
           </div>
