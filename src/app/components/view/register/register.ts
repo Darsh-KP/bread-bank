@@ -69,7 +69,9 @@ export class Register {
     }
     const passwordErrors = validatePassword(this.registration.password);
     if (passwordErrors.length) {
-      this.notifications.error(passwordErrors.join('\n'));
+      this.notifications.error(
+        'Password requirements:\n' + passwordErrors.map((error) => '• ' + error).join('\n'),
+      );
       return;
     }
     if (this.registration.password !== this.confirmPassword) {
