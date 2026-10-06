@@ -29,10 +29,11 @@ export class CreateAccount {
   }
 
   newAccount(pin: HTMLInputElement) {
-    if(Number.isNaN(pin)) {
-      document.getElementById("pinWarning")!.innerText = "A four-digit number is required.";
+    if (!/^\d{4}$/.test(pin.value)) {
+    document.getElementById("pinWarning")!.innerText =
+      "A four-digit number is required.";
     } else {
-      this.dialog = 'congratulate';
+      this.dialog = "congratulate";
     }
   }
 
