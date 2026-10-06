@@ -35,6 +35,7 @@
             <div class="modal-actions">
                 <input type="password" inputmode="text" maxlength="4" #pin>
                 <button (click)="newAccount(pin)">Enter</button>
+                <button (click)="dialog='none'">Close</button>
             </div>
             <p id="pinWarning"></p>
         </div>
@@ -48,6 +49,7 @@
             <div class="modal-actions">
                 <button (click)="dialog='none'">View this account</button>
                 <button (click)="dialog='none'">Back to dashboard</button>
+                <button (click)="dialog='none'">Close</button>"
             </div>
         </div>
     </div>
