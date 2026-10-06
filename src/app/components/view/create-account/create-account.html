@@ -1,7 +1,7 @@
 <div id="createAcct">
 <h1>Try one of Breadwinners' products</h1>
 
-<h2>Today's accounts</h2>
+<h2>Today's account offerings</h2>
 <div>
     @for (acc of accounts; track acc.name) {
         <label class="group">
@@ -24,6 +24,31 @@
 <div class="btnGroup">
 <button type="button" id="exitBtn">Exit</button>
 <button type="button" id="clsBtn" disabled="true" (click)="clearSelection();">Clear selection</button>
-<button type="button" id="contBtn" disabled="true">Continue</button>
+<button type="button" id="contBtn" disabled="true" (click)="continueCreation();">Continue</button>
 </div>
 </div>
+
+@if ( dialog === 'prompt' ) {
+    <div class="modal-backdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <h2>Please create a PIN</h2>
+            <div class="modal-actions">
+                <input type="password" inputmode="numeric" maxlength="4" #pin>
+                <button (click)="newAccount(pin)">Enter</button>
+            </div>
+            <p id="pinWarning"></p>
+        </div>
+    </div>
+}
+
+@if (dialog === 'congratulate') {
+    <div class="modal-backdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <h2>Success!</h2>
+            <div class="modal-actions">
+                <button (click)="dialog='none'">View this account</button>
+                <button (click)="dialog='none'">Back to dashboard</button>
+            </div>
+        </div>
+    </div>
+}
