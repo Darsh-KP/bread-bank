@@ -1,0 +1,10 @@
+@for (notification of notificationService.notifications(); track notification.id) {
+  <ngb-toast
+    [class]="'toast-' + notification.type + ' mb-2'"
+    [autohide]="true"
+    [delay]="notification.delay || 5000"
+    (hidden)="notificationService.remove(notification)"
+  >
+    {{ notification.message }}
+  </ngb-toast>
+}

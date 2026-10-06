@@ -52,10 +52,25 @@ describe('TransactionHistory', () => {
     expect(fixture.nativeElement.textContent).toContain('Loading transactions');
   });
 
-  it('renders one row per transaction', async () => {
+  it('shows the grid with one row per transaction', async () => {
     await setup(() => Promise.resolve(SAMPLE));
     await settle();
-    expect(fixture.nativeElement.querySelectorAll('tbody tr').length).toBe(2);
+    expect(fixture.nativeElement.querySelector('ag-grid-angular')).toBeTruthy();
+    expect(fixture.componentInstance.rows().length).toBe(2);
+  });
+
+  it('gives each row a signed amount (negative for money out)', async () => {
+    await setup(() => Promise.resolve(SAMPLE));
+    await settle();
+    const [deposit, withdrawal] = fixture.componentInstance.rows();
+    expect(deposit.signedAmount).toBe(50);
+    expect(withdrawal.signedAmount).toBe(-25);
+  });
+
+  it('defines the expected columns', async () => {
+    await setup(() => Promise.resolve(SAMPLE));
+    const headers = fixture.componentInstance.columnDefs.map((c) => c.headerName);
+    expect(headers).toEqual(['Date', 'Description', 'Type', 'Amount', 'Balance']);
   });
 
   it('shows an empty state when there are no transactions', async () => {

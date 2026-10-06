@@ -1,60 +1,74 @@
 <main class="row g-0 min-vh-100">
-    <section class="features-side col-12 col-md-6 d-flex flex-column justify-content-center">
-        <h1 class="text-center">Bread Bank</h1>
-        <h3 class="text-body-secondary fw-normal fs-5 mb-0 text-center">Your everyday banking,<br />a little more wholesome.</h3>
-        <img class="img-fluid w-50 mx-auto mt-3" src="logo.png" alt="Bread Bank logo" />
-        <div class="feature-list d-flex flex-column gap-4 mx-auto mt-4 px-4">
-            <div class="d-flex align-items-center gap-3">
-                <span class="feature-icon d-inline-flex flex-shrink-0 align-items-center justify-content-center rounded-circle p-3">
-                    <i class="bi bi-shield-lock-fill"></i>
-                </span>
-                <div class="d-flex flex-column"><strong>Secure Banking</strong><span>Your information stays protected.</span></div>
+  <app-auth-features />
+
+  <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center px-4 py-5">
+    <div class="login-content mx-auto w-75">
+      <header class="mb-5">
+        <h1 class="mb-2">Welcome Back</h1>
+        <h3 class="text-body-secondary fw-normal fs-5 mb-0">Log in to your Bread Bank account</h3>
+      </header>
+      <form (ngSubmit)="login()">
+        <fieldset [disabled]="submitting()">
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold">Username</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
+              <input
+                class="form-control border-start-0"
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Enter your username"
+                required
+                [(ngModel)]="credentials.userName"
+              />
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <span class="feature-icon d-inline-flex flex-shrink-0 align-items-center justify-content-center rounded-circle p-3">
-                    <i class="bi bi-credit-card-fill"></i>
-                </span>
-                <div class="d-flex flex-column"><strong>Manage Accounts</strong><span>Check balances, transfer, and more.</span></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold">Password</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
+              <input
+                class="form-control border-start-0"
+                [type]="showPassword() ? 'text' : 'password'"
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                required
+                [(ngModel)]="credentials.password"
+              />
+              <button
+                class="btn border border-start-0"
+                type="button"
+                (click)="showPassword.set(!showPassword())"
+              >
+                <i
+                  class="bi"
+                  [class.bi-eye]="showPassword()"
+                  [class.bi-eye-slash]="!showPassword()"
+                ></i>
+              </button>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <span class="feature-icon d-inline-flex flex-shrink-0 align-items-center justify-content-center rounded-circle p-3">
-                    <i class="bi bi-bar-chart-fill"></i>
-                </span>
-                <div class="d-flex flex-column"><strong>Build Your Future</strong><span>Simple tools for your financial goals.</span></div>
-            </div>
+          </div>
+
+          <button type="submit" class="btn login-button btn-lg w-100 mt-3">
+            @if (submitting()) {
+              <span class="spinner-border spinner-border-sm me-2"></span>Logging in…
+            } @else {
+              Log In
+            }
+          </button>
+        </fieldset>
+        <!-- stretch goal -->
+        <!-- <div class="text-center mt-3"><a class="forgot-link" href="">Forgot username or password?</a></div> -->
+        <div class="d-flex align-items-center gap-3 my-4 text-body-secondary">
+          <hr class="flex-grow-1" />
+          <span>or</span>
+          <hr class="flex-grow-1" />
         </div>
-    </section>
-
-    <section class="login-side col-12 col-md-6 d-flex flex-column justify-content-center px-4 py-5">
-        <div class="login-content mx-auto w-75">
-        <header class="mb-5">
-            <h1 class="mb-2">Welcome Back</h1>
-            <h3 class="text-body-secondary fw-normal fs-5 mb-0">Log in to your Bread Bank account</h3>
-        </header>
-            <form>
-                <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold">Username</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-person"></i></span>
-                        <input class="form-control border-start-0" type="text" name="username" id="username" placeholder="Enter your username" required />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label fw-semibold">Password</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent"><i class="bi bi-lock"></i></span>
-                        <input class="form-control border-start-0" type="password" name="password" id="password" placeholder="Enter your password" required />
-                        <button class="btn border border-start-0" type="button"><i class="bi bi-eye-slash"></i></button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn login-button btn-lg w-100 mt-3">Log In</button>
-                <!-- stretch goal -->
-                <!-- <div class="text-center mt-3"><a class="forgot-link" href="">Forgot username or password?</a></div> -->
-                <div class="d-flex align-items-center gap-3 my-4 text-body-secondary"><hr class="flex-grow-1" /><span>or</span><hr class="flex-grow-1" /></div>
-                <a class="btn create-account btn-lg w-100" href="">Create an Account</a>
-            </form>
-        </div>
-    </section>
+        <a class="btn create-account btn-lg w-100" routerLink="/register">Create an Account</a>
+      </form>
+    </div>
+  </section>
 </main>
