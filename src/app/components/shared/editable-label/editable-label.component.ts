@@ -7,6 +7,7 @@ import { validate } from '../../../../utils/regExps';
   imports: [FormsModule],
   standalone: true,
   templateUrl: 'editable-label.html',
+  styleUrl: 'editable-label.css',
 })
 export class EditableLabelComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
@@ -26,6 +27,38 @@ export class EditableLabelComponent implements OnChanges {
 
   private originalValue: string = '';
   private toastTimeout?: ReturnType<typeof setTimeout>;
+
+  // ==========================================
+  // Phone Display Methods
+  // ==========================================
+
+  get displayValue(): string {
+    if (this.type === 'tel' && this.isReadOnly && this.value) {
+      return this.formatPhoneNumber(this.value);
+    }
+    return this.value ?? '';
+  }
+
+  set displayValue(val: string) {
+    if (this.type === 'tel') {
+      // Strip out all non-digits so underlying value is pure numbers (e.g. 7320001234)
+      this.value = val.replace(/\D/g, '');
+    } else {
+      this.value = val;
+    }
+  }
+
+  // Format 10 digits as (XXX) XXX - XXXX
+  private formatPhoneNumber(phone: string): string {
+    const cleaned = ('' + phone).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]}) ${match[2]} - ${match[3]}`;
+    }
+    return phone;
+  }
+
+  // ==========================================
 
   //Check if user changes the value of the text field
   ngOnChanges(changes: SimpleChanges): void {

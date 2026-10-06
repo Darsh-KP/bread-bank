@@ -16,14 +16,24 @@ export const routes: Routes = [
   {
     path: 'history',
     loadComponent: () =>
-      import('./components/view/transaction-history/transaction-history').then((m) => m.TransactionHistory),
+      import('./components/view/transaction-history/transaction-history').then(
+        (m) => m.TransactionHistory,
+      ),
   },
   {
-    path: "profile-settings",
-    component: ProfileSettings
+    path: 'profile-settings',
+    loadComponent: () =>
+      import('./components/view/profile_settings/profile-settings').then((m) => m.ProfileSettings),
   },
   {
-    path: "create-account",
-    component: CreateAccount
-  }
+    path: 'create-account',
+    component: CreateAccount,
+  },
+  {
+  path: 'transfer',
+  loadComponent: () =>
+    import('./components/view/transfer/transfer').then(
+      (m) => m.Transfer,
+    ),
+},
 ];

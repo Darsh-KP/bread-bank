@@ -1,66 +1,95 @@
-<main>
-  <h2>Profile Settings</h2>
+<main class="profile-container">
 
-  <!--Display loading message when fetching user information -->
+  <!-- SVG Clip Path Definition -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <clipPath id="breadSliceShape" clipPathUnits="objectBoundingBox">
+        <path d="M 0.05,0.2
+                 C 0.05,0.05 0.25,0 0.5,0
+                 C 0.75,0 0.95,0.05 0.95,0.2
+                 C 0.95,0.24 0.9,0.25 0.9,0.28
+                 L 0.9,0.92
+                 C 0.9,0.97 0.85,1 0.8,1
+                 L 0.2,1
+                 C 0.15,1 0.1,0.97 0.1,0.92
+                 L 0.1,0.28
+                 C 0.1,0.25 0.05,0.24 0.05,0.2 C 0.05,0.2 0.05,0.2 0.05,0.2 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
   @if (loading()) {
     <p class="state" role="status">Loading Profile Settings...</p>
-    <!-- Display error message if could not load data from database -->
   } @else if (initialLoadError()) {
     <p class="state state-error" role="alert">{{ initialLoadError() }}</p>
   } @else if (user(); as profile) {
 
-    <!-- Username Section -->
-    <section>
-      <label for="username">Username:</label>
-      <input type="text" id="username" [value]="profile.userName" readonly />
-    </section>
+    <!-- Single Connected Bread Container -->
+    <div class="bread-card">
+      <div class="bread-content">
 
-    <!-- First Name -->
-    <editable-label
-      label="First Name:"
-      [value]="profile.firstName"
-      [onSave]="saveFirstName"
-      type="text"
-      errorMessage="First name cannot be empty.">
-    </editable-label>
+        <h2>Profile Settings</h2>
 
-    <!-- Last Name -->
-    <editable-label
-      label="Last Name:"
-      [value]="profile.lastName"
-      [onSave]="saveLastName"
-      type="text"
-      errorMessage="Last name cannot be empty.">
-    </editable-label>
+        <!-- Inner Content Area (Keeps fields safely away from crust edges) -->
+        <div class="bread-body-inner">
 
-    <!-- Email -->
-    <editable-label
-      label="Email:"
-      [value]="profile.email"
-      [onSave]="saveEmail"
-      [pattern]="emailPattern"
-      errorMessage="Please enter a valid email address (Ex: example@example.com)."
-      type="email">
-    </editable-label>
+          <!-- Username Section -->
+          <section class="user-name-row">
+            <label class="row-label" for="username">Username:</label>
+            <div class="row-content">
+              <input class="row-input" type="text" id="username" [value]="profile.userName" readonly />
+            </div>
+          </section>
 
-    <!-- Phone -->
-    <editable-label
-      label="Phone Number:"
-      [value]="profile.phone"
-      [onSave]="savePhone"
-      [pattern]="phonePattern"
-      errorMessage="Please enter a valid phone number from 10-14 digits."
-      type="tel">
-    </editable-label>
+          <!-- First Name -->
+          <editable-label
+            label="First Name:"
+            [value]="profile.firstName"
+            [onSave]="saveFirstName"
+            type="text"
+            errorMessage="First name cannot be empty.">
+          </editable-label>
 
-    <!-- Change Password Trigger Button -->
-    <button type="button" (click)="openPasswordModal()">
-      Change Password
-    </button>
+          <!-- Last Name -->
+          <editable-label
+            label="Last Name:"
+            [value]="profile.lastName"
+            [onSave]="saveLastName"
+            type="text"
+            errorMessage="Last name cannot be empty.">
+          </editable-label>
 
-    <!-- Custom Angular Password Modal Component -->
-      <!-- C:/Users/Gill/WebstormProjects/bread-bank/src/app/components/view/profile_settings/profile-settings.html -->
+          <!-- Email -->
+          <editable-label
+            label="Email:"
+            [value]="profile.email"
+            [onSave]="saveEmail"
+            [pattern]="emailPattern"
+            errorMessage="Please enter a valid email address (Ex: example@example.com)."
+            type="email">
+          </editable-label>
 
+          <!-- Phone -->
+          <editable-label
+            label="Phone Number:"
+            [value]="profile.phone"
+            [onSave]="savePhone"
+            [pattern]="phonePattern"
+            errorMessage="Please enter a valid phone number from 10-14 digits."
+            type="tel">
+          </editable-label>
+
+          <!-- Change Password Trigger Button -->
+          <button type="button" class="btn-change-password" (click)="openPasswordModal()">
+            Change Password
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Password Modal -->
     <password-change-modal
       #passwordModal
       [onSave]="handlePasswordChange">
