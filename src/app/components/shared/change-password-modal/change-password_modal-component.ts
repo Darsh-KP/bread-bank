@@ -11,6 +11,7 @@ import {
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './change-password-modal.component.html',
+  styleUrl: './change-password-modal.css'
 })
 export class PasswordChangeModalComponent {
   private readonly formbuilder: FormBuilder = inject(FormBuilder);
