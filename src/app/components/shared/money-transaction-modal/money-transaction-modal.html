@@ -1,0 +1,126 @@
+<p>money-transaction-modal works!</p>
+
+<form
+  [formGroup]="pinForm"
+  (ngSubmit)="verifyPin()">
+
+  <mat-form-field
+    appearance="outline"
+    class="full-width w-100">
+
+    <mat-label>PIN</mat-label>
+
+    <input
+      matInput
+      type="password"
+      inputmode="numeric"
+      autocomplete="off"
+      maxlength="4"
+      formControlName="pin"
+      (input)="onPinInput($event); checkPinValidation()"
+      (blur)="checkPinValidation()"
+    />
+
+    @if (isPinInvalid()) {
+      <mat-error>
+        @if (pinControl.hasError('required')) {
+          PIN is required.
+        }
+
+        @if (pinControl.hasError('pattern')) {
+          PIN must be exactly 4 digits.
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+
+  @if (errorMessage()) {
+    <div class="error-message d-flex align-items-center gap-2 mt-2 p-2 rounded text-start fs-6">
+      <mat-icon class="flex-shrink-0">error</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <div class="actions d-flex justify-content-end flex-wrap gap-2 mt-4">
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="isProcessing()">
+
+      @if (isProcessing()) {
+        <mat-spinner
+          diameter="20">
+        </mat-spinner>
+      } @else {
+        Continue
+      }
+    </button>
+  </div>
+</form>
+
+<form
+  [formGroup]="amountForm"
+  (ngSubmit)="submitAmount()">
+
+  <mat-form-field
+    appearance="outline"
+    class="full-width w-100">
+
+    <mat-label>Amount</mat-label>
+
+    <span matTextPrefix>$&nbsp;</span>
+
+    <input
+      matInput
+      type="text"
+      inputmode="decimal"
+      autocomplete="off"
+      placeholder="0.00"
+      formControlName="amount"
+      (input)="onAmountInput($event); checkAmountValidation()"
+      (blur)="checkAmountValidation()"
+    />
+
+    @if (isAmountInvalid()) {
+      <mat-error>
+        @if (amountControl.hasError('required')) {
+          Amount is required.
+        }
+
+        @if (amountControl.hasError('pattern')) {
+          Enter a valid amount with up to 2 decimal places.
+        }
+
+        @if (amountControl.hasError('min')) {
+          Amount must be greater than zero.
+        }
+      </mat-error>
+    }
+
+  </mat-form-field>
+
+  @if (errorMessage()) {
+    <div class="error-message d-flex align-items-center gap-2 mt-2 p-2 rounded text-start fs-6">
+      <mat-icon class="flex-shrink-0">error</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <div class="actions d-flex justify-content-end flex-wrap gap-2 mt-4">
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="isProcessing()">
+
+      @if (isProcessing()) {
+        <mat-spinner
+          diameter="20">
+        </mat-spinner>
+      } @else {
+        Submit
+      }
+    </button>
+  </div>
+</form>
