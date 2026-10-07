@@ -1,14 +1,17 @@
 <section class="editable-row">
   <!-- Fixed label column -->
-  <label class="row-label">{{ label }}</label>
+  <label class="row-label">{{ label() }}</label>
 
   <!-- Value / Input wrapper -->
   <div class="row-content">
     <input
       class="form-control-plaintext row-input"
       [class.editing]="!isReadOnly"
-      [type]="type"
-      [(ngModel)]="displayValue"
+      [type]="type()"
+      [ngModel]="isReadOnly ? displayValue() : value()"
+      (ngModelChange)="onInputChange($event)"
+      (keyup.enter)="toggleEdit()"
+      (keyup.esc)="cancelEdit()"
       [readonly]="isReadOnly || isSaving"
     />
   </div>
