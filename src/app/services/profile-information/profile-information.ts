@@ -31,6 +31,7 @@ export class ProfileInformationService {
   private currentUser: MockUser | null = null;
   private users?: Promise<MockUser[]>;
 
+
   //Initial promise of user data being loaded in.
   private initPromise: Promise<void>;
 
