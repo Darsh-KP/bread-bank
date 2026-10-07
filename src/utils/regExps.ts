@@ -12,3 +12,9 @@ export function validate(value: string, pattern?: RegExp): boolean {
 
   return pattern.test(val);
 }
+
+// PIN pattern: must be 6 digits
+export const PIN_REGEX = /^\d{4}$/;
+
+// Amount pattern: max 2 decimal numbers
+export const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/;
