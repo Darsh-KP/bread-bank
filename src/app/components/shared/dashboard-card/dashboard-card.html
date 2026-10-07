@@ -1,29 +1,29 @@
 <mat-card class="account-card" appearance="outlined">
   <mat-card-header>
-    <mat-card-title>{{ account.accountType }}</mat-card-title>
-    <mat-card-subtitle>Account ending in {{ account.lastFour }}</mat-card-subtitle>
+    <mat-card-title>{{ account().accountType }}</mat-card-title>
+    <mat-card-subtitle>Account ending in {{ account().lastFour }}</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
     <div class="balance-label">Available balance</div>
     <div class="balance">
-      {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+      {{ account().balance | currency:'USD':'symbol':'1.2-2' }}
     </div>
   </mat-card-content>
 
   <mat-card-actions align="end">
     <button mat-stroked-button color="primary" routerLink="/deposit">
-      <mat-icon>add</mat-icon>
+      <mat-icon>attach_money</mat-icon>
       Deposit
     </button>
 
     <button mat-stroked-button color="primary" routerLink="/withdraw">
-      <mat-icon>remove</mat-icon>
+      <mat-icon>money_off</mat-icon>
       Withdraw
     </button>
 
     <button mat-stroked-button color="primary" routerLink="/transfer">
-      <mat-icon>sync_alt</mat-icon>
+      <mat-icon>compare_arrows</mat-icon>
       Transfer
     </button>
   </mat-card-actions>
