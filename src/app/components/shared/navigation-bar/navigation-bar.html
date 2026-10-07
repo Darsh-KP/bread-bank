@@ -1,13 +1,31 @@
 <mat-toolbar color="primary" class="app-navbar" aria-label="Primary navigation">
-  <div class="brand" routerLink="/dashboard" aria-label="Breadwinners Financial Services home">
-    <img src="logo.png" alt="Breadwinners Financial Services Logo" class="brand-logo">
+  <a class="brand" routerLink="/dashboard" aria-label="Breadwinners Financial Services home">
+    <img src="logo.png" alt="" class="brand-logo">
     <span class="brand-text">Breadwinners Financial Services</span>
-  </div>
+  </a>
 
-  <nav class="nav-links" aria-label="Main navigation">
+  <button
+    mat-icon-button
+    class="mobile-menu-toggle"
+    type="button"
+    (click)="toggleMobileNav()"
+    [attr.aria-expanded]="mobileNavOpen()"
+    aria-controls="primary-navigation-links"
+    [attr.aria-label]="mobileNavOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+  >
+    <mat-icon>{{ mobileNavOpen() ? 'close' : 'menu' }}</mat-icon>
+  </button>
+
+  <nav
+    id="primary-navigation-links"
+    class="nav-links"
+    [class.mobile-open]="mobileNavOpen()"
+    aria-label="Main navigation"
+  >
     <button
       mat-button
       routerLink="/dashboard"
+      (click)="closeMobileNav()"
       routerLinkActive="active-link"
       [routerLinkActiveOptions]="{ exact: true }"
       aria-label="Dashboard"
@@ -19,18 +37,19 @@
     <button
       mat-button
       [matMenuTriggerFor]="accountsMenu"
+      (click)="closeMobileNav()"
       routerLinkActive="active-link"
       [routerLinkActiveOptions]="{ exact: false }"
       aria-label="Accounts"
     >
       <span>Accounts</span>
-<!--      <mat-icon>account_balance</mat-icon>-->
-      <mat-icon class="menu-caret" >arrow_drop_down</mat-icon>
+      <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
     </button>
 
     <button
       mat-button
       routerLink="/profile-settings"
+      (click)="closeMobileNav()"
       routerLinkActive="active-link"
       aria-label="User settings"
     >
