@@ -23,7 +23,9 @@ export const routes: Routes = [
   {
     path: 'profile-settings',
     loadComponent: () =>
-      import('./components/view/profile_settings/profile-settings').then((m) => m.ProfileSettings),
+      import('./components/view/profile_settings/profile-settings').then(
+        (m) => m.ProfileSettings
+      ),
   },
   {
     path: 'create-account',
@@ -31,10 +33,14 @@ export const routes: Routes = [
   },
   {
     path: 'transfer',
-    loadComponent: () => import('./components/view/transfer/transfer').then((m) => m.Transfer),
+    loadComponent: () => import('./components/view/transfer/transfer').then(
+      (m) => m.Transfer
+    ),
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./components/view/dashboard/dashboard').then((m) => m.Dashboard),
+    loadComponent: () => import('./components/view/dashboard/dashboard').then(
+      (m) => m.Dashboard
+    ),
   },
 ];
