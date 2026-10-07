@@ -1,5 +1,79 @@
+
 /* ==========================================
-   GLOBAL CONTAINER & TYPOGRAPHY
+       1. HEADER SECTION & TITLE GROUP
+========================================== */
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 1rem 0.875rem;
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+
+  /* Tactile double-layered crust divider */
+  border-bottom: 0.25rem solid #73452c;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: #2b1406;
+  font-size: 3.75rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  /* High-contrast embossed text shadow */
+  text-shadow:
+    0 0.09375rem 0 rgba(255, 255, 255, 0.95),
+    0 0.2rem 0.4rem rgba(43, 20, 6, 0.35);
+}
+
+/* Static Circular Badge - Matched to Header Scale */
+.header-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+
+  background-color: #fce8bd;
+  border: 0.125rem solid #e8c480;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+
+  /* Optical baseline adjustment for all-caps alignment */
+  transform: translateY(-0.1875rem);
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.header-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+/* ==========================================
+   2. GLOBAL LAYOUT & MASKED BREAD SLICE
    ========================================== */
 
 main.profile-container {
@@ -16,128 +90,142 @@ main.profile-container .state {
 }
 
 main.profile-container .state-error {
-  color: #522b00;
-  background: linear-gradient(135deg, #fff8cb 0%, #fde068 50%, #f4c442 100%);
-  border: 0.125rem solid #e5bd38;
-  border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  box-shadow: 0 0.25rem 0.625rem rgba(184, 134, 11, 0.25),
-  inset 0 0.0625rem 0.0625rem rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 1rem 1.25rem;
   margin-bottom: 1.25rem;
+
+  color: #522b00;
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  background: linear-gradient(135deg, #fff8cb 0%, #fde068 50%, #f4c442 100%);
+  border: 0.125rem solid #e5bd38;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 0.25rem 0.625rem rgba(184, 134, 11, 0.25),
+    inset 0 0.0625rem 0.0625rem rgba(255, 255, 255, 0.9);
 }
 
-/* ==========================================
-   SINGLE-PIECE MASKED BREAD SLICE
-   ========================================== */
-
+/* Single-Piece Masked Bread Card */
 main.profile-container .bread-card {
   position: relative;
-  max-width: 44rem;
   width: 100%;
+  max-width: 44rem;
   margin: 1rem auto;
-  background-color: #73452c; /* Solid Unbroken Crust Brown */
   padding: 1.25rem;
   box-sizing: border-box;
 
-  /* Apply SVG Clip Path to form complete bread silhouette */
+  background-color: #73452c; /* Solid unbroken crust brown */
   clip-path: url(#breadSliceShape);
   filter: drop-shadow(0 0.75rem 1.25rem rgba(115, 69, 44, 0.3));
 }
 
-/* Inner crumb yellow container */
+/* Inner Crumb Yellow Container */
 main.profile-container .bread-card .bread-content {
-  width: 100%;
-  height: 100%;
-  background-color: #f8db9c; /* Soft Crumb Yellow */
-  box-sizing: border-box;
-  padding: 2.5rem 12% 2rem 12%; /* Dynamic % padding scales safely with bread width */
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 2.5rem 12% 2rem 12%;
+  box-sizing: border-box;
 
-  /* Matches outer clip path so inner edge curves seamlessly */
+  /* Soft warm buttery yellow gradient */
+  background: linear-gradient(
+    360deg,
+    #fff5d6 0%,    /* Soft warm butter yellow top */
+    #fceabb 45%,   /* Rich golden-custard middle */
+    #f7d794 100%   /* Deep toasted butter yellow base */
+  );
+
   clip-path: url(#breadSliceShape);
 }
 
-/* Header inside top dome */
 main.profile-container .bread-card .bread-content h2 {
+  margin: 0 0 1.25rem 0;
   color: #4a230a;
   font-size: 2rem;
   font-weight: 800;
-  margin: 0 0 1.25rem 0;
   text-align: center;
   letter-spacing: -0.02em;
 }
 
-/* Dedicated Inner Body Container */
 main.profile-container .bread-card .bread-content .bread-body-inner {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
   box-sizing: border-box;
 }
 
+
 /* ==========================================
-   STATIC USERNAME ROW
+   3. USER ROWS & INPUT FIELDS
    ========================================== */
 
+/* Static Read-Only Username Row */
 main.profile-container .user-name-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  flex-wrap: nowrap;
-  gap: 0.5rem;
-  padding: 0.65rem 0.25rem;
-  background-color: transparent;
-  margin-bottom: 0.75rem;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  max-width: 28.125rem;
+  margin: 0 auto 1rem;
+  padding: 0.75rem 1.25rem;
+  box-sizing: border-box;
+
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 0.125rem solid #5c3a21;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
 }
 
 main.profile-container .user-name-row .row-label {
   flex: 0 0 auto;
   width: auto;
   min-width: 0;
+  margin-bottom: 0;
+  color: #4a230a;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #4a230a;
-  margin: 0;
   white-space: nowrap;
 }
 
 main.profile-container .user-name-row .row-content {
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  align-items: center;
 }
 
 main.profile-container .user-name-row .row-input {
   width: 100%;
-  border: none;
-  background: transparent;
+  padding: 0.375rem 0.25rem;
   color: #4a230a;
   font-size: 0.95rem;
   font-weight: 700;
-  padding: 0.375rem 0.25rem;
+
+  background-color: transparent;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.375rem;
   outline: none;
+
+  text-align: left;
   text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-/* Global rule for child editable-label components */
+/* Global wrapper host for custom editable-label components */
 main.profile-container editable-label {
   display: block;
   width: 100%;
+  margin-bottom: 0.75rem;
   box-sizing: border-box;
 }
-
-/* ==========================================
-   EDITABLE-LABEL COMPONENT STYLES
-   (:host & internals for editable-label)
-   ========================================== */
 
 :host {
   display: block;
@@ -146,29 +234,28 @@ main.profile-container editable-label {
 
 .editable-row {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 0.25rem;
+
   background-color: transparent;
   border: none;
   border-radius: 0.5rem;
-  flex-wrap: nowrap;
   transition: all 0.2s ease;
 }
 
-/* 1. Label Column - Takes only as much space as text needs */
 .row-label {
   flex: 0 0 auto;
   width: auto;
   min-width: 0;
+  margin-bottom: 0;
+  color: #4a230a;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #4a230a;
-  margin-bottom: 0;
   white-space: nowrap;
 }
 
-/* 2. Value Input Wrapper - Starts immediately next to label */
 .row-content {
   flex: 1 1 auto;
   min-width: 0;
@@ -178,14 +265,16 @@ main.profile-container editable-label {
 
 .row-input {
   width: 100%;
+  padding: 0.375rem 0.25rem;
   color: #4a230a;
   font-size: 0.95rem;
-  font-weight: 700;
-  padding: 0.375rem 0.25rem;
-  border-radius: 0.375rem;
-  border: 0.0625rem solid transparent;
+  font-weight: 500;
+
   background-color: transparent;
+  border: 0.0625rem solid transparent;
+  border-radius: 0.375rem;
   outline: none;
+
   text-align: left;
   text-overflow: ellipsis;
   transition: all 0.2s ease;
@@ -193,45 +282,48 @@ main.profile-container editable-label {
 
 /* Active Editing State */
 .row-input.editing {
-  background-color: #ffffff;
-  border-color: #73452c;
   padding: 0.375rem 0.75rem;
   font-weight: 500;
+  background-color: #ffffff;
+  border-color: #73452c;
 }
 
 .row-input.editing:focus {
   box-shadow: 0 0 0 0.2rem rgba(115, 69, 44, 0.2);
 }
 
-/* 3. Icon Action Button Container */
+/* Icon Action Button Container */
 .btn-icon {
   flex: 0 0 auto;
-  margin-left: auto; /* Keeps edit button anchored on far right */
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto; /* Anchors edit button on the far right */
+
   width: 2.25rem;
   height: 2.25rem;
   padding: 0;
-  font-size: 0.9rem;
-  border-radius: 0.5rem;
+
   color: #4a230a;
-  border: 0.0625rem solid #e8c480;
+  font-size: 0.9rem;
+
   background-color: #fce8bd;
+  border: 0.0625rem solid #e8c480;
+  border-radius: 0.5rem;
   transition: all 0.2s ease;
 }
 
 .btn-icon:hover:not(:disabled) {
+  color: #ffffff;
   background-color: #73452c;
   border-color: #73452c;
-  color: #ffffff;
 }
 
 /* Save / Active State */
 .btn-icon.btn-success {
+  color: #ffffff;
   background-color: #73452c;
   border-color: #73452c;
-  color: #ffffff;
 }
 
 .btn-icon.btn-success:hover:not(:disabled) {
@@ -244,7 +336,7 @@ main.profile-container editable-label {
   cursor: not-allowed;
 }
 
-/* 4. Toast Notification Banner */
+/* Toast Notification Banner */
 .row-toast {
   flex-basis: 100%;
   display: flex;
@@ -252,25 +344,29 @@ main.profile-container editable-label {
   justify-content: space-between;
   padding: 0.6rem 0.85rem;
   margin-top: 0.5rem;
-  background: linear-gradient(135deg, #fff3a1 0%, #fde068 100%);
-  border: 0.125rem solid #ebd050;
-  border-radius: 0.625rem;
+
   color: #633500;
   font-size: 0.85rem;
   font-weight: 700;
-  box-shadow: 0 0.25rem 0.5rem rgba(212, 160, 23, 0.25),
-  inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
+
+  background: linear-gradient(135deg, #fff3a1 0%, #fde068 100%);
+  border: 0.125rem solid #ebd050;
+  border-radius: 0.625rem;
+  box-shadow:
+    0 0.25rem 0.5rem rgba(212, 160, 23, 0.25),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
 }
 
 .toast-close {
-  background: none;
-  border: none;
+  padding: 0 0.2rem;
   color: #7a4100;
   font-size: 1.1rem;
   font-weight: 800;
-  cursor: pointer;
   line-height: 1;
-  padding: 0 0.2rem;
+
+  background: none;
+  border: none;
+  cursor: pointer;
   opacity: 0.75;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
@@ -280,34 +376,53 @@ main.profile-container editable-label {
   transform: scale(1.15);
 }
 
+
 /* ==========================================
-   PRIMARY BUTTON
+   4. PRIMARY ACTION BUTTON
    ========================================== */
 
-main.profile-container .btn-change-password {
-  margin-top: 1.25rem;
-  padding: 0.75rem 1.5rem;
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  margin: 1.5rem auto 0;
+  padding: 0.75rem 1.75rem;
+
+  color: #ffffff;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #ffffff;
-  background-color: #73452c;
+  letter-spacing: 0.02em;
+
+  background-color: #5c3a21;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.15);
+
   cursor: pointer;
-  align-self: center;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-main.profile-container .btn-change-password:hover {
-  background-color: #59331e;
+.primary-btn:hover {
+  background-color: #432815;
+  transform: translateY(-0.0625rem);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.2);
 }
 
-main.profile-container .btn-change-password:active {
-  transform: scale(0.98);
+.primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.12);
 }
+
+.btn-icon-lead {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
 
 /* ==========================================
-   RESPONSIVE BREAKPOINTS
+   5. RESPONSIVE BREAKPOINTS
    ========================================== */
 
 @media (max-width: 640px) {
@@ -315,7 +430,16 @@ main.profile-container .btn-change-password:active {
     padding: 2.25rem 15% 1.75rem 15%;
   }
 
-  main.profile-container .btn-change-password {
+  .header-title {
+    font-size: 2.75rem;
+  }
+
+  .header-badge {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .primary-btn {
     width: 100%;
     text-align: center;
   }
@@ -324,6 +448,6 @@ main.profile-container .btn-change-password:active {
 @media (max-width: 480px) {
   .row-input,
   main.profile-container .user-name-row .row-input {
-    font-size: 0.875rem; /* Slightly smaller text for tight screen widths */
+    font-size: 0.875rem;
   }
 }
