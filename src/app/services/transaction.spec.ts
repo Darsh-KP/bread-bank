@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing'; // import the Angular testing utilities for setting up the test environment
 
-import { TransactionService } from './transaction'; // import the TransactionService to be tested
+import { TransactionService } from './transaction_history'; // import the TransactionService to be tested
 
 describe('TransactionService', () => {
   let service: TransactionService;
