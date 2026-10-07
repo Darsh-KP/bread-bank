@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { normalizePhone } from '../../../utils/normalization';
+import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export interface ProfileInformation {
   userName: string;
@@ -19,39 +21,64 @@ interface MockUser extends ProfileInformation {
   passwordHash: string;
 }
 
-const MOCK_DATABASE: MockUser[] = [
-  {
-    userName: 'itsYaBreadBoi',
-    firstName: 'Iakkhos',
-    lastName: 'Baker',
-    email: 'paladinOfCrust@bmail.com',
-    phone: '1234567890',
-    passwordHash: 'myPassword123!',
-  },
-  {
-    userName: 'yeasterSunday',
-    firstName: 'Larkin',
-    lastName: 'Naan',
-    email: 'fallenBread@bmail.com',
-    phone: '0000000000',
-    passwordHash: 'myPassword123!',
-  },
-];
-
 export type UpdatableField = keyof Omit<ProfileInformation, 'userName'>;
 
 //Uses mock database, replace with api calls to GET /profile-settings
 //and PATCH /profile-settings/{field}
 @Injectable({ providedIn: 'root' })
 export class ProfileInformationService {
-  private currentUser: MockUser = { ...MOCK_DATABASE[0] };
+  private readonly http = inject(HttpClient);
+  private currentUser: MockUser | null = null;
+  private users?: Promise<MockUser[]>;
+
+  //Initial promise of user data being loaded in.
+  private initPromise: Promise<void>;
+
+  //Eagerly loads user data upon construction, stores the Promise/result of this
+  //for other methods to wait on.
+  constructor() {
+    this.initPromise = this.loadCurrentUser();
+  }
+
+  //Loads the first user from the json mock database.
+  private async loadCurrentUser(): Promise<void> {
+    try {
+      this.users = this.loadUsers();
+
+      const resolvedUser = await this.users;
+      if (resolvedUser && resolvedUser.length > 0) {
+        this.currentUser = resolvedUser[0];
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  //Loads user data from mock json file
+  private loadUsers(): Promise<MockUser[]> {
+    return (this.users ??= firstValueFrom(this.http.get<MockUser[]>('/mock-data/users.json')).catch(
+      () => {
+        this.users = undefined;
+        throw new Error('Could not load account data. Please try again.');
+      },
+    ));
+  }
+
+  //Returns information of user profile
   async getProfileInformation(): Promise<ProfileInformation> {
     await this.delay(500);
+
+    //Wait for constructor to load in resources.
+    await this.initPromise;
+
+    if(!this.currentUser){
+      throw new Error('Could not load account data. Please try again.');
+    }
+
     return { ...this.currentUser };
   }
 
@@ -66,6 +93,16 @@ export class ProfileInformationService {
     // In the future with HttpClient, this endpoint route will be:
     // const url = `/profile-settings/${field}`;
 
+    //Wait for constructor to load in resources.
+    await this.initPromise;
+
+    //Throw error if either the current user or mock users data could not be loaded.
+    if(!this.currentUser || !this.users){
+      throw new Error('Could not load account data. Please try again.');
+    }
+
+    const resolvedUsers = await this.users;
+
     const updatedData: Partial<ProfileInformation> = {};
 
     switch (field) {
@@ -75,7 +112,7 @@ export class ProfileInformationService {
         const currentEmail = this.currentUser.email.trim().toLowerCase();
 
         if (newEmail !== currentEmail) {
-          const emailExists = MOCK_DATABASE.some(
+          const emailExists = resolvedUsers.some(
             (user) => user.email.trim().toLowerCase() === newEmail,
           );
           if (emailExists) {
@@ -92,8 +129,7 @@ export class ProfileInformationService {
         const currentPhone = normalizePhone(this.currentUser.phone);
 
         if (newPhone !== currentPhone) {
-          const phoneExists =
-            MOCK_DATABASE.some((user) => normalizePhone(user.phone) === newPhone);
+          const phoneExists = resolvedUsers.some((user) => normalizePhone(user.phone) === newPhone);
           if (phoneExists) {
             throw new Error('This phone number is already taken.');
           }
@@ -120,6 +156,13 @@ export class ProfileInformationService {
   //Used specifically with patch requests for /profile-settings/password
   async updatePassword(request: ProfilePasswordChangeRequest): Promise<void> {
     await this.delay(500);
+
+    //Wait for constructor to load in resources.
+    await this.initPromise;
+
+    if(!this.currentUser){
+      throw new Error('Could not load account data. Please try again.');
+    }
 
     // In future with HttpClient:
     // return firstValueFrom(this.http.patch<void>('/profile-settings/password', request));

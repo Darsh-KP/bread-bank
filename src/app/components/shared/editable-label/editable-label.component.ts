@@ -1,6 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject, } from '@angular/core';
+import { Component, ChangeDetectorRef, inject, input, computed, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { validate } from '../../../../utils/regExps';
+import { validate, emailPattern, phonePattern } from '../../../../utils/regExps';
 
 @Component({
   selector: 'editable-label',
@@ -9,16 +9,17 @@ import { validate } from '../../../../utils/regExps';
   templateUrl: 'editable-label.html',
   styleUrl: 'editable-label.css',
 })
-export class EditableLabelComponent implements OnChanges {
+export class EditableLabelComponent {
   private readonly cdr = inject(ChangeDetectorRef);
 
-  @Input() label: string = '';
-  @Input() value: string = '';
-  @Input() type: 'text' | 'email' | 'tel' = 'text';
-  @Input() pattern?: RegExp;
-  @Input() errorMessage: string = '';
+  label = input<string>('');
+  type = input<'text' | 'email' | 'tel'>('text');
+  pattern = input<RegExp>();
+  errorMessage = input<string>('');
+  onSave = input<(newValue: string) => Promise<void>>();
 
-  @Input() onSave?: (newValue: string) => Promise<void>;
+  // Model bound to input state
+  value = model<string>('');
 
   isReadOnly: boolean = true;
   isSaving: boolean = false;
@@ -28,132 +29,125 @@ export class EditableLabelComponent implements OnChanges {
   private originalValue: string = '';
   private toastTimeout?: ReturnType<typeof setTimeout>;
 
-  // ==========================================
-  // Phone Display Methods
-  // ==========================================
-
-  get displayValue(): string {
-    if (this.type === 'tel' && this.isReadOnly && this.value) {
-      return this.formatPhoneNumber(this.value);
+  // Display value formats phone numbers in read-only mode
+  displayValue = computed(() => {
+    const rawVal = this.value();
+    if (this.type() === 'tel' && this.isReadOnly && rawVal) {
+      return this.formatPhoneNumber(rawVal);
     }
-    return this.value ?? '';
-  }
+    return rawVal ?? '';
+  });
 
-  set displayValue(val: string) {
-    if (this.type === 'tel') {
-      // Strip out all non-digits so underlying value is pure numbers (e.g. 7320001234)
-      this.value = val.replace(/\D/g, '');
-    } else {
-      this.value = val;
-    }
+  onInputChange(val: string): void {
+    // Preserve raw input string during typing
+    this.value.set(val);
   }
 
   // Format 10 digits as (XXX) XXX - XXXX
   private formatPhoneNumber(phone: string): string {
     const cleaned = ('' + phone).replace(/\D/g, '');
     const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-      return `(${match[1]}) ${match[2]} - ${match[3]}`;
-    }
-    return phone;
-  }
-
-  // ==========================================
-
-  //Check if user changes the value of the text field
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['value']) {
-      this.originalValue = changes['value'].currentValue ?? '';
-    }
+    return match ? `(${match[1]}) ${match[2]} - ${match[3]}` : phone;
   }
 
   /**
    * Toggles between edit and read-only modes.
-   *
-   * - When entering edit mode: Captures a snapshot of the starting value and clears errors.
-   * - When saving: Validates formatting, skips redundant network calls if unchanged,
-   *   executes the asynchronous `onSave` callback, and manages loading/error UI states.
    */
   async toggleEdit(): Promise<void> {
-    // ==========================================
-    // BRANCH 1: User clicked "SAVE" (Currently Editing)
-    // ==========================================
     if (!this.isReadOnly) {
-      const currentValue = (this.value ?? '').trim();
+      const currentValue = (this.value() ?? '').trim();
       const previousValue = (this.originalValue ?? '').trim();
 
-      // 1. Unchanged Check:
-      // Exit edit mode cleanly without calling the API if the user made no actual edits.
+      // 1. Emptiness Check
+      if (currentValue === '') {
+        this.displayToastError('This field cannot be left blank');
+        return;
+      }
+
+      // 2. Unchanged Check
       if (currentValue === previousValue) {
         this.isReadOnly = true;
         this.dismissToastError();
         return;
       }
 
-      // 2. Format Validation Check:
-      // Run regex/format checks. If invalid, keep the field open and display error toast.
-      if (!validate(this.value, this.pattern)) {
-        this.displayToastError(this.errorMessage || 'Invalid input format');
+      // 3. Resolve active pattern explicitly
+      let activePattern = this.pattern();
+      if (!activePattern) {
+        if (this.type() === 'email') {
+          activePattern = emailPattern;
+        } else if (this.type() === 'tel') {
+          activePattern = phonePattern;
+        }
+      }
+
+      // 4. Format Validation Check
+      if (activePattern && !validate(currentValue, activePattern)) {
+        this.displayToastError(this.errorMessage() || 'Invalid input format');
         return;
       }
 
-      // 3. Asynchronous Save Execution:
-      if (this.onSave) {
-        // Set loading state and notify Angular to immediately render "Saving..." button text.
+      // 5. Clean phone digits ONLY AFTER passing regex validation
+      const finalSaveValue = this.type() === 'tel' ? currentValue.replace(/\D/g, '') : currentValue;
+
+      // 6. Asynchronous Save Execution
+      const saveCallback = this.onSave();
+      if (saveCallback) {
         this.isSaving = true;
         this.dismissToastError();
         this.cdr.markForCheck();
 
         try {
-          // Await the parent's save operation (e.g., HTTP backend call or uniqueness check).
-          await this.onSave(currentValue);
-
-          // Success: Update local baseline snapshot and lock input back to read-only.
-          this.originalValue = currentValue;
+          await saveCallback(finalSaveValue);
+          this.value.set(finalSaveValue);
+          this.originalValue = finalSaveValue;
           this.isReadOnly = true;
         } catch (err: unknown) {
-          // Failure (e.g., duplicate email/phone or network timeout):
-          // Extract error message, present toast banner, and keep field open for user correction.
           const reason = err instanceof Error ? err.message : 'Failed to save value.';
           this.displayToastError(reason);
           this.isReadOnly = false;
         } finally {
-          // Guaranteed Cleanup:
-          // Always reset saving status and trigger change detection to restore button label ("Save" / "Edit").
           this.isSaving = false;
           this.cdr.markForCheck();
         }
       } else {
-        // Fallback if no `onSave` callback was provided by parent component.
+        this.value.set(finalSaveValue);
         this.isReadOnly = true;
       }
 
       return;
     }
 
-    // ==========================================
-    // BRANCH 2: User clicked "EDIT" (Currently Read-Only)
-    // ==========================================
-    // Capture initial baseline value before edits occur, unlock input, and dismiss stale toasts.
-    this.originalValue = this.value ?? '';
+    // Entering Edit Mode: Snapshot starting value here ONLY
+    this.originalValue = this.value() ?? '';
     this.isReadOnly = false;
     this.dismissToastError();
   }
 
-  //Used to display error message if phone/email are not properly formatted
-  //or if email/phone number is taken.
+  /**
+   * Reverts changes and exits edit mode when ESC is pressed or edit is canceled.
+   */
+  cancelEdit(): void {
+    if (this.isReadOnly) return;
+    this.value.set(this.originalValue);
+    this.isReadOnly = true;
+    this.dismissToastError();
+  }
+
   displayToastError(msg?: string): void {
-    this.toastMessage = msg || this.errorMessage || 'Invalid input format';
+    this.toastMessage = msg || this.errorMessage() || 'Invalid input format';
     this.displayToast = true;
+
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
 
     this.toastTimeout = setTimeout(() => {
       this.displayToast = false;
       this.cdr.markForCheck();
     }, 3000);
+
+    this.cdr.markForCheck();
   }
 
-  //Dismisses error message if user continues typing or presses close button
   dismissToastError(): void {
     this.displayToast = false;
     if (this.toastTimeout) clearTimeout(this.toastTimeout);

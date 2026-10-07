@@ -28,7 +28,17 @@
     <div class="bread-card">
       <div class="bread-content">
 
-        <h2>Profile Settings</h2>
+        <header class="toast-header">
+          <h2 class="header-title">Profile Settings</h2>
+          <!-- Static Circular Badge (No Link) -->
+          <div class="header-badge" aria-hidden="true">
+            <img
+              src="logo.png"
+              alt="Breadwinners Financial Services Logo"
+              class="header-badge-img"
+            />
+          </div>
+        </header>
 
         <!-- Inner Content Area (Keeps fields safely away from crust edges) -->
         <div class="bread-body-inner">
@@ -38,6 +48,11 @@
             <label class="row-label" for="username">Username:</label>
             <div class="row-content">
               <input class="row-input" type="text" id="username" [value]="profile.userName" readonly />
+            </div>
+
+            <!-- Non-clickable Badge using Bootstrap Icon -->
+            <div class="badge-icon" aria-label="Read-only field" title="This field cannot be edited">
+              <i class="bi bi-lock-fill"></i>
             </div>
           </section>
 
@@ -80,8 +95,9 @@
           </editable-label>
 
           <!-- Change Password Trigger Button -->
-          <button type="button" class="btn-change-password" (click)="openPasswordModal()">
-            Change Password
+          <button class="primary-btn" type="button" (click)="openPasswordModal()">
+            <i class="bi bi-key-fill btn-icon-lead"></i>
+            <span>Change Password</span>
           </button>
 
         </div>
