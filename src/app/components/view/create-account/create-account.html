@@ -3,21 +3,25 @@
 
 <h2>Today's account offerings</h2>
 <div>
-    @for (acc of accounts; track acc.name) {
-        <label class="group">
-        <input type="radio" name="product" [value]="acc.name" (change)="selectProduct();">{{acc.name}}
-        </label>
-        <br />
+    @if (accounts$ | async; as accounts) {
+        @for (acc of accounts; track acc.name) {
+            <label class="group">
+            <input type="radio" name="product" [value]="acc.name" (change)="selectProduct();">{{acc.name}}, {{acc.apy}} APY
+            </label>
+            <br />
+        }
     }
 </div>
 
 <h2>Today's certificates of deposit</h2>
 <div>
-    @for (cd of certificateDeposits; track cd.duration) {
-        <label class="group">
-        <input type="radio" name="product" [value]="cd" (click)="selectProduct();">{{cd.apy}} month {{cd.duration}}
-        </label>
-        <br />
+    @if (certificateDeposits$ | async; as certificateDeposits) {
+        @for (cd of certificateDeposits; track cd.duration) {
+            <label class="group">
+            <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.duration}}-month {{cd.apy}} APY
+            </label>
+            <br />
+        }
     }
 </div>
 
@@ -28,28 +32,31 @@
 </div>
 </div>
 
-@if ( dialog === 'prompt' ) {
+@if ( (dialog$ | async) === 'prompt' ) {
     <div class="modal-backdrop">
         <div class="modal" role="dialog" aria-modal="true">
             <h2>Please create a PIN</h2>
             <div class="modal-actions">
                 <input type="password" inputmode="text" maxlength="4" #pin>
                 <button (click)="newAccount(pin)">Enter</button>
-                <button (click)="dialog='none'">Close</button>
+                <button (click)="closeDialog()">Close</button>
             </div>
             <p id="pinWarning"></p>
+            @if ( (waiting$ | async) === true ) {
+                <p>Validating. Please wait.</p>
+            }
         </div>
     </div>
 }
 
-@if (dialog === 'congratulate') {
+@if ( (dialog$ | async) === 'congratulate') {
     <div class="modal-backdrop">
         <div class="modal" role="dialog" aria-modal="true">
             <h2>Success!</h2>
             <div class="modal-actions">
-                <button (click)="dialog='none'">View this account</button>
-                <button (click)="dialog='none'">Back to dashboard</button>
-                <button (click)="dialog='none'">Close</button>"
+                <button (click)="closeDialog()">View this account</button>
+                <button (click)="closeDialog()">Back to dashboard</button>
+                <button (click)="closeDialog()">Close</button>"
             </div>
         </div>
     </div>
