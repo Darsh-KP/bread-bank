@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+type DialogState = 'none' | 'prompt' | 'congratulate';
+
 @Component({
   imports: [],
   selector: 'app-create-account',
@@ -7,17 +9,33 @@ import { Component } from '@angular/core';
   templateUrl: './create-account.html',
 })
 export class CreateAccount {
-  accounts = [{
+  dialog: DialogState = 'none';
+  pin: number = 0;
+
+   accounts = [{
     name: 'Plain checking'
   }, {
     name: 'Sourdough savings'
   }];
 
-  certificateDeposits = [{
+ certificateDeposits = [{
     name: "Three-month 3.0% APY"
   }, {
     name: "Six-month 3.1% APY"
   }];
+
+  continueCreation() {
+    this.dialog = 'prompt';
+  }
+
+  newAccount(pin: HTMLInputElement) {
+    if (!/^\d{4}$/.test(pin.value)) {
+    document.getElementById("pinWarning")!.innerText =
+      "A four-digit number is required.";
+    } else {
+      this.dialog = "congratulate";
+    }
+  }
 
   clearSelection() {
     const radios = document.querySelectorAll<HTMLInputElement>(
@@ -27,23 +45,32 @@ export class CreateAccount {
     
     const labels = document.querySelectorAll<HTMLElement>(".group");
     labels.forEach(e => e.style.backgroundColor = "white");
+    labels.forEach(e => e.style.color = "rgb(154, 88, 51)");
     
 
     let clsBtn = <HTMLInputElement> document.getElementById('clsBtn');
     let contBtn = <HTMLInputElement> document.getElementById('contBtn');
-    clsBtn.style.backgroundColor = "Grey";
+    clsBtn.style.backgroundColor = "#fffefc";
+    clsBtn.style.color = "rgb(154, 88, 51)";
     clsBtn.disabled = true;
-    contBtn.style.backgroundColor = "Grey";
+    contBtn.style.backgroundColor = "#fffefc";
+    contBtn.style.color = "rgb(154, 88, 51)";
     contBtn.disabled = true;
   }
 
   selectProduct() {
     let clsBtn = <HTMLInputElement> document.getElementById("clsBtn");
     let contBtn = <HTMLInputElement> document.getElementById("contBtn");
-    clsBtn.style.backgroundColor = "Green";
+    clsBtn.style.backgroundColor = "#77762f";
+    clsBtn.style.color = "white";
     clsBtn.disabled = false;
-    contBtn.style.backgroundColor = "Green";
+    contBtn.style.backgroundColor = "#77762f";
+    contBtn.style.color = "white";
     contBtn.disabled = false;
+
+    const labels = document.querySelectorAll<HTMLElement>(".group");
+    labels.forEach(e => e.style.backgroundColor = "white");
+    labels.forEach(e => e.style.color = "rgb(154, 88, 51)");
 
     const radios = document.querySelectorAll<HTMLInputElement>(
       'input[type="radio"][name="product"]');
@@ -58,7 +85,8 @@ export class CreateAccount {
       }
     }
 
-    if(selected !== null && selected.parentElement !== null)
-      selected.parentElement.style.backgroundColor = "#00ff00";
+    let parent = selected?.parentElement;
+    parent!.style.backgroundColor = "#9a5833";
+    parent!.style.color = "white";
   }
 }

@@ -21,17 +21,20 @@ h1, h2 {
     width: 70%;
     height: 96px;
     display: flex;
-    outline: solid;
-    border-color: green;
+    background-color: white;
+    color: var(--color-primary);
+    border-style: solid;
+    border-color: var(--color-primary);
     border-radius: 16px;
+    border-width: 3px;
     justify-content: center;
     justify-self: center;
+    align-items: center;
+    font-size: 18pt;
 }
 
 .group input {
     display: none;
-    position: relative;
-    position: 16px;
     justify-content: center;
     align-items: center;
 }
@@ -49,14 +52,66 @@ h1, h2 {
     gap: 4px;
 
     button {    
-        background-color: gray;
-        color: white;
+        border-style: solid;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        border-width: 3px;
+        background-color: var(--color-page-background);
         border-radius: 8px;
-        border: none;
         height: 64px;
     }
 }
 
 #exitBtn {
-    background-color: red;
+    background-color: var(--color-accent-red);
+    color: white;
+}
+
+.modal-backdrop {
+    background-color: var(--color-page-background);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 384px;
+    height: auto;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+    z-index: 1001;
+
+    border: var(--color-primary);
+    border-style: solid;
+}
+
+.modal {
+    display: block;
+    position: relative;
+    justify-content: center;
+    text-align: center  ;
+
+    button {    
+        border-style: solid;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        border-width: 3px;
+        background-color: var(--color-page-background);
+        border-radius: 8px;
+        height: 64px;
+     }
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    margin-top: 1.5rem;
+
+    input {
+        border-style: solid;
+        border-radius: 8px;
+        border-color: var(--color-primary);
+    }
 }
