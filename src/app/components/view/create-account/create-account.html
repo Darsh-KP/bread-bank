@@ -6,7 +6,7 @@
     @if (accounts$ | async; as accounts) {
         @for (acc of accounts; track acc.name) {
             <label class="group">
-            <input type="radio" name="product" [value]="acc.name" (change)="selectProduct();">{{acc.name}}, {{acc.apy}} APY
+            <input type="radio" name="product" [value]="acc.name" (click)="selectProduct();">{{acc.name}}, {{acc.apy}} APY
             </label>
             <br />
         }
@@ -16,9 +16,9 @@
 <h2>Today's certificates of deposit</h2>
 <div>
     @if (certificateDeposits$ | async; as certificateDeposits) {
-        @for (cd of certificateDeposits; track cd.duration) {
+        @for (cd of certificateDeposits; track cd.name) {
             <label class="group">
-            <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.duration}}-month {{cd.apy}} APY
+            <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.name}}, {{cd.apy}} APY
             </label>
             <br />
         }
@@ -38,8 +38,13 @@
             <h2>Please create a PIN</h2>
             <div class="modal-actions">
                 <input type="password" inputmode="text" maxlength="4" #pin>
-                <button (click)="newAccount(pin)">Enter</button>
-                <button (click)="closeDialog()">Close</button>
+
+                Give your account a name (optional)
+                <input inputmode="text" #acctName>
+                <div class="modal-buttons">
+                    <button (click)="newAccount(pin, acctName)">Enter</button>
+                    <button (click)="closeDialog()">Close</button>
+                </div>
             </div>
             <p id="pinWarning"></p>
             @if ( (waiting$ | async) === true ) {
@@ -56,7 +61,7 @@
             <div class="modal-actions">
                 <button (click)="closeDialog()">View this account</button>
                 <button (click)="closeDialog()">Back to dashboard</button>
-                <button (click)="closeDialog()">Close</button>"
+                <button (click)="closeDialog()">Close</button>
             </div>
         </div>
     </div>
