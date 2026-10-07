@@ -4,42 +4,81 @@
     <h1>Transfer Money</h1>
     <p>Transfer money between your Bread Bank accounts.</p>
 
-    <form>
+    @if (loading()) {
+      <p>Loading accounts...</p>
+    } @else {
 
-      <div>
-        <label for="from-account">From Account</label>
-        <select id="from-account" name="fromAccount" required>
-          <option value="" disabled selected>Select an account</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
-        </select>
-      </div>
+      <form (ngSubmit)="submitTransfer()">
 
-      <div>
-        <label for="to-account">To Account</label>
-        <select id="to-account" name="toAccount" required>
-          <option value="" disabled selected>Select an account</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
-        </select>
-      </div>
+        <div>
+          <label for="from-account">From Account</label>
+          <select
+            id="from-account"
+            name="fromAccount"
+            [(ngModel)]="fromAccountId"
+            required
+          >
+            <option value="" disabled>Select an account</option>
 
-      <div>
-        <label for="amount">Amount</label>
-        <input
-          type="number"
-          id="amount"
-          name="amount"
-          placeholder="0.00"
-          min="0.01"
-          step="0.01"
-          required
-        />
-      </div>
+            @for (account of accounts(); track account.id) {
+              <option [value]="account.id">
+                {{ account.name }} - {{ account.balance | currency }}
+              </option>
+            }
+          </select>
+        </div>
 
-      <button type="submit">Transfer</button>
+        <div>
+          <label for="to-account">To Account</label>
+          <select
+            id="to-account"
+            name="toAccount"
+            [(ngModel)]="toAccountId"
+            required
+          >
+            <option value="" disabled>Select an account</option>
 
-    </form>
+            @for (account of accounts(); track account.id) {
+              <option [value]="account.id">
+                {{ account.name }} - {{ account.balance | currency }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="amount">Amount</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            [(ngModel)]="amount"
+            placeholder="0.00"
+            min="0.01"
+            step="0.01"
+            required
+          />
+        </div>
+
+        @if (error()) {
+          <p>{{ error() }}</p>
+        }
+
+        @if (successMessage()) {
+          <p>{{ successMessage() }}</p>
+        }
+
+        <button type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            Transferring...
+          } @else {
+            Transfer
+          }
+        </button>
+
+      </form>
+
+    }
 
   </section>
 </main>
