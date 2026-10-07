@@ -1,35 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { pinPattern } from '../../../../utils/regExps';
+import { Router, RouterLink } from '@angular/router';
+import { ShorthandPropertyAssignment } from 'typescript';
 
 type DialogState = 'none' | 'prompt' | 'congratulate';
+type Account = { name: String; apy: String; }
 
 @Component({
-  imports: [],
+  imports: [ ],
   selector: 'app-create-account',
   styleUrl: './create-account.css',
   templateUrl: './create-account.html',
 })
-export class CreateAccount {
+export class CreateAccount implements OnInit {
   dialog: DialogState = 'none';
-  pin: number = 0;
 
-   accounts = [{
-    name: 'Plain checking'
-  }, {
-    name: 'Sourdough savings'
-  }];
+  accounts: Account[]  = [];
+  certificateDeposits: Account[] = [];
 
- certificateDeposits = [{
-    name: "Three-month 3.0% APY"
-  }, {
-    name: "Six-month 3.1% APY"
-  }];
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.http.get<Account[]>('/mock-data/accountTypes.json').subscribe(ac => this.accounts = ac );
+    this.http.get<Account[]>('/mock-data/certificatesDeposit.json').subscribe(cd => this.certificateDeposits = cd);
+  }
 
   continueCreation() {
     this.dialog = 'prompt';
   }
 
   newAccount(pin: HTMLInputElement) {
-    if (!/^\d{4}$/.test(pin.value)) {
+    if (!pinPattern.test(pin.value)) {
     document.getElementById("pinWarning")!.innerText =
       "A four-digit number is required.";
     } else {
