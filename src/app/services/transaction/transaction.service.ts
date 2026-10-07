@@ -1,0 +1,41 @@
+import { Service } from '@angular/core';
+import {VerifyPinRequestDTO} from '../../dtos/transaction/VerifyPinRequestDTO';
+import {VerifyPinResponseDTO} from '../../dtos/transaction/VerifyPinResponseDTO';
+import {delay, Observable, of} from 'rxjs';
+import {TransactionRequestDTO} from '../../dtos/transaction/TransactionRequestDTO';
+import {TransactionResponseDTO} from '../../dtos/transaction/TransactionResponseDTO';
+
+@Service()
+export class TransactionService {
+  verifyPin(request: VerifyPinRequestDTO): Observable<VerifyPinResponseDTO> {
+    // Success case
+    if (request.pin === '1234') {
+      return of({
+        success: true
+      }).pipe(delay(800));
+    }
+
+    // Failure
+    return of({
+      success: false
+    }).pipe(delay(800));
+  }
+
+  processTransaction(request: TransactionRequestDTO): Observable<TransactionResponseDTO> {
+    // Failure case
+    if (request.amountInCents === 999.99) {
+      return of({
+        success: false,
+        transactionType: request.type,
+        amountInCents: request.amountInCents
+      })
+    }
+
+    // Success
+    return of({
+      success: true,
+      transactionType: request.type,
+      amountInCents: request.amountInCents
+    })
+  }
+}
