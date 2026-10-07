@@ -8,8 +8,8 @@ import { Dialog } from '@angular/cdk/dialog';
 
 type DialogState = 'none' | 'prompt' | 'congratulate';
 type Account = { name: string; apy: string; };
-type CertificateDeposit = { duration: string; apy: string; }
-type Approval = { approved: boolean; acctNum: string; }
+type Approval = { approved: boolean; acctNum: string; };
+type newAcctRq = { owner: string; accountName: string; accountType: string; pin: string };
 
 @Component({
   imports: [ AsyncPipe ],
@@ -22,17 +22,19 @@ export class CreateAccount implements OnInit {
   dialog$: Observable<DialogState> = this.dialog.asObservable();
 
   accounts$!: Observable<Account[]>;
-  certificateDeposits$!: Observable<CertificateDeposit[]>;
+  certificateDeposits$!: Observable<Account[]>;
   
   waiting: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   waiting$: Observable<boolean> = this.waiting.asObservable();
-  
 
+  selected?: string;
+  pin?: string;
+  
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     this.accounts$ = this.http.get<Account[]>('/mock-data/accountTypes.json');
-    this.certificateDeposits$ = this.http.get<CertificateDeposit[]>('/mock-data/certificatesDeposit.json');
+    this.certificateDeposits$ = this.http.get<Account[]>('/mock-data/certificatesDeposit.json');
   }
 
   continueCreation() {
@@ -43,13 +45,16 @@ export class CreateAccount implements OnInit {
     this.dialog.next('none');
   }
 
-  newAccount(pin: HTMLInputElement) {
+  newAccount(pin: HTMLInputElement, acctName: HTMLInputElement) {
     if (!pinPattern.test(pin.value)) {
     document.getElementById("pinWarning")!.innerText =
       "A four-digit number is required.";
     } else {
+
       this.waiting.next(true);
-      this.http.get<Approval>("/mock-data/new-account.json").subscribe(r => 
+      let rq : newAcctRq = {owner: "", accountName: acctName.value, accountType: this.selected!, pin: pin.value};
+
+      this.http.post<Approval>("/mock-data/new-account.json", rq).subscribe(r => 
         { this.dialog.next(r.approved ? 'congratulate' : 'prompt');
           this.waiting.next(false) });
     }
@@ -93,17 +98,16 @@ export class CreateAccount implements OnInit {
     const radios = document.querySelectorAll<HTMLInputElement>(
       'input[type="radio"][name="product"]');
 
-    let selected = null;
-
+    let selectedBtn = null;
     for(let i = 0; i < radios.length; i++) {
-      if(radios[i].checked === true) selected = radios[i];
+      if(radios[i].checked === true) { selectedBtn = radios[i]; this.selected = radios[i].innerText.split(",")[0]; }
       let parent = radios[i].parentElement;
       if(parent !== null) {
         parent.style.backgroundColor = "white";
       }
     }
 
-    let parent = selected?.parentElement;
+    let parent = selectedBtn?.parentElement;
     parent!.style.backgroundColor = "#9a5833";
     parent!.style.color = "white";
   }
