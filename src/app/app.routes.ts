@@ -30,10 +30,11 @@ export const routes: Routes = [
     component: CreateAccount,
   },
   {
-  path: 'transfer',
-  loadComponent: () =>
-    import('./components/view/transfer/transfer').then(
-      (m) => m.Transfer,
-    ),
-},
+    path: 'transfer',
+    loadComponent: () => import('./components/view/transfer/transfer').then((m) => m.Transfer),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./components/view/dashboard/dashboard').then((m) => m.Dashboard),
+  },
 ];
