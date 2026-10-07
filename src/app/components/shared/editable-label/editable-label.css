@@ -5,14 +5,19 @@
 
 .editable-row {
   display: flex;
+  flex-wrap: wrap; /* Allows row-toast to break cleanly onto a new line below */
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 0.25rem;
-  background-color: transparent;
-  border: none;
-  border-radius: 0.5rem;
-  flex-wrap: wrap; /* Allows the toast banner to break onto a new line below */
-  transition: all 0.2s ease;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1.25rem;
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 0.125rem solid #5c3a21; /* Relative border thickness (~2px) */
+  border-radius: 0.625rem; /* Relative rounding (~10px) matching butter toast */
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 28.125rem; /* ~450px container cap */
+  margin: 0 auto 1rem;
+  box-sizing: border-box;
 }
 
 /* 1. Label Column */
@@ -39,7 +44,7 @@
   width: 100%;
   color: #4a230a;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 500;
   padding: 0.375rem 0.25rem;
   border-radius: 0.375rem;
   border: 0.0625rem solid transparent;
@@ -101,10 +106,10 @@
   cursor: not-allowed;
 }
 
-/* 4. Toast Notification Banner - Forces full width below label & input */
+/* 4. Toast Notification Banner - Positioned cleanly below input controls */
 .row-toast {
   width: 100%;
-  flex: 0 0 100%; /* Guarantees taking up the full width below the flex items */
+  flex: 0 0 100%; /* Forces toast into full row below inputs */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -132,7 +137,7 @@
   font-weight: 800;
   cursor: pointer;
   line-height: 1;
-  padding: 0 0.2rem;
+  padding: 0 0.2em;
   opacity: 0.75;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
