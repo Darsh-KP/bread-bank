@@ -1,33 +1,46 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { AsyncPipe } from '@angular/common';
 import { pinPattern } from '../../../../utils/regExps';
-import { Router, RouterLink } from '@angular/router';
-import { ShorthandPropertyAssignment } from 'typescript';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Dialog } from '@angular/cdk/dialog';
 
 type DialogState = 'none' | 'prompt' | 'congratulate';
-type Account = { name: String; apy: String; }
+type Account = { name: string; apy: string; };
+type CertificateDeposit = { duration: string; apy: string; }
+type Approval = { approved: boolean; acctNum: string; }
 
 @Component({
-  imports: [ ],
+  imports: [ AsyncPipe ],
   selector: 'app-create-account',
   styleUrl: './create-account.css',
   templateUrl: './create-account.html',
 })
 export class CreateAccount implements OnInit {
-  dialog: DialogState = 'none';
+  private dialog = new BehaviorSubject<DialogState>('none');
+  dialog$: Observable<DialogState> = this.dialog.asObservable();
 
-  accounts: Account[]  = [];
-  certificateDeposits: Account[] = [];
+  accounts$!: Observable<Account[]>;
+  certificateDeposits$!: Observable<CertificateDeposit[]>;
+  
+  waiting: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  waiting$: Observable<boolean> = this.waiting.asObservable();
+  
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
-    this.http.get<Account[]>('/mock-data/accountTypes.json').subscribe(ac => this.accounts = ac );
-    this.http.get<Account[]>('/mock-data/certificatesDeposit.json').subscribe(cd => this.certificateDeposits = cd);
+    this.accounts$ = this.http.get<Account[]>('/mock-data/accountTypes.json');
+    this.certificateDeposits$ = this.http.get<CertificateDeposit[]>('/mock-data/certificatesDeposit.json');
   }
 
   continueCreation() {
-    this.dialog = 'prompt';
+    this.dialog.next('prompt');
+  }
+
+  closeDialog() {
+    this.dialog.next('none');
   }
 
   newAccount(pin: HTMLInputElement) {
@@ -35,7 +48,10 @@ export class CreateAccount implements OnInit {
     document.getElementById("pinWarning")!.innerText =
       "A four-digit number is required.";
     } else {
-      this.dialog = "congratulate";
+      this.waiting.next(true);
+      this.http.get<Approval>("/mock-data/new-account.json").subscribe(r => 
+        { this.dialog.next(r.approved ? 'congratulate' : 'prompt');
+          this.waiting.next(false) });
     }
   }
 
