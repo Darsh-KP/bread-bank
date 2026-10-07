@@ -13,9 +13,9 @@
 
 <h2>Today's certificates of deposit</h2>
 <div>
-    @for (cd of certificateDeposits; track cd.name) {
+    @for (cd of certificateDeposits; track cd.duration) {
         <label class="group">
-        <input type="radio" name="product" [value]="cd" (click)="selectProduct();">{{cd.name}}
+        <input type="radio" name="product" [value]="cd" (click)="selectProduct();">{{cd.apy}} month {{cd.duration}}
         </label>
         <br />
     }
