@@ -1,6 +1,18 @@
-import { Component, ChangeDetectorRef, inject, input, computed, model } from '@angular/core';
+import {
+  Component,
+  ChangeDetectorRef,
+  inject,
+  input,
+  computed,
+  model,
+  DestroyRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { validate, emailPattern, phonePattern } from '../../../../utils/regExps';
+import { validate } from '../../../../utils/regExps';
+import { Observable } from 'rxjs';
+import { ProfileInformationResponse } from '../../../services/profile-information/profile-information.interfaces';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { normalizePhone } from '../../../../utils/normalization';
 
 @Component({
   selector: 'editable-label',
@@ -11,12 +23,13 @@ import { validate, emailPattern, phonePattern } from '../../../../utils/regExps'
 })
 export class EditableLabelComponent {
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef); // Used for stream unsubscription lifecycle management
 
   label = input<string>('');
   type = input<'text' | 'email' | 'tel'>('text');
   pattern = input<RegExp>();
   errorMessage = input<string>('');
-  onSave = input<(newValue: string) => Promise<void>>();
+  onSave = input<(newValue: string) => Observable<ProfileInformationResponse>>();
 
   // Model bound to input state
   value = model<string>('');
@@ -53,7 +66,7 @@ export class EditableLabelComponent {
   /**
    * Toggles between edit and read-only modes.
    */
-  async toggleEdit(): Promise<void> {
+  toggleEdit(): void {
     if (!this.isReadOnly) {
       const currentValue = (this.value() ?? '').trim();
       const previousValue = (this.originalValue ?? '').trim();
@@ -71,15 +84,7 @@ export class EditableLabelComponent {
         return;
       }
 
-      // 3. Resolve active pattern explicitly
       let activePattern = this.pattern();
-      if (!activePattern) {
-        if (this.type() === 'email') {
-          activePattern = emailPattern;
-        } else if (this.type() === 'tel') {
-          activePattern = phonePattern;
-        }
-      }
 
       // 4. Format Validation Check
       if (activePattern && !validate(currentValue, activePattern)) {
@@ -88,7 +93,7 @@ export class EditableLabelComponent {
       }
 
       // 5. Clean phone digits ONLY AFTER passing regex validation
-      const finalSaveValue = this.type() === 'tel' ? currentValue.replace(/\D/g, '') : currentValue;
+      const finalSaveValue = this.type() === 'tel' ? normalizePhone(currentValue) : currentValue;
 
       // 6. Asynchronous Save Execution
       const saveCallback = this.onSave();
@@ -97,19 +102,24 @@ export class EditableLabelComponent {
         this.dismissToastError();
         this.cdr.markForCheck();
 
-        try {
-          await saveCallback(finalSaveValue);
-          this.value.set(finalSaveValue);
-          this.originalValue = finalSaveValue;
-          this.isReadOnly = true;
-        } catch (err: unknown) {
-          const reason = err instanceof Error ? err.message : 'Failed to save value.';
-          this.displayToastError(reason);
-          this.isReadOnly = false;
-        } finally {
-          this.isSaving = false;
-          this.cdr.markForCheck();
-        }
+        saveCallback(finalSaveValue).pipe(
+          takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: () => {
+              this.isSaving = false;
+              this.value.set(finalSaveValue);
+              this.originalValue = finalSaveValue;
+              this.isReadOnly = true;
+              this.cdr.markForCheck();
+            },
+          error: (err: unknown) => {
+            this.isSaving = false;
+            // The duplication errors from the service validation helper land cleanly here!
+            const reason = err instanceof Error ? err.message : 'Failed to save value.';
+            this.displayToastError(reason);
+            this.isReadOnly = false;
+            this.cdr.markForCheck();
+            }
+          });
       } else {
         this.value.set(finalSaveValue);
         this.isReadOnly = true;

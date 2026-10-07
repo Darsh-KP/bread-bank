@@ -1,25 +1,27 @@
-import { Component, ElementRef, ViewChild, inject, signal, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal, Input, input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   passwordMatchValidator,
   passwordValidationRulesValidator,
   MIN_LENGTH
 } from '../../../../utils/passwordValidation';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'password-change-modal', // 👈 Fixed: Updated from 'passwordModal'
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './change-password-modal.component.html',
-  styleUrl: './change-password-modal.css'
+  styleUrl: './change-password-modal.css',
 })
 export class PasswordChangeModalComponent {
   private readonly formbuilder: FormBuilder = inject(FormBuilder);
 
   @ViewChild('dialogRef') private dialogRef!: ElementRef<HTMLDialogElement>;
 
-  /** Async callback provided by parent to execute password update */
-  @Input() onSave?: (payload: { oldPassword: string; newPassword: string }) => Promise<void>;
+  //Used to track event of saving new password
+  readonly onSave =
+    input<(payload: { oldPassword: string; newPassword: string }) => Observable<void>>();
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
@@ -72,29 +74,34 @@ export class PasswordChangeModalComponent {
     this.errorMessage.set('');
   }
 
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     if (this.form.invalid || this.isSubmitting()) {
       this.form.markAllAsTouched();
       return;
     }
 
+    const saveAttempt = this.onSave();
+    if (!saveAttempt) return;
+
     this.isSubmitting.set(true);
     this.errorMessage.set('');
 
-    try {
-      const payload = this.form.getRawValue();
+    const payload = this.form.getRawValue();
 
-      if (this.onSave) {
-        await this.onSave(payload);
+    // Call the parent callback function and execute the resulting stream
+    saveAttempt(payload).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.close(); // Clean exit on successful verification
+      },
+      error: (err: unknown) => {
+        this.isSubmitting.set(false);
+        // Safely extract the custom exception message thrown by the profile service
+        const msg = err instanceof Error
+          ? err.message
+          : 'Failed to update password. Please try again.';
+        this.errorMessage.set(msg);
       }
-
-      this.close();
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : 'Failed to update password. Please try again.';
-      this.errorMessage.set(msg);
-    } finally {
-      this.isSubmitting.set(false);
-    }
+    });
   }
 }
