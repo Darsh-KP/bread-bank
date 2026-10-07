@@ -1,0 +1,37 @@
+<main class="dashboard-page">
+  <section class="dashboard-content" aria-labelledby="dashboard-title">
+    <header class="dashboard-header">
+      <div>
+        <p class="eyebrow">Your Bread Bank accounts</p>
+        <h1 id="dashboard-title">
+          @if (firstName()) {
+            Welcome back, {{ firstName() }}
+          } @else {
+            Your dashboard
+          }
+        </h1>
+        <p class="dashboard-intro">A clear view of your money, all in one place.</p>
+      </div>
+      @if (accounts().length > 0) {
+        <div class="total-balance" aria-label="Total available balance">
+          <span>Total available balance</span>
+          <strong>{{ totalBalance() | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
+      }
+    </header>
+
+    @if (loading()) {
+      <p class="dashboard-message" role="status">Loading your accounts…</p>
+    } @else if (errorMessage()) {
+      <p class="dashboard-message" role="alert">{{ errorMessage() }}</p>
+    } @else if (accounts().length === 0) {
+      <p class="dashboard-message">There are no accounts associated with your profile yet.</p>
+    } @else {
+      <section class="account-grid" aria-label="Your accounts">
+        @for (account of accounts(); track account.id) {
+          <app-dashboard-card [account]="account" />
+        }
+      </section>
+    }
+  </section>
+</main>
