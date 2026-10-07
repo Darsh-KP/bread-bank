@@ -7,6 +7,8 @@ import {
   UpdatableField,
 } from '../../../services/profile-information/profile-information';
 import { emailPattern, phonePattern } from '../../../../utils/regExps';
+import { AuthService, RegisteredUser } from '../../../services/auth/auth';
+import { NotificationService } from '../../shared/notifications/notification.service';
 
 @Component({
   imports: [EditableLabelComponent, PasswordChangeModalComponent],
@@ -16,6 +18,7 @@ import { emailPattern, phonePattern } from '../../../../utils/regExps';
 })
 export class ProfileSettings {
   private readonly service = inject(ProfileInformationService);
+  private readonly notifications = inject(NotificationService);
 
   @ViewChild('passwordModal') private passwordModal!: PasswordChangeModalComponent;
 
@@ -47,6 +50,7 @@ export class ProfileSettings {
     newPassword: string;
   }): Promise<void> => {
     await this.service.updatePassword(payload);
+    this.notifications.success('Password updated successfully!');
   };
 
   // Explicitly return the promise returned by saveField
@@ -65,6 +69,7 @@ export class ProfileSettings {
       newValue as ProfileInformation[K],
     );
 
+    this.notifications.success('Profile saved successfully.');
     // On success: Update reactive `user` signal to re-render parent view.
     this.user.set(updatedProfile);
   }
