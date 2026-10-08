@@ -1,8 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { AuthService } from '../../../services/auth/auth';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
 import { AccountSummary, DashboardCard } from '../../shared/dashboard-card/dashboard-card';
+import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
+import { tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [CurrencyPipe, DashboardCard],
@@ -13,6 +16,7 @@ import { AccountSummary, DashboardCard } from '../../shared/dashboard-card/dashb
 export class Dashboard {
   private readonly authService = inject(AuthService);
   private readonly accountsService = inject(DashboardAccountsService);
+  private readonly profileInformationService = inject(ProfileInformationService);
 
   readonly accounts = signal<AccountSummary[]>([]);
   readonly loading = signal(true);
@@ -22,6 +26,9 @@ export class Dashboard {
     this.accounts().reduce((total, account) => total + account.balance, 0),
   );
 
+  //Used to keep memory from leaking when component destroyed
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor() {
     const user = this.authService.currentUser;
     if (!user) {
@@ -30,8 +37,25 @@ export class Dashboard {
       return;
     }
 
-    this.firstName.set(user.firstName);
-    void this.loadAccounts(user.userName);
+    //Load current user information from profile information service
+    //If Observable as not be initalized then do it in the dashboard view
+    this.profileInformationService.initCurrentUser(user.userName)
+      .pipe(
+        // Runs when initCurrentUser succeeds
+        tap((profile) => this.firstName.set(profile?.firstName || '')),
+        // Automatically cleans up the subscription when the component destroys
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => {
+          //Load userName data after the profile is active
+          void this.loadAccounts(user.userName);
+        },
+        error: (err) => {
+          this.errorMessage.set(err.message || 'An error has occurred loading your account details. Please try logging out.');
+          this.loading.set(false);
+        }
+      });
   }
 
   private async loadAccounts(userName: string): Promise<void> {
