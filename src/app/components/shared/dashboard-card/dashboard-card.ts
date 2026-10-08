@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
 
 export interface AccountSummary {
@@ -22,11 +22,16 @@ export interface AccountSummary {
     MatIconModule,
     RouterLink,
     CurrencyPipe,
-    TransactionButtonComponent
+    TransactionButtonComponent,
   ],
   templateUrl: './dashboard-card.html',
   styleUrl: './dashboard-card.css',
 })
 export class DashboardCard {
   readonly account = input.required<AccountSummary>();
+  constructor(private router: Router) {}
+
+  goToAccount() {
+    this.router.navigate(['/account']);
+  }
 }
