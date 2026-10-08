@@ -85,7 +85,7 @@ export class ProfileInformationService {
       switchMap(() => {
         const currentUser = this.currentUserSubject.value;
         if (!currentUser) {
-          return throwError(() => new Error('Could not load account data. Please try again.'));
+          return throwError(() => new Error('Could not load account data. Please try logging on again.'));
         }
         return of({ ...currentUser });
       }),
