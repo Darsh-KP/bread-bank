@@ -285,9 +285,12 @@ export class MoneyTransactionModal implements OnInit {
 
   // When transaction is done and dismissed, close the modal
   finish(): void {
+    const resultResponse = this.transactionResult()
+    const isSuccessful = resultResponse ? resultResponse.success : false;
+
     // Get the transaction info
     const result: TransactionResponseDTO = {
-      success: true,
+      success: isSuccessful,
       transactionType: this.transactionType(),
       amountInCents: this.convertToCents(this.amountControl.value),
     };
