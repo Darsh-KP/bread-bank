@@ -15,16 +15,17 @@
       <p class="state">No transactions yet.</p>
     } @else {
       <ag-grid-angular
-      class="grid"
-      [rowData]="rows()"
-      [columnDefs]="columnDefs"
-      [defaultColDef]="defaultColDef"
-      [theme]="theme"
-       [pagination]="true"
-       [paginationPageSize]="10"
-       [paginationPageSizeSelector]="[5, 10, 25]"
-       domLayout="autoHeight"
-       />
+        class="grid"
+        [rowData]="rows()"
+        [columnDefs]="columnDefs()"
+        [defaultColDef]="defaultColDef()"
+        [theme]="theme"
+        [pagination]="true"
+        [paginationPageSize]="10"
+        [paginationPageSizeSelector]="pageSizes()"
+        [rowHeight]="rowHeight()"
+        domLayout="autoHeight"
+      />
     }
   </section>
 </main>

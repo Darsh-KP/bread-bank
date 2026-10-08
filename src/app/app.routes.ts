@@ -38,9 +38,15 @@ export const routes: Routes = [
     ),
   },
   {
+  path: 'recent-demo',
+  loadComponent: () =>
+    import('./components/view/recent-transactions/recent-transactions').then((m) => m.RecentTransactions),
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./components/view/dashboard/dashboard').then(
       (m) => m.Dashboard
     ),
   },
+
 ];
