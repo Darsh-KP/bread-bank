@@ -45,13 +45,21 @@ export class CreateAccount implements OnInit {
     this.dialog.next('none');
   }
 
-  newAccount(pin: HTMLInputElement, acctName: HTMLInputElement) {
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
+  async delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+  async newAccount(pin: HTMLInputElement, acctName: HTMLInputElement) {
     if (!pinPattern.test(pin.value)) {
     document.getElementById("pinWarning")!.innerText =
       "A four-digit number is required.";
     } else {
-
       this.waiting.next(true);
+      await this.delay(500);
       let rq : newAcctRq = {owner: "", accountName: acctName.value, accountType: this.selected!, pin: pin.value};
 
       this.http.post<Approval>("/mock-data/new-account.json", rq).subscribe(r => 
