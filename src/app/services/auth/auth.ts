@@ -59,6 +59,27 @@ export class AuthService {
     return { ...profile };
   }
 
+  async changePassword(request: { oldPassword: string; newPassword: string }): Promise<void> {
+    const currentUser = this.currentUser;
+    if (!currentUser) throw new Error('Please sign in to change your password.');
+
+    const users = await this.loadUsers();
+    if (this.currentUser !== currentUser) {
+      throw new Error('Your session changed. Please try again.');
+    }
+    const user = users.find((candidate) => candidate.userName === currentUser.userName);
+    if (!user || user.passwordHash !== request.oldPassword) {
+      throw new Error('Incorrect current password.');
+    }
+    if (request.oldPassword === request.newPassword) {
+      throw new Error('New password cannot be the same as your current password.');
+    }
+    const errors = validatePassword(request.newPassword);
+    if (errors.length) throw new Error(errors[0]);
+
+    user.passwordHash = request.newPassword;
+  }
+
   private loadUsers(): Promise<MockRegisteredUser[]> {
     return (this.users ??= firstValueFrom(
       this.http.get<MockRegisteredUser[]>('/mock-data/users.json'),
