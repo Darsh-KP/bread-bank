@@ -4,11 +4,10 @@ import { AppToast } from './components/shared/notifications/app-toast/app-toast'
 import { NavigationBar } from './components/shared/navigation-bar/navigation-bar';
 
 @Component({
-  imports: [RouterOutlet, AppToast, NavigationBar],
+  imports: [RouterOutlet, AppToast],
   selector: 'app-root',
   template: `
     <app-toast />
-    <app-navigation-bar />
     <router-outlet />
   `,
 })
