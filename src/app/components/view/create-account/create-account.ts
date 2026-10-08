@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 import { pinPattern } from '../../../../utils/regExps';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Dialog } from '@angular/cdk/dialog';
 
 type DialogState = 'none' | 'prompt' | 'congratulate';
 type Account = { name: string; apy: string; };
@@ -28,7 +27,6 @@ export class CreateAccount implements OnInit {
   waiting$: Observable<boolean> = this.waiting.asObservable();
 
   selected?: string;
-  pin?: string;
   
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -58,11 +56,14 @@ export class CreateAccount implements OnInit {
     document.getElementById("pinWarning")!.innerText =
       "A four-digit number is required.";
     } else {
+      const accessToken = null;
+      const header = new HttpHeaders({ Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }); 
+
       this.waiting.next(true);
       await this.delay(500);
       let rq : newAcctRq = {owner: "", accountName: acctName.value, accountType: this.selected!, pin: pin.value};
 
-      this.http.post<Approval>("/mock-data/new-account.json", rq).subscribe(r => 
+      this.http.post<Approval>("/mock-data/new-account.json", rq, {headers: header}).subscribe(r => 
         { this.dialog.next(r.approved ? 'congratulate' : 'prompt');
           this.waiting.next(false) });
     }
