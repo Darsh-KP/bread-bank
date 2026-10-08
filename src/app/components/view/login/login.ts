@@ -29,7 +29,7 @@ export class Login {
 
       this.notifications.success('Successfully logged in!');
 
-      await this.router.navigate(['/history']);
+      await this.router.navigate(['/dashboard']);
     } catch (error) {
       this.notifications.error(
         error instanceof Error ? error.message : 'Could not log in. Please try again.',

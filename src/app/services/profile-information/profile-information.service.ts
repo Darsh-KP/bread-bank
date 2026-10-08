@@ -17,7 +17,7 @@ import {
   throwError,
 } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
-import { ProfilePasswordChangeRequest } from './profile-information';
+import { PasswordChangeRequest } from './profile-information.interfaces';
 
 
 @Injectable({ providedIn: 'root' })
@@ -39,11 +39,16 @@ export class ProfileInformationService {
   constructor() {}
 
   //For now, load first user in users, try to link with auth service later
-  initCurrentUser(): Observable<MockUserResponse> {
+  initCurrentUser(userName: string): Observable<MockUserResponse> {
     return this.loadUsers().pipe(
       //From the list of mock user data load the first user
       map((users: MockUserResponse[]) => {
-        return users[0];
+        const user = users.find((u) => u.userName === userName);
+
+        if (!user) {
+          throw new Error(`User with username "${userName}" was not found.`);
+        }
+        return user;
       }),
       //Get the user from map function and store in service
       tap((user: MockUserResponse) => {
@@ -197,7 +202,7 @@ export class ProfileInformationService {
   }
 
   //Used specifically with patch requests for /profile-settings/password
-  updatePassword(request: ProfilePasswordChangeRequest): Observable<void> {
+  updatePassword(request: PasswordChangeRequest): Observable<void> {
     return of(null).pipe(
       delay(this.loadTime),
       switchMap(() => {

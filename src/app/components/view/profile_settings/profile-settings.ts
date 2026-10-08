@@ -10,15 +10,18 @@ import {
 } from '../../../services/profile-information/profile-information.interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, tap } from 'rxjs';
+import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
+import { AuthService } from '../../../services/auth/auth';
 
 @Component({
-  imports: [EditableLabelComponent, PasswordChangeModalComponent],
+  imports: [EditableLabelComponent, PasswordChangeModalComponent, NavigationBar],
   selector: 'app-profile-settings',
   styleUrl: './profile-settings.css',
   templateUrl: './profile-settings.html',
 })
 export class ProfileSettings {
   private readonly service = inject(ProfileInformationService);
+  private readonly authService = inject(AuthService);
   private readonly notifications = inject(NotificationService);
   //Used to keep memory from leaking when component destroyed
   private readonly destroyRef = inject(DestroyRef);
@@ -30,14 +33,27 @@ export class ProfileSettings {
   readonly initialLoadError = signal('');
   readonly errorMessage = 'We could not load your profile settings. Please try again later.';
 
+  readonly userName? : string | undefined = undefined;
+
+
   protected readonly emailPattern = emailPattern;
   protected readonly phonePattern = phonePattern;
 
   constructor() {
+    const currentUser = this.authService.currentUser;
+
+    if (!currentUser) {
+      this.initialLoadError.set(this.errorMessage);
+      this.loading.set(false);
+      return;
+    }
+
+    this.userName = currentUser.userName;
+
     this.service
-      .initCurrentUser()
+      .initCurrentUser(this.userName)
       .pipe(
-        takeUntilDestroyed(), //Prevents memory leaks when component destroyed
+        takeUntilDestroyed(this.destroyRef), //Prevents memory leaks when component destroyed
       )
       .subscribe({
         next: (data) => {
