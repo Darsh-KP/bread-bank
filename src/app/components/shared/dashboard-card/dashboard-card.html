@@ -1,4 +1,4 @@
-<mat-card class="account-card" appearance="outlined">
+<mat-card class="account-card" appearance="outlined" (click)="goToAccount()">
   <mat-card-header>
     <mat-card-title>{{ account().accountType }}</mat-card-title>
     <mat-card-subtitle>Account ending in {{ account().lastFour }}</mat-card-subtitle>
@@ -11,16 +11,10 @@
     </div>
   </mat-card-content>
 
-  <mat-card-actions align="end">
-    <button mat-stroked-button color="primary" routerLink="/deposit">
-      <mat-icon>attach_money</mat-icon>
-      Deposit
-    </button>
+  <mat-card-actions align="end" (click)="$event.stopPropagation()">
+    <transaction-button type="DEPOSIT" (click)="$event.stopPropagation()"/>
 
-    <button mat-stroked-button color="primary" routerLink="/withdraw">
-      <mat-icon>money_off</mat-icon>
-      Withdraw
-    </button>
+    <transaction-button type="WITHDRAW" (click)="$event.stopPropagation()"/>
 
     <button mat-stroked-button color="primary" routerLink="/transfer">
       <mat-icon>compare_arrows</mat-icon>
