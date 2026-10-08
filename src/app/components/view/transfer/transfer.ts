@@ -6,10 +6,11 @@ import {
 } from '../../../services/transfer.service';
 import { CurrencyPipe } from '@angular/common';
 import { NotificationService } from '../../shared/notifications/notification.service';
+import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 
 @Component({
   selector: 'app-transfer',
-  imports: [FormsModule, CurrencyPipe],
+  imports: [FormsModule, CurrencyPipe, NavigationBar],
   templateUrl: './transfer.html',
   styleUrl: './transfer.css',
 })
