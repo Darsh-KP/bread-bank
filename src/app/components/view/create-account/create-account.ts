@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 import { pinPattern } from '../../../../utils/regExps';
+import {NavigationBar} from '../../shared/navigation-bar/navigation-bar'
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -11,7 +12,7 @@ type Approval = { approved: boolean; acctNum: string; };
 type newAcctRq = { owner: string; accountName: string; accountType: string; pin: string };
 
 @Component({
-  imports: [ AsyncPipe ],
+  imports: [ AsyncPipe, NavigationBar ],
   selector: 'app-create-account',
   styleUrl: './create-account.css',
   templateUrl: './create-account.html',
