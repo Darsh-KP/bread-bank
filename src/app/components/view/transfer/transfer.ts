@@ -5,6 +5,7 @@ import {
   TransferService,
 } from '../../../services/transfer.service';
 import { CurrencyPipe } from '@angular/common';
+import { NotificationService } from '../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-transfer',
@@ -14,12 +15,13 @@ import { CurrencyPipe } from '@angular/common';
 })
 export class Transfer {
   private readonly transferService = inject(TransferService);
+  private readonly notificationService = inject(NotificationService);
 
   readonly accounts = signal<Account[]>([]);
   readonly loading = signal(true);
   readonly submitting = signal(false);
-  readonly error = signal('');
-  readonly successMessage = signal('');
+  // readonly error = signal('');
+  // readonly successMessage = signal('');
 
   fromAccountId = '';
   toAccountId = '';
@@ -29,16 +31,23 @@ export class Transfer {
     this.transferService
       .getAccounts()
       .then((accounts) => this.accounts.set(accounts))
-      .catch(() => this.error.set('Could not load your accounts. Please try again.'))
+      // .catch(() => this.error.set('Could not load your accounts. Please try again.'))
+      .catch(() =>
+        this.notificationService.error('Could not load your accounts. Please try again.')
+      )
       .finally(() => this.loading.set(false));
   }
 
   async submitTransfer(): Promise<void> {
-    this.error.set('');
-    this.successMessage.set('');
+    if (this.submitting()) return;
 
     if (!this.fromAccountId || !this.toAccountId || this.amount === null) {
-      this.error.set('Please complete all transfer fields.');
+      this.notificationService.error('Please complete all transfer fields.');
+      return;
+    }
+
+    if (this.amount !== null && this.amount <= 0) {
+      this.notificationService.warning('Transfer amount must be greater than zero.');
       return;
     }
 
@@ -52,13 +61,13 @@ export class Transfer {
       });
 
       this.accounts.set(accounts);
-      this.successMessage.set('Transfer completed successfully.');
+      this.notificationService.success('Transfer completed successfully.');
 
       this.fromAccountId = '';
       this.toAccountId = '';
       this.amount = null;
     } catch (error) {
-      this.error.set(
+      this.notificationService.error(
         error instanceof Error ? error.message : 'Transfer failed. Please try again.',
       );
     } finally {
