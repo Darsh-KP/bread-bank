@@ -6,7 +6,7 @@ import {TransactionResponseDTO} from '../../../dtos/transaction/TransactionRespo
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput} from '@angular/material/input';
-import { RecentTransactions } from '../recent-transactions/recent-transactions';
+import { RecentTransactions } from '../../shared/recent-transactions/recent-transactions';
 
 @Component({
   imports: [
