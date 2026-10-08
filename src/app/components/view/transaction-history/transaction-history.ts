@@ -1,5 +1,6 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
+import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from 'ag-grid-community';
 import type { ColDef, ICellRendererParams, ValueFormatterParams } from 'ag-grid-community';
 
@@ -129,7 +130,7 @@ const NARROW_COLUMNS: ColDef<Row>[] = [
 
 @Component({
   selector: 'app-transaction-history',
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, NavigationBar],
   templateUrl: './transaction-history.html',
   styleUrl: './transaction-history.css',
 })
