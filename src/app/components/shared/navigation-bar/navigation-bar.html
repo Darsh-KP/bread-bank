@@ -37,13 +37,23 @@
     <button
       mat-button
       [matMenuTriggerFor]="accountsMenu"
+      (menuOpened)="loadAccountItems()"
       (click)="closeMobileNav()"
-      routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{ exact: false }"
       aria-label="Accounts"
     >
-      <span>Accounts</span>
       <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
+      <span>Accounts</span>
+    </button>
+
+    <button
+      mat-button
+      routerLink="/create-account"
+      (click)="closeMobileNav()"
+      routerLinkActive="active-link"
+      aria-label="Create Account"
+    >
+      <mat-icon>add</mat-icon>
+      <span>Create Account</span>
     </button>
 
     <button
@@ -67,12 +77,25 @@
 </mat-toolbar>
 
 <mat-menu #accountsMenu="matMenu">
-  @for (account of accountItems; track account.label) {
-    <button mat-menu-item [routerLink]="account.route" [attr.aria-label]="account.label">
-      <span class="account-item-label">{{ account.label }}</span>
-      @if (account.description) {
-        <span class="account-item-description">{{ account.description }}</span>
-      }
-    </button>
+  @if (accountsLoading()) {
+    <button mat-menu-item disabled>Loading accounts…</button>
+  } @else if (accountsError()) {
+    <button mat-menu-item disabled>{{ accountsError() }}</button>
+  } @else if (accountItems().length === 0) {
+    <button mat-menu-item disabled>No accounts found</button>
+  } @else {
+    @for (account of accountItems(); track account.id) {
+      <button
+        mat-menu-item
+        routerLink="/account"
+        (click)="closeMobileNav()"
+        [attr.aria-label]="account.accountType + ', ending in ' + account.lastFour"
+      >
+        <span class="account-item-label">{{ account.accountType }}</span>
+        <span class="account-item-description">
+          Ending in {{ account.lastFour }} · {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+        </span>
+      </button>
+    }
   }
 </mat-menu>
