@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {NavigationBar} from '../../shared/navigation-bar/navigation-bar';
 import {TransactionButtonComponent} from '../../shared/money-transaction-modal/transaction-button';
 import {RouterLink} from '@angular/router';
@@ -7,6 +7,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput} from '@angular/material/input';
 import { RecentTransactions } from '../../shared/recent-transactions/recent-transactions';
+import { TransactionService } from '../../../services/transaction/transaction.service';
 
 @Component({
   imports: [
@@ -28,7 +29,10 @@ export class Account {
   // State variables to store mock data
   accountName = signal<string>('Everyday Checking');
   rawAccountNumber = signal<string>('123456784812');
-  accountBalanceCents = signal<number>(284576);
+
+  // Inject Transaction Service to get accountBalance
+  transactionService = inject(TransactionService);
+  accountBalanceCents = this.transactionService.accountBalanceInCents;
 
   // String to store account nickname when being edited
   updatedNickname = signal<string>('');
@@ -99,11 +103,14 @@ export class Account {
   onTransactionSuccess(event: TransactionResponseDTO): void {
     // Update balance to reflect transaction
     this.accountBalanceCents.update((currentBalanceCents) => {
-      // Check the transaction type
-      if (event.transactionType === 'DEPOSIT') {
-        return currentBalanceCents + event.amountInCents;
-      } else if (event.transactionType === 'WITHDRAW') {
-        return Math.max(0, currentBalanceCents - event.amountInCents);
+      // Check if transaction was successful
+      if (event.success) {
+        // Check the transaction type
+        if (event.transactionType === 'DEPOSIT') {
+          return currentBalanceCents + event.amountInCents;
+        } else if (event.transactionType === 'WITHDRAW') {
+          return Math.max(0, currentBalanceCents - event.amountInCents);
+        }
       }
 
       // Fallback
