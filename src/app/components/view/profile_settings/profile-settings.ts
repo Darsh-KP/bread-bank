@@ -31,7 +31,7 @@ export class ProfileSettings {
   readonly user = signal<ProfileInformationResponse | null>(null);
   readonly loading = signal(true);
   readonly initialLoadError = signal('');
-  readonly errorMessage = 'We could not load your profile settings. Please try again later.';
+  readonly errorMessage = 'We could not load your profile settings. Please try logging in.';
 
   readonly userName? : string | undefined = undefined;
 
