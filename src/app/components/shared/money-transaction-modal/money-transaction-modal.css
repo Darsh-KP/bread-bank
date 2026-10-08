@@ -36,7 +36,6 @@ h2 {
 
 input[formControlName="pin"] {
   letter-spacing: 8px;
-  font-size: 30px;
 }
 
 .actions button {
