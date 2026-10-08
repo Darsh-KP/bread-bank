@@ -1,27 +1,42 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, model, OnInit, signal } from '@angular/core';
+import { SingleTransactionType } from '../../../dtos/transaction/SingleTransactionType';
+import { TransactionPhase } from './TransactionPhase';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AMOUNT_REGEX, PIN_REGEX } from '../../../../utils/regExps';
-import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TransactionService } from '../../../services/transaction/transaction.service';
+import { TransactionResponseDTO } from '../../../dtos/transaction/TransactionResponseDTO';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { AMOUNT_REGEX, PIN_REGEX } from '../../../../utils/regExps';
 
 @Component({
   imports: [
+    MatIcon,
+    MatProgressSpinner,
     ReactiveFormsModule,
     MatFormField,
     MatLabel,
     MatInput,
     MatError,
-    MatIcon,
     MatButton,
-    MatProgressSpinner,
   ],
   selector: 'money-transaction-modal',
   styleUrl: './money-transaction-modal.css',
   templateUrl: './money-transaction-modal.html',
 })
-export class MoneyTransactionModal {
+export class MoneyTransactionModal implements OnInit {
+  // Inject required dependencies
+  private readonly activeModal = inject(NgbActiveModal);
+  private readonly transactionService = inject(TransactionService);
+
+  // Ask the caller to set the type of transaction
+  transactionType = model.required<SingleTransactionType>();
+
+  // Set loading as the starting phase
+  phase = signal<TransactionPhase>('loading');
+
   // String to store error messages
   errorMessage = signal<string>('');
 
@@ -30,6 +45,9 @@ export class MoneyTransactionModal {
 
   // State variable used to track if response was successful or not
   isSuccess = signal<boolean>(false);
+
+  // Variable to store transaction response
+  transactionResult = signal<TransactionResponseDTO | null>(null);
 
   // PIN input form / field
   readonly pinForm = new FormGroup({
@@ -71,6 +89,14 @@ export class MoneyTransactionModal {
     );
   }
 
+  // Render the default phase
+  ngOnInit(): void {
+    // Simulate loading, go to next phase
+    setTimeout(() => {
+      this.phase.set('pin');
+    }, 1000);
+  }
+
   // Handle PIN input events
   onPinInput(event: Event): void {
     // Get access to input element
@@ -104,7 +130,41 @@ export class MoneyTransactionModal {
     this.isProcessing.set(true);
     this.errorMessage.set('');
 
-    // TODO: Attempt to verify PIN by calling the service
+    // Attempt to verify PIN by calling the service
+    this.transactionService
+      .verifyPin({
+        pin: this.pinControl.value,
+      })
+      .subscribe({
+        next: (response) => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          // Check if the PIN is authenticated
+          if (!response.success) {
+            // Set incorrect PIN error message
+            this.errorMessage.set('Incorrect PIN.');
+
+            // Reset the input field for PIN
+            this.pinControl.reset();
+            this.checkPinValidation();
+
+            return;
+          }
+
+          // If PIN is correct, go to next phase
+          this.phase.set('amount');
+        },
+
+        // Handle errors from the service
+        error: () => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          // Set the error message to something generic
+          this.errorMessage.set('Unable to verify your PIN. Please try again.');
+        },
+      });
   }
 
   // Handle amount input events
@@ -169,7 +229,46 @@ export class MoneyTransactionModal {
     // Get the PIN from the previous form
     const userPin = this.pinControl.value ?? '';
 
-    // TODO: Attempt to process the transaction by calling the service
+    // Attempt to process the transaction by calling the service
+    this.transactionService
+      .processTransaction({
+        type: this.transactionType(),
+        pin: userPin,
+        amountInCents,
+      })
+      .subscribe({
+        next: (response) => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          // Save the transaction result
+          this.transactionResult.set(response);
+
+          // Check if the transaction was successful
+          if (response.success) {
+            // Show transaction successful result screen
+            this.isSuccess.set(true);
+          } else {
+            // Show transaction failed result screen
+            this.isSuccess.set(false);
+
+            // Set transaction failed error message
+            this.errorMessage.set('Transaction could not be completed.');
+          }
+
+          // Go to next phase
+          this.phase.set('result');
+        },
+
+        // Handle errors from the service
+        error: () => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          // Set the error message to something generic
+          this.errorMessage.set('Unable to complete the transaction. Please try again.');
+        },
+      });
   }
 
   // Helper methods to convert amount input to cents for better precision
@@ -183,4 +282,58 @@ export class MoneyTransactionModal {
     // Return the amount in cents
     return Number(whole) * 100 + Number(paddedDecimal);
   }
+
+  // When transaction is done and dismissed, close the modal
+  finish(): void {
+    // Get the transaction info
+    const result: TransactionResponseDTO = {
+      success: true,
+      transactionType: this.transactionType(),
+      amountInCents: this.convertToCents(this.amountControl.value),
+    };
+
+    // Close the modal, and return the transaction info
+    this.activeModal.close(result);
+  }
+
+  // Close the modal, if the user clicks Cancel
+  cancel(): void {
+    // Check if a transaction is being processed
+    if (this.isProcessing()) {
+      return;
+    }
+
+    // Close the modal
+    this.activeModal.dismiss('cancelled');
+  }
+
+  // Set the title based on the transaction type
+  readonly title = computed(() => {
+    return this.transactionType() === 'DEPOSIT' ? 'Deposit Money' : 'Withdraw Money';
+  });
+
+  // Set the button value based on the transaction type
+  readonly actionText = computed(() => {
+    return this.transactionType() === 'DEPOSIT' ? 'Deposit' : 'Withdraw';
+  });
+
+  // Set the result message based on the transaction type
+  readonly successMessage = computed(() => {
+    return this.transactionType() === 'DEPOSIT'
+      ? 'Your deposit was successful.'
+      : 'Your withdrawal was successful.';
+  });
+
+  // Helper methods to convert amount input from cents to decimal
+  readonly formattedAmount = computed(() => {
+    // Get the transaction amount
+    const result = this.transactionResult();
+    const amount = result ? result.amountInCents : 0;
+
+    // Format the amount from cents to decimal and return it
+    return (amount / 100).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  });
 }
