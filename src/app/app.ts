@@ -1,12 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AppToast } from './components/shared/notifications/app-toast/app-toast';
+import { NavigationBar } from './components/shared/navigation-bar/navigation-bar';
 
 @Component({
-  imports: [RouterOutlet, AppToast],
+  imports: [RouterOutlet, AppToast, NavigationBar],
   selector: 'app-root',
   template: `
     <app-toast />
+    <app-navigation-bar />
     <router-outlet />
   `,
 })

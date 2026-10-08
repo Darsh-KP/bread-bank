@@ -7,6 +7,7 @@ import {
 } from './profile-information.interfaces';
 import {
   BehaviorSubject,
+  from,
   catchError,
   delay,
   map,
@@ -17,6 +18,7 @@ import {
   throwError,
 } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
+import { AuthService } from '../auth/auth';
 import { PasswordChangeRequest } from './profile-information.interfaces';
 
 
@@ -24,8 +26,9 @@ import { PasswordChangeRequest } from './profile-information.interfaces';
 export class ProfileInformationService {
   //Http Client used to manage requesting and receiving responses from mock data in json file
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   //Current user logged in, used to track state inside service
-  private readonly currentUserSubject = new BehaviorSubject<MockUserResponse | null>(null);
+  private readonly currentUserSubject = new BehaviorSubject<ProfileInformationResponse | null>(null);
 
   //Public Observable user for view to use, converts Mock User with password
   //To ProfileInformationResponse with none
@@ -39,26 +42,13 @@ export class ProfileInformationService {
   constructor() {}
 
   //For now, load first user in users, try to link with auth service later
-  initCurrentUser(userName: string): Observable<MockUserResponse> {
-    return this.loadUsers().pipe(
-      //From the list of mock user data load the first user
-      map((users: MockUserResponse[]) => {
-        const user = users.find((u) => u.userName === userName);
-
-        if (!user) {
-          throw new Error(`User with username "${userName}" was not found.`);
-        }
-        return user;
-      }),
-      //Get the user from map function and store in service
-      tap((user: MockUserResponse) => {
-        this.currentUserSubject.next(user);
-      }),
-      //Rethrow error from loadUser method
-      catchError((error: Error) => {
-        return throwError(() => error);
-      }),
-    );
+  initCurrentUser(userName: string): Observable<ProfileInformationResponse> {
+    const user = this.auth.currentUser;
+    if (!user || user.userName !== userName) {
+      this.currentUserSubject.next(null);
+      return throwError(() => new Error('Please sign in to view your profile settings.'));
+    }
+    return of({ ...user }).pipe(tap((profile) => this.currentUserSubject.next(profile)));
   }
 
   //Method used to load data of users from given url
@@ -145,7 +135,7 @@ export class ProfileInformationService {
         }
 
         //Merge current user data with updated data
-        const updatedUser: MockUserResponse = {
+        const updatedUser: ProfileInformationResponse = {
           ...currentUser,
           ...updatedData,
         };
@@ -162,7 +152,7 @@ export class ProfileInformationService {
   private checkForDuplicatePhoneOrEmail<K extends UpdatableField>(
     field: K,
     value: ProfileInformationResponse[K],
-    currentUser: MockUserResponse,
+    currentUser: ProfileInformationResponse,
     resolvedUsers: MockUserResponse[],
   ): Observable<void> {
     if (field === 'email') {
@@ -203,41 +193,6 @@ export class ProfileInformationService {
 
   //Used specifically with patch requests for /profile-settings/password
   updatePassword(request: PasswordChangeRequest): Observable<void> {
-    return of(null).pipe(
-      delay(this.loadTime),
-      switchMap(() => {
-        //Get current User information
-        const currentUser = this.currentUserSubject.value;
-
-        //Throw an error if user information can not be loaded.
-        if (!currentUser) {
-          return throwError(() => new Error('Could not load account data. Please try again.'));
-        }
-
-        //Verify that provided old password matches mock stored password
-        if (request.oldPassword !== currentUser.passwordHash) {
-          return throwError(() => new Error('Incorrect current password.'));
-        }
-
-        //Prevent reusing the current password as the new password
-        if (request.oldPassword === request.newPassword) {
-          return throwError(
-            () => new Error('New password cannot be the same as your current password.'),
-          );
-        }
-
-        //Merge current user data with updated data
-        const updatedUser: MockUserResponse = {
-          ...currentUser,
-          passwordHash: request.newPassword,
-        };
-
-        //Broadcast new updates to application
-        this.currentUserSubject.next(updatedUser);
-
-        // Return an empty success notification down the pipe
-        return of(void 0);
-      }),
-    );
+    return from(this.auth.changePassword(request));
   }
 }

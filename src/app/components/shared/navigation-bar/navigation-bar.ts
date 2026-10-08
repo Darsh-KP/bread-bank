@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth';
 
 interface AccountMenuItem {
   label: string;
@@ -27,6 +28,8 @@ interface AccountMenuItem {
 })
 
 export class NavigationBar {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   readonly mobileNavOpen = signal(false);
 
   readonly accountItems: AccountMenuItem[] = [
@@ -44,6 +47,7 @@ export class NavigationBar {
   }
 
   logout(): void {
-    console.log('Logout triggered');
+    this.auth.currentUser = null;
+    void this.router.navigate(['/']);
   }
 }
