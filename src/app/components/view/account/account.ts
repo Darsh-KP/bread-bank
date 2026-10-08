@@ -1,4 +1,4 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {NavigationBar} from '../../shared/navigation-bar/navigation-bar';
 import {TransactionButtonComponent} from '../../shared/money-transaction-modal/transaction-button';
 import {RouterLink} from '@angular/router';
@@ -6,6 +6,7 @@ import {TransactionResponseDTO} from '../../../dtos/transaction/TransactionRespo
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput} from '@angular/material/input';
+import { RecentTransactions } from '../../shared/recent-transactions/recent-transactions';
 
 @Component({
   imports: [
@@ -16,7 +17,8 @@ import {MatFormField, MatInput} from '@angular/material/input';
     RouterLink,
     MatIconButton,
     MatFormField,
-    MatInput
+    MatInput,
+    RecentTransactions,
   ],
   selector: 'account',
   styleUrl: './account.css',
@@ -41,7 +43,7 @@ export class Account {
   readonly formattedBalance = computed(() => {
     return (this.accountBalanceCents() / 100).toLocaleString('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     });
   });
 
@@ -90,7 +92,7 @@ export class Account {
 
   // Toggle account number visibility state
   toggleAccountNumberVisibility(): void {
-    this.isAccountNumberVisible.update(visible => !visible);
+    this.isAccountNumberVisible.update((visible) => !visible);
   }
 
   // Update balance on a transaction completion
