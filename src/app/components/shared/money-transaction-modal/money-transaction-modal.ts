@@ -324,7 +324,7 @@ export class MoneyTransactionModal implements OnInit {
       : 'Your withdrawal was successful.';
   });
 
-  // Helper methods to convert amount input from cents to decimal
+  // Helper method to convert amount input from cents to decimal
   readonly formattedAmount = computed(() => {
     // Get the transaction amount
     const result = this.transactionResult();
@@ -332,8 +332,8 @@ export class MoneyTransactionModal implements OnInit {
 
     // Format the amount from cents to decimal and return it
     return (amount / 100).toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      style: 'currency',
+      currency: 'USD'
     });
   });
 }
