@@ -48,7 +48,14 @@ export class ProfileInformationService {
       this.currentUserSubject.next(null);
       return throwError(() => new Error('Please sign in to view your profile settings.'));
     }
-    return of({ ...user }).pipe(tap((profile) => this.currentUserSubject.next(profile)));
+
+    //If user has already been loaded then return the already existing observable
+    const currentLoadedUser = this.currentUserSubject.value;
+    if (currentLoadedUser && currentLoadedUser.userName === userName) {
+      return of(currentLoadedUser);
+    }
+
+      return of({ ...user }).pipe(tap((profile) => this.currentUserSubject.next(profile)));
   }
 
   //Method used to load data of users from given url
