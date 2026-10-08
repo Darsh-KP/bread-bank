@@ -25,6 +25,7 @@ export class PasswordChangeModalComponent {
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
+  showPassword = signal(false);
 
   readonly form = this.formbuilder.nonNullable.group(
     {
