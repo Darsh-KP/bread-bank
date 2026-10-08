@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
 
 export interface AccountSummary {
   id: number;
@@ -20,7 +21,8 @@ export interface AccountSummary {
     MatButtonModule,
     MatIconModule,
     RouterLink,
-    CurrencyPipe
+    CurrencyPipe,
+    TransactionButtonComponent
   ],
   templateUrl: './dashboard-card.html',
   styleUrl: './dashboard-card.css',

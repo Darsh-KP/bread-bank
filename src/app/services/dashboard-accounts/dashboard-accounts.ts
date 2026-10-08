@@ -1,60 +1,48 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AccountSummary } from '../../components/shared/dashboard-card/dashboard-card';
+import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+export interface AccountRequest {
+  userName: string;
+}
 
 interface MockAccount extends AccountSummary {
   userName: string;
 }
 
-const MOCK_ACCOUNTS: MockAccount[] = [
-  {
-    id: 1,
-    userName: 'itsYaBreadBoi',
-    accountType: 'Everyday Checking',
-    lastFour: '4821',
-    balance: 2845.76,
-  },
-  {
-    id: 2,
-    userName: 'itsYaBreadBoi',
-    accountType: 'High-Yield Savings',
-    lastFour: '9073',
-    balance: 12750.4,
-  },
-  {
-    id: 3,
-    userName: 'yeasterSunday',
-    accountType: 'Everyday Checking',
-    lastFour: '1638',
-    balance: 1932.18,
-  },
-  {
-    id: 4,
-    userName: 'yeasterSunday',
-    accountType: 'Rainy Day Savings',
-    lastFour: '7410',
-    balance: 8340.92,
-  },
-  {
-    id: 5,
-    userName: 'yeasterSunday',
-    accountType: 'Travel Savings',
-    lastFour: '2556',
-    balance: 2160.5,
-  },
-];
-
 @Injectable({ providedIn: 'root' })
 export class DashboardAccountsService {
+  private readonly http = inject(HttpClient);
+  private accounts?: Promise<MockAccount[]>;
+
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async getAccountsForUser(userName: string): Promise<AccountSummary[]> {
+  private loadAccounts(): Promise<MockAccount[]> {
+    return (this.accounts ??= firstValueFrom(
+      this.http.get<MockAccount[]>('/mock-data/accounts.json'),
+    ).catch(() => {
+      this.accounts = undefined;
+      throw new Error('Could not load account data. Please try again.');
+    }));
+  }
+
+  async getAccountsForUser(request: AccountRequest): Promise<AccountSummary[]> {
+    const normalizedUserName = request.userName.trim().toLowerCase();
+    if (normalizedUserName === null || normalizedUserName === '') {
+      throw new Error('Invalid request body');
+    }
+
     await this.delay(500);
 
-    const normalizedUserName = userName.trim().toLowerCase();
-    return MOCK_ACCOUNTS.filter(
+    const accounts = await this.loadAccounts();
+
+    return accounts.filter(
       (account) => account.userName.trim().toLowerCase() === normalizedUserName,
-    ).map(({ userName: _userName, ...account }) => ({ ...account }));
+    ).map(
+      ({ userName: _userName, ...account }) => ({ ...account })
+    );
   }
 }

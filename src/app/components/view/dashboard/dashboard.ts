@@ -1,14 +1,15 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AuthService } from '../../../services/auth/auth';
-import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
+import { DashboardAccountsService, AccountRequest } from '../../../services/dashboard-accounts/dashboard-accounts';
 import { AccountSummary, DashboardCard } from '../../shared/dashboard-card/dashboard-card';
 import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
 import { tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  imports: [CurrencyPipe, DashboardCard],
+  imports: [NavigationBar, CurrencyPipe, DashboardCard],
   selector: 'app-dashboard',
   styleUrl: './dashboard.css',
   templateUrl: './dashboard.html',
@@ -59,8 +60,9 @@ export class Dashboard {
   }
 
   private async loadAccounts(userName: string): Promise<void> {
+    const request: AccountRequest = { userName };
     try {
-      this.accounts.set(await this.accountsService.getAccountsForUser(userName));
+      this.accounts.set(await this.accountsService.getAccountsForUser(request));
     } catch (error: unknown) {
       this.errorMessage.set(
         error instanceof Error

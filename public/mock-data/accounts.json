@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "userName": "itsYaBreadBoi",
+    "accountType": "Everyday Checking",
+    "lastFour": "4821",
+    "balance": 2845.76
+  },
+  {
+    "id": 2,
+    "userName": "itsYaBreadBoi",
+    "accountType": "High-Yield Savings",
+    "lastFour": "9073",
+    "balance": 12750.4
+  },
+  {
+    "id": 3,
+    "userName": "yeasterSunday",
+    "accountType": "Everyday Checking",
+    "lastFour": "1638",
+    "balance": 1932.18
+  },
+  {
+    "id": 4,
+    "userName": "yeasterSunday",
+    "accountType": "Rainy Day Savings",
+    "lastFour": "7410",
+    "balance": 8340.92
+  },
+  {
+    "id": 5,
+    "userName": "yeasterSunday",
+    "accountType": "Travel Savings",
+    "lastFour": "2556",
+    "balance": 2160.5
+  }
+]
