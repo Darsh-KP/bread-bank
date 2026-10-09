@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { Login } from './components/view/login/login';
-import { ProfileSettings } from './components/view/profile_settings/profile-settings';
 import { Register } from './components/view/register/register';
 import { CreateAccount } from './components/view/create-account/create-account';
 import { Account } from './components/view/account/account';
