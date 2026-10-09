@@ -99,14 +99,6 @@ input[formControlName="pin"] {
   color: var(--color-text-primary);
 }
 
-.transaction-id {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  font-family: monospace;
-}
-
 .done-button {
   width: 100%;
 }

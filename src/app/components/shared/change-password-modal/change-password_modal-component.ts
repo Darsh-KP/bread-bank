@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, signal, Input, input } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal, input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   passwordMatchValidator,
