@@ -1,59 +1,52 @@
-# BankFrontend
+# Breadwinners Financial Services (BFS) — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+## Overview
 
-## Development server
+The frontend is a banking application built with Angular and TypeScript. It currently uses mock data to simulate authentication, bank accounts, deposits, withdrawals, transfers, and transaction history.
 
-To start a local development server, run:
+> **Note:** All data is currently mocked and is not persisted through a backend. Release 2 will introduce a REST API backend to support persistent data storage.
 
-```bash
-ng serve
-```
+## Getting Started
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Prerequisites
 
-## Code scaffolding
+- **Node.js:** 24.21.0 — [Download Node.js](https://nodejs.org/en/download/archive/v24.21.0)
+- npm (included with Node.js)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Installation
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Navigate to the frontend directory:
 
 ```bash
-ng generate --help
+cd bank-frontend
 ```
 
-## Building
-
-To build the project run:
+Install dependencies:
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Run the Application
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Start the Angular development server:
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+Open [http://localhost:4200](http://localhost:4200) in your browser.
 
-For end-to-end (e2e) testing, run:
+## Test Accounts
 
-```bash
-ng e2e
-```
+Use the following mock credentials to log in:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+| Username | Password |
+|---|---|
+| `itsYaBreadBoi` | `myPassword123!` |
+| `yeasterSunday` | `myPassword123!` |
 
-## Additional Resources
+These accounts are for frontend testing only and do not represent real banking accounts.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+- **Data:** Mock data and simulated API responses
