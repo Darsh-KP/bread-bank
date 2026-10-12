@@ -1,0 +1,101 @@
+<mat-toolbar color="primary" class="app-navbar" aria-label="Primary navigation">
+  <a class="brand" routerLink="/dashboard" aria-label="Breadwinners Financial Services home">
+    <img src="logo.png" alt="" class="brand-logo">
+    <span class="brand-text">Breadwinners Financial Services</span>
+  </a>
+
+  <button
+    mat-icon-button
+    class="mobile-menu-toggle"
+    type="button"
+    (click)="toggleMobileNav()"
+    [attr.aria-expanded]="mobileNavOpen()"
+    aria-controls="primary-navigation-links"
+    [attr.aria-label]="mobileNavOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+  >
+    <mat-icon>{{ mobileNavOpen() ? 'close' : 'menu' }}</mat-icon>
+  </button>
+
+  <nav
+    id="primary-navigation-links"
+    class="nav-links"
+    [class.mobile-open]="mobileNavOpen()"
+    aria-label="Main navigation"
+  >
+    <button
+      mat-button
+      routerLink="/dashboard"
+      (click)="closeMobileNav()"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+      aria-label="Dashboard"
+    >
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </button>
+
+    <button
+      mat-button
+      [matMenuTriggerFor]="accountsMenu"
+      (menuOpened)="loadAccountItems()"
+      (click)="closeMobileNav()"
+      aria-label="Accounts"
+    >
+      <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
+      <span>Accounts</span>
+    </button>
+
+    <button
+      mat-button
+      routerLink="/create-account"
+      (click)="closeMobileNav()"
+      routerLinkActive="active-link"
+      aria-label="Create Account"
+    >
+      <mat-icon>add</mat-icon>
+      <span>Create Account</span>
+    </button>
+
+    <button
+      mat-button
+      routerLink="/profile-settings"
+      (click)="closeMobileNav()"
+      routerLinkActive="active-link"
+      aria-label="User settings"
+    >
+      <mat-icon>person</mat-icon>
+      <span>User Settings</span>
+    </button>
+  </nav>
+
+  <span class="spacer"></span>
+
+  <button mat-flat-button color="warn" class="logout-button" (click)="logout()" aria-label="Log out">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-toolbar>
+
+<mat-menu #accountsMenu="matMenu">
+  @if (accountsLoading()) {
+    <button mat-menu-item disabled>Loading accounts…</button>
+  } @else if (accountsError()) {
+    <button mat-menu-item disabled>{{ accountsError() }}</button>
+  } @else if (accountItems().length === 0) {
+    <button mat-menu-item disabled>No accounts found</button>
+  } @else {
+    @for (account of accountItems(); track account.id) {
+      <button
+        mat-menu-item
+        routerLink="/account"
+        (click)="closeMobileNav()"
+        [attr.aria-label]="account.accountType + ', ending in ' + account.lastFour"
+      >
+        <span class="account-item-label">{{ account.accountType }}</span>
+        <span class="account-item-description">
+          Ending in {{ account.lastFour }} · {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+        </span>
+      </button>
+    }
+  }
+</mat-menu>

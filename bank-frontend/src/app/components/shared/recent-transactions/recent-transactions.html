@@ -1,0 +1,27 @@
+<section class="recent" aria-labelledby="recent-heading">
+  @if (loading()) {
+    <p class="state" role="status">Loading recent transactions…</p>
+  } @else if (error()) {
+    <p class="state state-error" role="alert">{{ error() }}</p>
+  } @else if (recent().length === 0) {
+    <p class="state">No transactions yet.</p>
+  } @else {
+    <ul class="list">
+      @for (t of recent(); track t.id) {
+        <li class="item">
+          <div class="info">
+            <span class="desc">{{ t.description ?? label(t) }}</span>
+            <span class="meta">{{ label(t) }} · {{ t.createdAt | date: 'MMM d, y' }}</span>
+          </div>
+          <span class="amount" [class.out]="isOut(t)" [class.in]="!isOut(t)">
+            {{ signedAmount(t) | currency }}
+          </span>
+        </li>
+      }
+    </ul>
+
+    <div class="footer">
+      <a class="btn" [routerLink]="viewAllLink()">Show all transactions</a>
+    </div>
+  }
+</section>

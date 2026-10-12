@@ -1,0 +1,241 @@
+<div class="transaction-modal w-100 mx-auto">
+  @if (phase() === 'loading') {
+    <div class="phase loading-phase d-flex flex-column align-items-center justify-content-center text-center">
+      <mat-spinner
+        diameter="48"
+        class="mb-3">
+      </mat-spinner>
+
+      <h2 class="fw-semibold mb-2">Preparing...</h2>
+
+      <p class="mb-0">
+        Please wait a moment.
+      </p>
+    </div>
+  }
+
+  @if (phase() === 'pin') {
+    <div class="phase text-center">
+      <div class="phase-icon mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
+        <mat-icon>lock</mat-icon>
+      </div>
+
+      <h2 class="fw-semibold mb-2">{{ title() }}</h2>
+
+      <p class="description lh-base mb-4">
+        Enter your 4-digit PIN to continue.
+      </p>
+
+      <form
+        [formGroup]="pinForm"
+        (ngSubmit)="verifyPin()">
+
+        <mat-form-field
+          appearance="outline"
+          class="full-width w-100">
+
+          <mat-label>PIN</mat-label>
+
+          <input
+            matInput
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="4"
+            formControlName="pin"
+            (input)="onPinInput($event); checkPinValidation()"
+            (blur)="checkPinValidation()"
+          />
+
+          @if (isPinInvalid()) {
+            <mat-error>
+              @if (pinControl.hasError('required')) {
+                PIN is required.
+              }
+
+              @if (pinControl.hasError('pattern')) {
+                PIN must be exactly 4 digits.
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <div class="error-message d-flex align-items-center gap-2 mt-2 p-2 rounded text-start fs-6">
+            <mat-icon class="flex-shrink-0">error</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <div class="actions d-flex justify-content-end flex-wrap gap-2 mt-4">
+          <button
+            mat-button
+            type="button"
+            [disabled]="isProcessing()"
+            (click)="cancel()">
+            Cancel
+          </button>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="isProcessing()">
+
+            @if (isProcessing()) {
+              <mat-spinner
+                diameter="20">
+              </mat-spinner>
+            } @else {
+              Continue
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (phase() === 'amount') {
+    <div class="phase text-center">
+      <div class="phase-icon mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
+        @if (transactionType() === 'DEPOSIT') {
+          <mat-icon>add_circle</mat-icon>
+        } @else {
+          <mat-icon>remove_circle</mat-icon>
+        }
+      </div>
+
+      <h2 class="fw-semibold mb-2">{{ title() }}</h2>
+
+      <p class="description lh-base mb-4">
+        Enter the amount you want to
+        {{ transactionType() === 'DEPOSIT'
+        ? 'deposit'
+        : 'withdraw' }}.
+      </p>
+
+      <form
+        [formGroup]="amountForm"
+        (ngSubmit)="submitAmount()">
+
+        <mat-form-field
+          appearance="outline"
+          class="full-width w-100">
+
+          <mat-label>Amount</mat-label>
+
+          <span matTextPrefix>$&nbsp;</span>
+
+          <input
+            matInput
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0.00"
+            formControlName="amount"
+            (input)="onAmountInput($event); checkAmountValidation()"
+            (blur)="checkAmountValidation()"
+          />
+
+          @if (isAmountInvalid()) {
+            <mat-error>
+              @if (amountControl.hasError('required')) {
+                Amount is required.
+              }
+
+              @if (amountControl.hasError('pattern')) {
+                Enter a valid amount with up to 2 decimal places.
+              }
+
+              @if (amountControl.hasError('min')) {
+                Amount must be greater than zero.
+              }
+            </mat-error>
+          }
+
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <div class="error-message d-flex align-items-center gap-2 mt-2 p-2 rounded text-start fs-6">
+            <mat-icon class="flex-shrink-0">error</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <div class="actions d-flex justify-content-end flex-wrap gap-2 mt-4">
+          <button
+            mat-button
+            type="button"
+            [disabled]="isProcessing()"
+            (click)="cancel()">
+            Cancel
+          </button>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="isProcessing()">
+
+            @if (isProcessing()) {
+              <mat-spinner
+                diameter="20">
+              </mat-spinner>
+            } @else {
+              {{ actionText() }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (phase() === 'result') {
+    <div class="phase success-phase text-center">
+      @if (isSuccess()) {
+        <div class="success-icon mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
+          <mat-icon>check</mat-icon>
+        </div>
+        <h2 class="fw-semibold mb-2">Success!</h2>
+        <p class="description lh-base mb-4">
+          {{ successMessage() }}
+        </p>
+      }
+      @else {
+        <div class="failure-icon mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
+          <mat-icon>close</mat-icon>
+        </div>
+        <h2 class="fw-semibold mb-2">Transaction Failed</h2>
+        <p class="description lh-base mb-4">
+          {{ errorMessage() || 'We were unable to process this request.' }}
+        </p>
+      }
+
+      <div class="transaction-summary my-4 p-3 rounded text-start">
+        <div class="summary-row d-flex align-items-center justify-content-between flex-wrap gap-3 py-2 border-bottom">
+          <span>Transaction</span>
+
+          <strong class="fw-semibold">
+            {{ actionText() }}
+          </strong>
+        </div>
+
+        <div class="summary-row d-flex align-items-center justify-content-between flex-wrap gap-3 py-2">
+          <span>Amount</span>
+
+          <strong class="fw-semibold">
+            {{ formattedAmount() }}
+          </strong>
+        </div>
+      </div>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="done-button w-100"
+        (click)="finish()">
+        Done
+      </button>
+    </div>
+  }
+</div>

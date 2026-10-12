@@ -1,0 +1,24 @@
+<mat-card class="account-card" appearance="outlined" (click)="goToAccount()">
+  <mat-card-header>
+    <mat-card-title>{{ account().accountType }}</mat-card-title>
+    <mat-card-subtitle>Account ending in {{ account().lastFour }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="balance-label">Available balance</div>
+    <div class="balance">
+      {{ account().balance | currency:'USD':'symbol':'1.2-2' }}
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions align="end" (click)="$event.stopPropagation()">
+    <transaction-button type="DEPOSIT" (click)="$event.stopPropagation()"/>
+
+    <transaction-button type="WITHDRAW" (click)="$event.stopPropagation()"/>
+
+    <button mat-stroked-button color="primary" routerLink="/transfer">
+      <mat-icon>compare_arrows</mat-icon>
+      Transfer
+    </button>
+  </mat-card-actions>
+</mat-card>

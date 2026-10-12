@@ -1,0 +1,63 @@
+.login-side {
+    background: var(--color-surface);
+}
+
+.login-content {
+    min-height: 34rem;
+}
+
+.login-side .input-group-text,
+.login-side .form-control,
+.login-side .input-group .btn {
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+    transition: none;
+}
+
+.login-side .form-label {
+    font-size: 1.1rem;
+}
+
+.login-side .form-control,
+.login-side .input-group .btn {
+    font-size: 1rem;
+}
+
+.login-side .input-group:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(154, 93, 58, 0.15);
+    border-radius: var(--bs-border-radius-lg);
+}
+
+.login-side .input-group:focus-within .input-group-text,
+.login-side .input-group:focus-within .form-control,
+.login-side .input-group:focus-within .btn {
+    border-color: var(--color-primary);
+}
+
+.login-side .form-control:focus {
+    box-shadow: none;
+}
+
+.login-button {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.login-button:hover,
+.login-button:focus {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: #fff;
+}
+
+.create-account {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.create-account:hover {
+    background: var(--color-primary);
+    color: #fff;
+}

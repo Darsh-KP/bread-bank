@@ -1,0 +1,38 @@
+.account-card {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.mat-mdc-card-header {
+  padding-bottom: 0;
+}
+
+.balance-label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.balance {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.mat-mdc-card-content {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mat-mdc-card-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  padding-bottom: 1rem;
+}

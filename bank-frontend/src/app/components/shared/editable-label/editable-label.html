@@ -1,0 +1,47 @@
+<section class="editable-row">
+  <!-- Fixed label column -->
+  <label class="row-label">{{ label() }}</label>
+
+  <!-- Value / Input wrapper -->
+  <div class="row-content">
+    <input
+      class="form-control-plaintext row-input"
+      [class.editing]="!isReadOnly"
+      [type]="type()"
+      [ngModel]="isReadOnly ? displayValue() : value()"
+      (ngModelChange)="onInputChange($event)"
+      (keyup.enter)="toggleEdit()"
+      (keyup.esc)="cancelEdit()"
+      [readonly]="isReadOnly || isSaving"
+    />
+  </div>
+
+  <!-- Action button -->
+  <button
+    type="button"
+    class="btn btn-outline-secondary btn-icon"
+    [class.btn-success]="!isReadOnly && !isSaving"
+    [class.is-editing]="!isReadOnly"
+    (click)="toggleEdit()"
+    [disabled]="isSaving"
+    [attr.aria-label]="isSaving ? 'Saving' : isReadOnly ? 'Edit field' : 'Save field'"
+  >
+    @if (isSaving){
+      <!-- Shows spinner if in progress of saving -->
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    } @else if (isReadOnly) {
+      <!-- Shows pencil if can be edited -->
+      <i class="bi bi-pencil-fill"></i>
+    } @else {
+      <!-- Save / Checkmark Icon -->
+      <i class="bi bi-check-lg"></i>
+    }
+  </button>
+
+  @if (displayToast) {
+    <div class="row-toast" role="alert">
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close py-2" (click)="dismissToastError()" aria-label="Close"></button>
+    </div>
+  }
+</section>

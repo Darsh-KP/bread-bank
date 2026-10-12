@@ -1,0 +1,104 @@
+.transaction-modal {
+  background: var(--color-surface);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.phase {
+  padding: 32px;
+}
+
+.loading-phase {
+  min-height: 280px;
+}
+
+.phase-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--color-panel-accent);
+  color: var(--color-text-primary);
+}
+
+.phase-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+h2 {
+  font-size: 24px;
+  color: var(--color-text-primary);
+}
+
+.description {
+  color: var(--color-text-secondary);
+}
+
+input[formControlName="pin"] {
+  letter-spacing: 8px;
+}
+
+.actions button {
+  min-width: 100px;
+}
+
+.error-message {
+  background: #ffebee;
+  color: var(--color-accent-red);
+}
+
+.error-message mat-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.success-phase {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.success-icon {
+  width: 72px;
+  height: 72px;
+  background: #e8f5e9;
+  color: var(--color-accent-olive);
+}
+
+.success-icon mat-icon {
+  font-size: 42px;
+  width: 42px;
+  height: 42px;
+}
+
+.failure-icon {
+  width: 72px;
+  height: 72px;
+  background: #ffebee;
+  color: var(--color-accent-red);
+}
+
+.failure-icon mat-icon {
+  font-size: 42px;
+  width: 42px;
+  height: 42px;
+}
+
+.transaction-summary {
+  background: var(--color-panel);
+}
+
+.summary-row {
+  border-color: var(--color-border) !important;
+}
+
+.summary-row > span:first-child {
+  color: var(--color-text-secondary);
+}
+
+.summary-row strong {
+  color: var(--color-text-primary);
+}
+
+.done-button {
+  width: 100%;
+}

@@ -1,0 +1,120 @@
+/* Rules for desktop */
+@media (min-width: 768px) {
+    #createAcct {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        width: 62.5%;
+    }
+}
+
+#createAcct {
+    padding-bottom: 32px;
+}
+
+h1, h2 {
+    justify-self: center;
+}
+
+
+.group {
+    width: 70%;
+    height: 96px;
+    display: flex;
+    background-color: white;
+    color: var(--color-primary);
+    border-style: solid;
+    border-color: var(--color-primary);
+    border-radius: 16px;
+    border-width: 3px;
+    justify-content: center;
+    justify-self: center;
+    align-items: center;
+    font-size: 18pt;
+}
+
+.group input {
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.btnGroup {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: stretch;
+    align-content: stretch;
+    width: 64px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 4px;
+
+    button {    
+        border-style: solid;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        border-width: 3px;
+        background-color: var(--color-page-background);
+        border-radius: 8px;
+        height: 64px;
+    }
+}
+
+#exitBtn {
+    background-color: var(--color-accent-red);
+    color: white;
+}
+
+.modal-backdrop {
+    background-color: var(--color-page-background);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 384px;
+    height: auto;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+    z-index: 1001;
+
+    border: var(--color-primary);
+    border-style: solid;
+}
+
+.modal {
+    display: block;
+    position: relative;
+    justify-content: center;
+    text-align: center;
+
+    button {    
+        border-style: solid;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        border-width: 3px;
+        background-color: var(--color-page-background);
+        border-radius: 8px;
+        height: 4rem;
+        margin:0.5rem;
+     }
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: 1rem;
+
+    margin-top: 1.5rem;
+
+    input {
+        border-style: solid;
+        border-radius: 8px;
+        border-color: var(--color-primary);
+        height: 3rem;
+    }
+}

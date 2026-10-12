@@ -1,0 +1,33 @@
+<app-navigation-bar />
+
+<main class="page">
+  <header class="page-header">
+    <h1>Transaction history</h1>
+    <p class="subtitle">Every deposit, withdrawal, and transfer on your account.</p>
+  </header>
+
+  <section class="card" aria-labelledby="history-heading">
+    <h2 id="history-heading" class="sr-only">Transactions</h2>
+
+    @if (loading()) {
+      <p class="state" role="status">Loading transactions…</p>
+    } @else if (error()) {
+      <p class="state state-error" role="alert">{{ error() }}</p>
+    } @else if (transactions().length === 0) {
+      <p class="state">No transactions yet.</p>
+    } @else {
+      <ag-grid-angular
+        class="grid"
+        [rowData]="rows()"
+        [columnDefs]="columnDefs()"
+        [defaultColDef]="defaultColDef()"
+        [theme]="theme"
+        [pagination]="true"
+        [paginationPageSize]="10"
+        [paginationPageSizeSelector]="pageSizes()"
+        [rowHeight]="rowHeight()"
+        domLayout="autoHeight"
+      />
+    }
+  </section>
+</main>

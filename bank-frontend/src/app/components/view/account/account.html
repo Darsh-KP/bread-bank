@@ -1,0 +1,85 @@
+<app-navigation-bar />
+
+<div class="account-page-container container py-4">
+  <div class="account-card p-4 mb-4 rounded shadow-sm">
+    <div class="account-header-row d-flex align-items-center mb-3">
+      @if (isEditingName()) {
+        <div class="edit-nickname-form d-flex align-items-center gap-2">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input
+              #nameInput
+              matInput
+              [value]="updatedNickname()"
+              (input)="updatedNickname.set(nameInput.value)"
+              maxlength="30"
+              (keyup.enter)="saveNickname()"
+            />
+          </mat-form-field>
+          <button
+            mat-icon-button
+            color="primary"
+            class="d-inline-flex align-items-center justify-content-center"
+            (click)="saveNickname()">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            class="d-inline-flex align-items-center justify-content-center"
+            (click)="cancelEditingNickname()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      } @else {
+        <div class="display-nickname-container d-flex align-items-center gap-2">
+          <h1 class="fw-bold m-0 fs-3">{{ accountName() }}</h1>
+          <button mat-icon-button (click)="startEditingNickname()" aria-label="Edit account nickname">
+            <mat-icon class="fs-5 text-muted">edit</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="account-number-row d-flex align-items-center gap-2 mb-4 text-secondary">
+      <span class="font-monospace fs-5 lh-1">{{ displayedAccountNumber() }}</span>
+      <button mat-icon-button (click)="toggleAccountNumberVisibility()" aria-label="Toggle account visibility">
+        <mat-icon class="fs-5">
+          {{ isAccountNumberVisible() ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </button>
+    </div>
+
+    <div class="account-balance-section mb-2">
+      <span class="text-uppercase text-muted fs-6 fw-medium tracking-wider">Available Balance</span>
+      <h2 class="display-balance fw-bold m-0 mt-1 fs-1">{{ formattedBalance() }}</h2>
+    </div>
+  </div>
+
+  <div class="quick-actions-bar d-flex align-items-center flex-wrap gap-3 mb-5">
+    <transaction-button
+      type="DEPOSIT"
+      (transactionSuccess)="onTransactionSuccess($event)">
+    </transaction-button>
+
+    <transaction-button
+      type="WITHDRAW"
+      (transactionSuccess)="onTransactionSuccess($event)">
+    </transaction-button>
+
+    <button
+      mat-flat-button
+      color="accent"
+      type="button"
+      routerLink="/transfer">
+      <mat-icon class="me-1">swap_horiz</mat-icon>
+      Transfer Funds
+    </button>
+  </div>
+
+  <div class="recent-activity-section">
+    <h3 class="fw-semibold mb-3 border-bottom pb-2">Recent Transactions</h3>
+
+    <app-recent-transactions />
+  </div>
+</div>
+

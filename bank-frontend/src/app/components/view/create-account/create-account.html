@@ -1,0 +1,73 @@
+<main>
+    <app-navigation-bar />
+    <br />
+
+    <div id="createAcct">
+    <h1>Try one of Breadwinners' products</h1>
+
+    <h2>Today's account offerings</h2>
+    <div>
+        @if (accounts$ | async; as accounts) {
+            @for (acc of accounts; track acc.name) {
+                <label class="group">
+                <input type="radio" name="product" [value]="acc.name" (click)="selectProduct();">{{acc.name}}, {{acc.apy}} APY
+                </label>
+                <br />
+            }
+        }
+    </div>
+
+    <h2>Today's certificates of deposit</h2>
+    <div>
+        @if (certificateDeposits$ | async; as certificateDeposits) {
+            @for (cd of certificateDeposits; track cd.name) {
+                <label class="group">
+                <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.name}}, {{cd.apy}} APY
+                </label>
+                <br />
+            }
+        }
+    </div>
+
+    <div class="btnGroup">
+    <button type="button" id="exitBtn" (click)="goToDashboard()">Exit</button>
+    <button type="button" id="clsBtn" disabled="true" (click)="clearSelection();">Clear selection</button>
+    <button type="button" id="contBtn" disabled="true" (click)="continueCreation();">Continue</button>
+    </div>
+    </div>
+
+    @if ( (dialog$ | async) === 'prompt' ) {
+        <div class="modal-backdrop">
+            <div class="modal" role="dialog" aria-modal="true">
+                <h2>Please create a PIN</h2>
+                <div class="modal-actions">
+                    <input type="password" inputmode="text" maxlength="4" #pin>
+
+                    Give your account a name (optional)
+                    <input inputmode="text" #acctName>
+                    <div class="modal-buttons">
+                        <button (click)="newAccount(pin, acctName)">Enter</button>
+                        <button (click)="closeDialog()">Close</button>
+                    </div>
+                </div>
+                <p id="pinWarning"></p>
+                @if ( (waiting$ | async) === true ) {
+                    <p>Validating. Please wait.</p>
+                }
+            </div>
+        </div>
+    }
+
+    @if ( (dialog$ | async) === 'congratulate') {
+        <div class="modal-backdrop">
+            <div class="modal" role="dialog" aria-modal="true">
+                <h2>Success!</h2>
+                <div class="modal-actions">
+                    <button (click)="goToDashboard()">View this account</button>
+                    <button (click)="goToDashboard()">Back to dashboard</button>
+                    <button (click)="closeDialog()">Close</button>
+                </div>
+            </div>
+        </div>
+    }
+</main>
