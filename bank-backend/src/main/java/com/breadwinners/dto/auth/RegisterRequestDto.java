@@ -17,6 +17,7 @@ public record RegisterRequestDto(
     String email,
 
     @NotBlank(message = "Phone number is required")
+    @Size(max = 20, message = "Phone number must not exceed 20 characters")
     String phone,
 
     @NotBlank(message = "Username is required")
