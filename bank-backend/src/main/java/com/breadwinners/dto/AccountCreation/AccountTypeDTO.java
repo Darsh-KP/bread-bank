@@ -1,4 +1,4 @@
-package com.breadwinners.dto;
+package com.breadwinners.dto.AccountCreation;
 
 import jakarta.validation.constraints.*;
 

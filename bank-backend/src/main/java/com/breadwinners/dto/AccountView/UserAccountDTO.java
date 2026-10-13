@@ -1,5 +1,6 @@
-package com.breadwinners.dto;
+package com.breadwinners.dto.AccountView;
 
+import com.breadwinners.dto.AccountCreation.AccountTypeDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -11,6 +12,5 @@ public record UserAccountDTO (
     String nickname,
     @NotBlank String hashedPin,
     @Min(0) long balanceCents,
-    @NotNull Instant creationDate,
     Instant frozenUntil
 ) {}
