@@ -25,5 +25,5 @@ public class AccountType {
 
     @Min(0)
     @Column
-    private int maturationDays;
+    private Integer maturationDays;
 }
