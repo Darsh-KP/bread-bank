@@ -1,4 +1,4 @@
-package com.breadwinners.bank.security;
+package com.breadwinners.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
