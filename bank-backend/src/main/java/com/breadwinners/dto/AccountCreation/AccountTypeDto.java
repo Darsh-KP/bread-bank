@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 /* For use on the account creation page. */
-public record AccountType(
+public record AccountTypeDto(
     @NotNull Long id,
     @NotBlank @Size(max = 50) String marketingName,
     @DecimalMin("0.0") @DecimalMax("99.99999")
