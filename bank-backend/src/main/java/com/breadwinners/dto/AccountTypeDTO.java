@@ -1,4 +1,4 @@
-package com.breadwinners.bank.dto;
+package com.breadwinners.dto;
 
 import jakarta.validation.constraints.*;
 
