@@ -1,4 +1,4 @@
-package com.breadwinners.dto.AccountCreation;
+package com.breadwinners.dto.accountcreation;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
