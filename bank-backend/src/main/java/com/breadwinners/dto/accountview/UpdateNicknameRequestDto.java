@@ -4,8 +4,7 @@ import jakarta.validation.constraints.*;
 
 public record UpdateNicknameRequestDto(
         @NotNull(message = "Account number is required.")
-        @Min(value = 100_000_000_000L, message = "Account number must be exactly 12 digits.")
-        @Max(value = 999_999_999_999L, message = "Account number must be exactly 12 digits.")
+        @Digits(integer = 12, fraction = 0, message = "Account number must be exactly 12 digits.")
         Long accountNumber,
 
         @NotBlank(message = "Nickname cannot be empty.")
