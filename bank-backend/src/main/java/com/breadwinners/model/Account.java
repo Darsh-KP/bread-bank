@@ -1,65 +1,97 @@
 package com.breadwinners.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @Table(name = "accounts")
-@Getter @Setter
+@EqualsAndHashCode(of = "accountNumber")
 public class Account {
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private static long generateId() {
+        return 100_000_000_000L
+                + RANDOM.nextLong(900_000_000_000L);
+    }
+
     @Id
-    @Min(100_000_000_000L) @Max(999_999_999_999L)
-    @Column(name = "account_number", precision = 12, unique = true, nullable = false)
+    @Column(precision = 12, unique = true, nullable = false)
     @Getter
-    private long accountNumber;
+    private Long accountNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
     @JoinColumn(
-            name = "account_type",
             referencedColumnName = "id",
             nullable = false
     )
     private AccountType accountType;
 
-    @NotBlank @Size(max = 50)
     @Getter
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(length = 50, nullable = false)
     private String username;
 
-    @Length(max = 50)
-    @Column(name = "nickname", length = 50)
+    @Column(length = 50)
     @Getter @Setter
     private String nickname;
 
-    @NotNull
-    @DecimalMin("0.00")
-    @Digits(integer = 15, fraction = 2)
-    @Column(name = "balance", precision = 17, scale = 2, nullable = false)
+    @Column(precision = 17, scale = 2, nullable = false)
     @Getter @Setter
     private BigDecimal balance;
 
-    @NotEmpty @Length(max = 255)
-    @Column(name = "pin_hash", nullable = false)
+    @Column(nullable = false)
     @Getter @Setter
     private String pinHash;
 
-    @NotNull
-    @Column(name = "creation_date", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     @Getter
     private LocalDateTime creationDate;
 
-    @Column(name = "frozen_until")
+    @Column
     @Getter @Setter
     private LocalDateTime frozenUntil;
 
-    protected Account() {
+    public Account(AccountType accountType, String username, String nickname, BigDecimal balance, String pinHash,
+        LocalDateTime creationDate, LocalDateTime frozenUntil) {
+        this.accountNumber = generateId();
 
+        this.accountType = accountType;
+
+        if(this.accountType == null) {
+            throw new IllegalArgumentException("Invalid account type.");
+        }
+
+        if(username == null || username.length() > 50) {
+            throw new IllegalArgumentException("Invalid username.");
+        } else {
+            this.username = username;
+        }
+
+        this.nickname = (nickname == null || nickname.isBlank()) ? null : nickname.trim();
+
+        if(balance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative.");
+        } else {
+            this.balance = balance;
+        }
+
+        if(pinHash.isBlank()) {
+            throw new IllegalArgumentException("PIN hash must not be blank.");
+        } else {
+            this.pinHash = pinHash;
+        }
+
+        if(creationDate == null) {
+            throw new IllegalArgumentException("Creation date must exist.");
+        } else {
+            this.creationDate = creationDate;
+        }
+
+        this.frozenUntil = frozenUntil;
     }
 }
