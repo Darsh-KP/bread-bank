@@ -12,7 +12,7 @@ import java.time.Instant;
 
 @Entity
 public class Account {
-    @Min(0) @Max(100000000000L)
+    @Min(100000000000L)
     @Column
     long accountNumber;
 
@@ -28,7 +28,7 @@ public class Account {
     @Column
     String nickname;
 
-    @DecimalMin("0.0")
+    @DecimalMin("0.0") @DecimalMax("99999999999999.99")
     @Column
     BigDecimal balance;
 
@@ -42,21 +42,4 @@ public class Account {
 
     @Column
     Instant frozenUntil;
-
-
-    /*
-    CREATE TABLE accounts (
-	account_number NUMERIC(12,0) CHECK (account_number >= 100000000000) PRIMARY KEY,
-	account_type BIGINT NOT NULL,
-	username VARCHAR(50) NOT NULL,
-	nickname VARCHAR(50) DEFAULT NULL,
-	balance NUMERIC(17,2) NOT NULL DEFAULT 0.00 CHECK (balance >= 0.00),
-	pin_hash VARCHAR(255) NOT NULL,
-	creation_date TIMESTAMP NOT NULL DEFAULT NOW(),
-	frozen_until TIMESTAMP DEFAULT NULL,
-
-	FOREIGN KEY (username) REFERENCES users(username) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	FOREIGN KEY (account_type) REFERENCES account_type(id) ON DELETE RESTRICT ON UPDATE RESTRICT
-);
-     */
 }
