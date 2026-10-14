@@ -6,6 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
@@ -26,15 +27,13 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
-    @JoinColumn(
-            referencedColumnName = "id",
-            nullable = false
-    )
+    @JoinColumn(name = "account_type_id", referencedColumnName = "id", nullable = false)
     private AccountType accountType;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
-    @Column(length = 50, nullable = false)
-    private String username;
+    @JoinColumn(name = "username", referencedColumnName = "username", nullable = false)
+    private User user;
 
     @Column(length = 50)
     @Getter @Setter
@@ -60,38 +59,22 @@ public class Account {
         LocalDateTime creationDate, LocalDateTime frozenUntil) {
         this.accountNumber = generateId();
 
-        this.accountType = accountType;
-
-        if(this.accountType == null) {
-            throw new IllegalArgumentException("Invalid account type.");
-        }
-
-        if(username == null || username.length() > 50) {
-            throw new IllegalArgumentException("Invalid username.");
-        } else {
-            this.username = username;
-        }
+        this.accountType = Objects.requireNonNull(accountType, "Account type cannot be null");
+        this.user = Objects.requireNonNull(user, "User cannot be null");
 
         this.nickname = (nickname == null || nickname.isBlank()) ? null : nickname.trim();
 
-        if(balance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative.");
-        } else {
-            this.balance = balance;
+        if (balance == null || balance.signum() < 0) {
+            throw new IllegalArgumentException("Invalid balance");
         }
 
-        if(pinHash.isBlank()) {
-            throw new IllegalArgumentException("PIN hash must not be blank.");
-        } else {
-            this.pinHash = pinHash;
-        }
+        this.balance = balance;
 
-        if(creationDate == null) {
-            throw new IllegalArgumentException("Creation date must exist.");
-        } else {
-            this.creationDate = creationDate;
+        if (pinHash == null || pinHash.isBlank()) {
+            throw new IllegalArgumentException("Invalid PIN hash");
         }
+        this.pinHash = pinHash;
 
-        this.frozenUntil = frozenUntil;
+        this.creationDate = LocalDateTime.now();
     }
 }
