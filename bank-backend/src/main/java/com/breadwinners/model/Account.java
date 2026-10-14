@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Account {
     @Id
     @Min(100_000_000_000L) @Max(999_999_999_999L)
-    @Column(name = "account_number", precision = 12, scale = 0, unique = true, nullable = false)
+    @Column(name = "account_number", precision = 12, unique = true, nullable = false)
     @Getter
     private long accountNumber;
 
@@ -36,17 +36,17 @@ public class Account {
     @Length(max = 50)
     @Column(name = "nickname", length = 50)
     @Getter @Setter
-    String nickname;
+    private String nickname;
 
     @NotNull
     @DecimalMin("0.00")
     @Digits(integer = 15, fraction = 2)
     @Column(name = "balance", precision = 17, scale = 2, nullable = false)
     @Getter @Setter
-    BigDecimal balance;
+    private BigDecimal balance;
 
     @NotEmpty @Length(max = 255)
-    @Column(name = "pin_hash", length = 255, nullable = false)
+    @Column(name = "pin_hash", nullable = false)
     @Getter @Setter
     private String pinHash;
 
