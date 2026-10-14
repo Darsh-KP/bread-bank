@@ -13,6 +13,7 @@ public record AccountTypeDto(
     @Digits(integer = 2, fraction = 5) @NotNull(message = "APY must exist.")
     BigDecimal annualYieldRate,
 
+    @NotNull(message = "All BFS products must have a time to mature.")
     @Min(value = 0, message = "Days until maturation must be non-negative.")
     Integer maturationDays
 ) {}
