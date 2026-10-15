@@ -13,7 +13,6 @@ interface MockAccount extends AccountSummary {
   userName: string;
 }
 
-// TODO: refactor to @Service for best practices/modern implementation
 @Injectable({ providedIn: 'root' })
 export class DashboardAccountsService {
   private readonly http = inject(HttpClient);
