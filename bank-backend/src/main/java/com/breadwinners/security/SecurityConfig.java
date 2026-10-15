@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,16 +22,14 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // // Argon2id password encoder
-        // return new Argon2PasswordEncoder(
-        //         16,
-        //         32,
-        //         2,
-        //         131072,
-        //         3
-        // );
-
-        return new BCryptPasswordEncoder();
+         // Argon2id password encoder
+         return new Argon2PasswordEncoder(
+                 16,
+                 32,
+                 2,
+                 131072,
+                 3
+         );
     }
 
     @Bean
