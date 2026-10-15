@@ -55,8 +55,7 @@ public class Account {
     @Getter @Setter
     private LocalDateTime frozenUntil;
 
-    public Account(AccountType accountType, String username, String nickname, BigDecimal balance, String pinHash,
-        LocalDateTime creationDate, LocalDateTime frozenUntil) {
+    public Account(AccountType accountType, User user, String nickname, String pinHash, LocalDateTime frozenUntil) {
         this.accountNumber = generateId();
 
         this.accountType = Objects.requireNonNull(accountType, "Account type cannot be null");
@@ -64,17 +63,14 @@ public class Account {
 
         this.nickname = (nickname == null || nickname.isBlank()) ? null : nickname.trim();
 
-        if (balance == null || balance.signum() < 0) {
-            throw new IllegalArgumentException("Invalid balance");
-        }
-
-        this.balance = balance;
+        this.balance = BigDecimal.ZERO;
 
         if (pinHash == null || pinHash.isBlank()) {
             throw new IllegalArgumentException("Invalid PIN hash");
         }
-        this.pinHash = pinHash;
 
+        this.pinHash = pinHash;
         this.creationDate = LocalDateTime.now();
+        this.frozenUntil = frozenUntil;
     }
 }
