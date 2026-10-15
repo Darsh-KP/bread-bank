@@ -4,9 +4,11 @@ import com.breadwinners.dto.userSettings.UserInformationRequestDto;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.exception.DuplicateEmailException;
 import com.breadwinners.exception.DuplicatePhoneException;
+import com.breadwinners.exception.InvalidPhoneFormatException;
 import com.breadwinners.exception.UserNotFoundException;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
+import com.breadwinners.util.Normalization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +38,12 @@ public class UserSettingsService {
     public User updateUserField(UserInformationUpdateRequestDto request) {
         User user = loadUserInformation(request.username());
 
-        //TODO Normalize Phone
+        //If phone is provided, normalize it and if it is empty then user did not provide correct format.
         String normalizedPhone = request.phone().isEmpty() || request.phone().isBlank() ? null:
-                request.phone();
+                Normalization.normalizePhone(request.phone());
+        if(normalizedPhone != null && normalizedPhone.isEmpty()){
+            throw new InvalidPhoneFormatException("Phone number must contain digits.");
+        }
 
         String email = request.email().isEmpty() || request.email().isBlank() ? null :
                 request.email();
