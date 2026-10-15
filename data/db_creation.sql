@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.account_type
 -- Table: public.accounts
 CREATE TABLE IF NOT EXISTS public.accounts
 (
-    account_number numeric(12,0) NOT NULL,
+    account_number bigint NOT NULL,
     account_type bigint NOT NULL,
     username character varying(50) NOT NULL,
     nickname character varying(50) DEFAULT NULL::character varying,
@@ -59,8 +59,8 @@ CREATE INDEX IF NOT EXISTS idx_accounts_username ON public.accounts USING btree 
 CREATE TABLE IF NOT EXISTS public.transactions_history
 (
     id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
-    source_account numeric(12,0) NOT NULL,
-    destination_account numeric(12,0),
+    source_account bigint NOT NULL,
+    destination_account bigint,
     instant timestamp without time zone NOT NULL,
     amount numeric(17,2) NOT NULL,
     source_balance_after numeric(17,2) NOT NULL,

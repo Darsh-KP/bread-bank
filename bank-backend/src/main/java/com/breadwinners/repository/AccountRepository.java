@@ -5,11 +5,10 @@ import com.breadwinners.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.*;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, BigInteger> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findAllByUser(User user);
-    boolean existsByAccountNumberAndUser(BigInteger accountNumber, User user);
+    boolean existsByAccountNumberAndUser(Long accountNumber, User user);
 }
