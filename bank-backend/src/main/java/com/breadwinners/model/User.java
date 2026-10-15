@@ -20,7 +20,6 @@ import org.hibernate.annotations.DynamicUpdate;
 public class User {
     @Id
     @Column(length = 50)
-    @Getter
     private String username;
 
     @Column(name = "password_hash", length = 254, nullable = false)
