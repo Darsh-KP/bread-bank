@@ -30,7 +30,7 @@ export class Register {
     lastName: '',
     email: '',
     phone: '',
-    userName: '',
+    username: '',
     password: '',
   };
 
@@ -63,7 +63,7 @@ export class Register {
       this.nextStep();
       return;
     }
-    if (!this.registration.userName.trim()) {
+    if (!this.registration.username.trim()) {
       this.notifications.error('Please enter a username.');
       return;
     }

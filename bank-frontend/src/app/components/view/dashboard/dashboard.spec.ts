@@ -20,7 +20,7 @@ describe('Dashboard', () => {
         provideRouter([]),
         {
           provide: AuthService,
-          useValue: { currentUser: { userName: 'itsYaBreadBoi', firstName: 'Iakkhos' } },
+          useValue: { currentUser: { username: 'itsYaBreadBoi', firstName: 'Iakkhos' } },
         },
         {
           provide: DashboardAccountsService,

@@ -1,7 +1,7 @@
 //Interface representing response json from backend api
 
 export interface ProfileInformationResponse {
-  userName: string;
+  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -21,4 +21,4 @@ export interface MockUserResponse extends ProfileInformationResponse {
 }
 
 //From ProfileInformationResponse lists all fields that can be updated leaving username out
-export type UpdatableField = keyof Omit<ProfileInformationResponse, 'userName'>;
+export type UpdatableField = keyof Omit<ProfileInformationResponse, 'username'>;

@@ -16,7 +16,7 @@ export class Login {
   private readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
 
-  credentials: LoginRequest = { userName: '', password: '' };
+  credentials: LoginRequest = { username: '', password: '' };
   submitting = signal(false);
   showPassword = signal(false);
 
