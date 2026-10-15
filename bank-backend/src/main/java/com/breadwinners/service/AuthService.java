@@ -3,6 +3,7 @@ package com.breadwinners.service;
 import com.breadwinners.dto.auth.*;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
+import com.breadwinners.security.JwtUtil;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public RegisterResponse register(RegisterRequestDto req) {
@@ -51,7 +54,7 @@ public class AuthService {
 
         User u = userRepository.findByUsername(username).orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
         if (passwordEncoder.matches(password, u.getPasswordHash())) {
-            return new LoginResponse(new UserResponse(u.getUsername(), u.getFirstName(), u.getLastName(), u.getEmail(), u.getPhone()));
+            return new LoginResponse(new UserResponse(u.getUsername(), u.getFirstName(), u.getLastName(), u.getEmail(), u.getPhone()), jwtUtil.generateToken(username));
         }
 
         throw new BadCredentialsException("Invalid username or password");
