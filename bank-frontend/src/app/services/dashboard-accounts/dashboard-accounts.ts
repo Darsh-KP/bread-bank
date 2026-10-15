@@ -3,6 +3,8 @@ import { AccountSummary } from '../../components/shared/dashboard-card/dashboard
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+// TODO: replace these interfaces with the AllAccountsRequestDTO, AllAccountsResponseDTO, and AccountSummary, which
+//  would then change the implementation
 export interface AccountRequest {
   userName: string;
 }
