@@ -1,6 +1,5 @@
 package com.breadwinners.service;
 
-import com.breadwinners.dto.userSettings.UserInformationRequestDto;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.exception.DuplicateEmailException;
 import com.breadwinners.exception.DuplicatePhoneException;
@@ -22,21 +21,25 @@ public class UserSettingsService {
         this.userRepository = userRepository;
     }
 
-    //Internal loadUserInformation method, will delete/alter after jwt/services to get username
-    private User loadUserInformation(String username){
-        UserInformationRequestDto internalDto = new UserInformationRequestDto(username);
-        return loadUserInformation(internalDto);
-    }
-
-    //External loadUserInformation method, will alter after jwt/services to get username.
-    public User loadUserInformation(UserInformationRequestDto request) {
-        return userRepository.findByUsername(request.username())
+    /**
+     * Loads current user information given a username
+     * @param username Username parsed from JWT of user logged in.
+     * @return User model object of current user logged-in, contains info to display to user.
+     */
+    public User loadUserInformation(String username) {
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User data does not exist."));
     }
 
-    //Given an update request, updates the provided fields
-    public User updateUserField(UserInformationUpdateRequestDto request) {
-        User user = loadUserInformation(request.username());
+    /**
+     * Given an update request, updates the provided fields
+     * @param username Username parsed from JWT of user logged in.
+     * @param request request to update one or more fields of a user's personal information.
+     * @return User model object representing the update to their information.
+     */
+    public User updateUserField(String username, UserInformationUpdateRequestDto request) {
+
+        User user = loadUserInformation(username);
 
         //If phone is provided, normalize it and if it is empty then user did not provide correct format.
         String normalizedPhone = request.phone().isEmpty() || request.phone().isBlank() ? null:
