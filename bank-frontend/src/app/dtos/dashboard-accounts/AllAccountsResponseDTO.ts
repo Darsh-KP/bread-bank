@@ -1,7 +1,5 @@
 import { AccountSummary } from './AccountSummary';
 
-export interface AllAccountsResponseDto {
-  // might not need this
-  success: boolean;
+export interface AllAccountsResponseDTO {
   accounts: AccountSummary[];
 }
