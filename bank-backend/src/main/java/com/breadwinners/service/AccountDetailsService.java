@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 @Service
 public class AccountDetailsService {
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     // Constructor injection to initialize required dependencies
     public AccountDetailsService(AccountRepository accountRepository) {
