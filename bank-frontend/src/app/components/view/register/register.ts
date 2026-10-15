@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
@@ -84,10 +85,18 @@ export class Register {
       this.notifications.success('Your account was created successfully.', 1500);
       await this.router.navigate(['/']);
     } catch (error) {
+      let message = 'We could not create your account. Please try again later.';
+      if (error instanceof HttpErrorResponse) {
+        if (typeof error.error === 'string' && error.error.trim()) {
+          message = error.error;
+        } else if (error.status === 0) {
+          message = 'Could not connect to the server.';
+        }
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
       this.notifications.error(
-        error instanceof Error
-          ? error.message
-          : 'We could not create your account. Please try again later.',
+        message,
       );
     } finally {
       this.submitting.set(false);
