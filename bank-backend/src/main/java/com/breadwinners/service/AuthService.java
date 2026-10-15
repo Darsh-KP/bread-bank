@@ -1,6 +1,7 @@
 package com.breadwinners.service;
 
 import com.breadwinners.dto.auth.*;
+import com.breadwinners.exception.*;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
 import com.breadwinners.security.JwtUtil;
@@ -29,17 +30,17 @@ public class AuthService {
         String lastName = req.lastName().trim();
 
         if (phone.isEmpty()) {
-            throw new IllegalArgumentException("Phone number must contain digits.");
+            throw new InvalidRegistrationException("Phone number must contain digits.");
         }
 
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already exists.");
+            throw new DuplicateUserException("Username already exists.");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists.");
+            throw new DuplicateUserException("Email already exists.");
         }
         if (userRepository.existsByPhone(phone)) {
-            throw new IllegalArgumentException("Phone already exists.");
+            throw new DuplicateUserException("Phone already exists.");
         }
 
         User user = new User(username, passwordEncoder.encode(req.password()), firstName, lastName, email, phone);
