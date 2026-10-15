@@ -2,6 +2,7 @@ package com.breadwinners.service;
 
 import com.breadwinners.model.*;
 import com.breadwinners.repository.*;
+import com.breadwinners.exception.*;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,9 @@ public class AccountCreationService {
                                  String nickname, String pin) {
         AccountType acctType = accountTypeRepository
                 .findByMarketingName(accountTypeName)
-                .orElseThrow(() -> new IllegalArgumentException("Account type not found."));
+                .orElseThrow(() -> new AccountTypeNotFoundException("Account type not found."));
         User user = userRepository
-                .findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found."));
+                .findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         Account account = new Account(acctType, user, nickname, passwordEncoder.encode(pin), null);
         return this.accountRepository.save(account);
