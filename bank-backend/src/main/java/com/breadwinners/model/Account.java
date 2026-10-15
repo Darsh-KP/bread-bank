@@ -6,6 +6,7 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.generator.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,11 +26,11 @@ public class Account {
     @Id
     @Column(precision = 12, unique = true, nullable = false)
     @Getter
-    private Long accountNumber;
+    private BigInteger accountNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
-    @JoinColumn(name = "account_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
     private AccountType accountType;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -59,7 +60,7 @@ public class Account {
     private LocalDateTime frozenUntil;
 
     public Account(AccountType accountType, User user, String nickname, String pinHash, LocalDateTime frozenUntil) {
-        this.accountNumber = generateId();
+        this.accountNumber = BigInteger.valueOf(generateId());
 
         this.accountType = Objects.requireNonNull(accountType, "Account type cannot be null");
         this.user = Objects.requireNonNull(user, "User cannot be null");
