@@ -10,17 +10,17 @@ export interface RegistrationRequest {
   lastName: string;
   email: string;
   phone: string;
-  userName: string;
+  username: string;
   password: string;
 }
 
 export interface LoginRequest {
-  userName: string;
+  username: string;
   password: string;
 }
 
 export interface RegisteredUser {
-  userName: string;
+  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -38,8 +38,8 @@ export class AuthService {
   currentUser: RegisteredUser | null = null;
 
   async login(request: LoginRequest): Promise<RegisteredUser> {
-    const userName = request.userName.trim().toLowerCase();
-    if (!userName || !request.password) {
+    const username = request.username.trim().toLowerCase();
+    if (!username || !request.password) {
       throw new Error('Please enter your username and password.');
     }
 
@@ -49,7 +49,7 @@ export class AuthService {
 
     const user = users.find(
       (user) =>
-        user.userName.trim().toLowerCase() === userName && user.passwordHash === request.password,
+        user.username.trim().toLowerCase() === username && user.passwordHash === request.password,
     );
     if (!user) throw new Error('Invalid username or password.');
 
@@ -67,7 +67,7 @@ export class AuthService {
     if (this.currentUser !== currentUser) {
       throw new Error('Your session changed. Please try again.');
     }
-    const user = users.find((candidate) => candidate.userName === currentUser.userName);
+    const user = users.find((candidate) => candidate.username === currentUser.username);
     if (!user || user.passwordHash !== request.oldPassword) {
       throw new Error('Incorrect current password.');
     }
@@ -98,11 +98,11 @@ export class AuthService {
 
     const firstName = request.firstName.trim();
     const lastName = request.lastName.trim();
-    const userName = request.userName.trim();
+    const username = request.username.trim();
     const email = request.email.trim().toLowerCase();
     const phone = normalizePhone(request.phone);
 
-    if (!firstName || !lastName || !userName || !email || !phone || !request.password) {
+    if (!firstName || !lastName || !username || !email || !phone || !request.password) {
       throw new Error('All registration fields are required.');
     }
     if (!validate(email, emailPattern)) {
@@ -117,7 +117,7 @@ export class AuthService {
     }
 
     const users = await this.loadUsers();
-    if (users.some((user) => user.userName.trim().toLowerCase() === userName.toLowerCase())) {
+    if (users.some((user) => user.username.trim().toLowerCase() === username.toLowerCase())) {
       throw new Error('This username is already taken.');
     }
     if (users.some((user) => user.email.trim().toLowerCase() === email)) {
@@ -128,7 +128,7 @@ export class AuthService {
     }
 
     const user: MockRegisteredUser = {
-      userName,
+      username,
       firstName,
       lastName,
       email,
