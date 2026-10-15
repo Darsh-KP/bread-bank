@@ -3,10 +3,8 @@ package com.breadwinners.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.breadwinners.dto.auth.LoginRequestDto;
-import com.breadwinners.dto.auth.LoginResponse;
-import com.breadwinners.dto.auth.RegisterRequestDto;
-import com.breadwinners.dto.auth.RegisterResponse;
+import com.breadwinners.dto.auth.*;
+import com.breadwinners.exception.*;
 import com.breadwinners.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -31,8 +29,13 @@ public class AuthController {
         return ResponseEntity.status(201).body(authService.register(req));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handle(IllegalArgumentException e) {
+    @ExceptionHandler(InvalidRegistrationException.class)
+    public ResponseEntity<String> handleInvalidRegistration(InvalidRegistrationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<String> handleDuplicateUser(DuplicateUserException e) {
+        return ResponseEntity.status(409).body(e.getMessage());
     }
 }
