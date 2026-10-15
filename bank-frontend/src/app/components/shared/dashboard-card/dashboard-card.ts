@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
 
-// TODO: refactor to then use the Account view instead to get the account details
+// TODO: refactor to not have this interface
 export interface AccountSummary {
   id: number;
   accountType: string;
@@ -34,11 +34,5 @@ export class DashboardCard {
 
   goToAccount() {
     this.router.navigate(['/account']);
-  }
-
-  getLastFourDigits() {
-    // assume these a const value for the account number
-    // return accNumber.slice(-4);
-    // or return `${lastFour}`
   }
 }
