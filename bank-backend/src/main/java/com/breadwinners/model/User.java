@@ -4,15 +4,25 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
+@NoArgsConstructor(force = true)
+@DynamicUpdate  //Dynamic Update added to optimize SQL for Patch/updates to one field
+@Getter
+@Setter
+@EqualsAndHashCode(of = "username")
 @Table(name = "users")
 public class User {
     @Id
     @Column(length = 50)
     private String username;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
+    @Column(name = "password_hash", length = 254, nullable = false)
     private String passwordHash;
 
     @Column(name = "first_name", length = 30, nullable = false)
@@ -26,9 +36,6 @@ public class User {
 
     @Column(length = 20, nullable = false, unique = true)
     private String phone;
-
-    public User() {
-    }
 
     public User(String username, String passwordHash, String firstName, String lastName, String email, String phone) {
         this.username = username;

@@ -1,11 +1,13 @@
 package com.breadwinners.dto.accountcreation;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.*;
 
 public record CreateAccountRequestDto(
-    @NotNull @Min(0) Long accountTypeId,
-    String nickname,
-    @NotNull @Length(min = 4, max = 4) String pin
+        @NotNull(message = "Please select a product.")
+        String accountType,
+        @Size(max = 50, message = "Nickname too long.")
+        String nickname,
+        @NotBlank(message = "PIN is required.")
+        @Pattern(regexp = "^\\d{4}$", message = "PIN must be exactly 4 numeric digits.")
+        String pin
 ) {}

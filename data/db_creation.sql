@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.account_type
     id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     marketing_name character varying(50) NOT NULL,
     interest_rate numeric(7,5) NOT NULL DEFAULT 0.00,
-    maturation_days integer DEFAULT 0,
+    maturation_days integer NOT NULL DEFAULT 0,
     CONSTRAINT account_type_pkey PRIMARY KEY (id),
     CONSTRAINT account_type_marketing_name_key UNIQUE (marketing_name),
     CONSTRAINT account_type_interest_rate_check CHECK (interest_rate >= 0.00),
