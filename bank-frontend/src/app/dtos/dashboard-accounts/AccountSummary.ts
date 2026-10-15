@@ -1,8 +1,7 @@
-// TODO: ensure that this is standardized to use within the dashboard card & services
 export interface AccountSummary {
-  // id: number;
-  username: string;
-  accountNumber: number;
-  accountType: number;
-  balance: number;
+  accountId: number;
+  accountTypeName: string;
+  nickname: string | null;
+  lastFour: string;
+  balanceInCents: number;
 }
