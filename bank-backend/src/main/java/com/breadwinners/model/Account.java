@@ -2,6 +2,8 @@ package com.breadwinners.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.*;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -9,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "accounts")
 @EqualsAndHashCode(of = "accountNumber")
 public class Account {
@@ -47,7 +49,8 @@ public class Account {
     @Getter @Setter
     private String pinHash;
 
-    @Column(nullable = false, updatable = false)
+    @Generated(event = EventType.INSERT)
+    @Column(nullable = false, insertable = false, updatable = false)
     @Getter
     private LocalDateTime creationDate;
 
@@ -70,7 +73,6 @@ public class Account {
         }
 
         this.pinHash = pinHash;
-        this.creationDate = LocalDateTime.now();
         this.frozenUntil = frozenUntil;
     }
 }
