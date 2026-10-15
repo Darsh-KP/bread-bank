@@ -1,6 +1,6 @@
 [
   {
-    "userName": "itsYaBreadBoi",
+    "username": "itsYaBreadBoi",
     "firstName": "Iakkhos",
     "lastName": "Baker",
     "email": "paladinOfCrust@bmail.com",
@@ -8,7 +8,7 @@
     "passwordHash": "myPassword123!"
   },
   {
-    "userName": "yeasterSunday",
+    "username": "yeasterSunday",
     "firstName": "Larkin",
     "lastName": "Naan",
     "email": "fallenBread@bmail.com",

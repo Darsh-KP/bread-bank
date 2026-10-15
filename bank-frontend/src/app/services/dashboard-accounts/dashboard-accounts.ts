@@ -6,11 +6,11 @@ import { HttpClient } from '@angular/common/http';
 // TODO: replace these interfaces with the AllAccountsRequestDTO, AllAccountsResponseDTO, and AccountSummary, which
 //  would then change the implementation
 export interface AccountRequest {
-  userName: string;
+  username: string;
 }
 
 interface MockAccount extends AccountSummary {
-  userName: string;
+  username: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -32,7 +32,7 @@ export class DashboardAccountsService {
   }
 
   async getAccountsForUser(request: AccountRequest): Promise<AccountSummary[]> {
-    const normalizedUserName = request.userName.trim().toLowerCase();
+    const normalizedUserName = request.username.trim().toLowerCase();
     if (normalizedUserName === null || normalizedUserName === '') {
       throw new Error('Invalid request body');
     }
@@ -42,9 +42,9 @@ export class DashboardAccountsService {
     const accounts = await this.loadAccounts();
 
     return accounts.filter(
-      (account) => account.userName.trim().toLowerCase() === normalizedUserName,
+      (account) => account.username.trim().toLowerCase() === normalizedUserName,
     ).map(
-      ({ userName: _userName, ...account }) => ({ ...account })
+      ({ username: _username, ...account }) => ({ ...account })
     );
   }
 }

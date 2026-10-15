@@ -33,7 +33,7 @@ export class ProfileSettings {
   readonly initialLoadError = signal('');
   readonly errorMessage = 'We could not load your profile settings. Please try logging in.';
 
-  readonly userName? : string | undefined = undefined;
+  readonly username? : string | undefined = undefined;
 
 
   protected readonly emailPattern = emailPattern;
@@ -48,10 +48,10 @@ export class ProfileSettings {
       return;
     }
 
-    this.userName = currentUser.userName;
+    this.username = currentUser.username;
 
     this.service
-      .initCurrentUser(this.userName)
+      .initCurrentUser(this.username)
       .pipe(
         takeUntilDestroyed(this.destroyRef), //Prevents memory leaks when component destroyed
       )
