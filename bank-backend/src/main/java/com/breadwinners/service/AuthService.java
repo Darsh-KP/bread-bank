@@ -6,6 +6,7 @@ import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
 import com.breadwinners.security.JwtUtil;
 
+import com.breadwinners.util.Normalization;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AuthService {
     public RegisterResponse register(RegisterRequestDto req) {
         String username = req.username().trim().toLowerCase();
         String email = req.email().trim().toLowerCase();
-        String phone = normalizePhone(req.phone());
+        String phone = Normalization.normalizePhone(req.phone());
         String firstName = req.firstName().trim();
         String lastName = req.lastName().trim();
 
@@ -59,13 +60,5 @@ public class AuthService {
         }
 
         throw new BadCredentialsException("Invalid username or password");
-    }
-
-    private String normalizePhone(String phone) {
-        String digitsOnly = phone.trim().replaceAll("\\D", "");
-        if (digitsOnly.length() == 11 && digitsOnly.startsWith("1")) {
-            return digitsOnly.substring(1);
-        }
-        return digitsOnly;
     }
 }
