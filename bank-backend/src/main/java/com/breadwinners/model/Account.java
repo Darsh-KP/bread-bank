@@ -23,13 +23,13 @@ public class Account {
     }
 
     @Id
-    @Column(precision = 12, unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     @Getter
     private Long accountNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
-    @JoinColumn(name = "account_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "account_type", referencedColumnName = "id", nullable = false)
     private AccountType accountType;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
