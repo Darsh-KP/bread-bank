@@ -18,6 +18,10 @@ public record RegisterRequestDto(
 
     @NotBlank(message = "Phone number is required")
     @Size(max = 20, message = "Phone number must not exceed 20 characters")
+    @Pattern(
+        regexp = "^\\+?[\\s(]*(?:[0-9][\\s\\-() ]*){10,14}$",
+        message = "Phone number must contain between 10 and 14 digits"
+    )
     String phone,
 
     @NotBlank(message = "Username is required")
@@ -26,5 +30,8 @@ public record RegisterRequestDto(
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 128, message = "Password must be between 8 and 128 characters")
+    @Pattern(regexp = ".*\\d.*", message = "Password must include at least 1 digit")
+    @Pattern(regexp = ".*[a-z].*", message = "Password must include at least 1 lowercase character")
+    @Pattern(regexp = ".*[A-Z].*", message = "Password must include at least 1 uppercase character")
     String password
 ) {}

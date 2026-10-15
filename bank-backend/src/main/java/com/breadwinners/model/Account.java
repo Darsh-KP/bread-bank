@@ -2,6 +2,8 @@ package com.breadwinners.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.*;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -9,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "accounts")
 @EqualsAndHashCode(of = "accountNumber")
 public class Account {
@@ -21,13 +23,13 @@ public class Account {
     }
 
     @Id
-    @Column(precision = 12, unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     @Getter
     private Long accountNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Getter
-    @JoinColumn(name = "account_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "account_type", referencedColumnName = "id", nullable = false)
     private AccountType accountType;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -47,7 +49,8 @@ public class Account {
     @Getter @Setter
     private String pinHash;
 
-    @Column(nullable = false, updatable = false)
+    @Generated(event = EventType.INSERT)
+    @Column(nullable = false, insertable = false, updatable = false)
     @Getter
     private LocalDateTime creationDate;
 
@@ -55,8 +58,7 @@ public class Account {
     @Getter @Setter
     private LocalDateTime frozenUntil;
 
-    public Account(AccountType accountType, String username, String nickname, BigDecimal balance, String pinHash,
-        LocalDateTime creationDate, LocalDateTime frozenUntil) {
+    public Account(AccountType accountType, User user, String nickname, String pinHash, LocalDateTime frozenUntil) {
         this.accountNumber = generateId();
 
         this.accountType = Objects.requireNonNull(accountType, "Account type cannot be null");
@@ -64,17 +66,13 @@ public class Account {
 
         this.nickname = (nickname == null || nickname.isBlank()) ? null : nickname.trim();
 
-        if (balance == null || balance.signum() < 0) {
-            throw new IllegalArgumentException("Invalid balance");
-        }
-
-        this.balance = balance;
+        this.balance = BigDecimal.ZERO;
 
         if (pinHash == null || pinHash.isBlank()) {
             throw new IllegalArgumentException("Invalid PIN hash");
         }
-        this.pinHash = pinHash;
 
-        this.creationDate = LocalDateTime.now();
+        this.pinHash = pinHash;
+        this.frozenUntil = frozenUntil;
     }
 }
