@@ -1,14 +1,12 @@
 package com.breadwinners.service;
 
-import com.breadwinners.dto.auth.RegisterRequestDto;
-import com.breadwinners.dto.auth.RegisterResponse;
+import com.breadwinners.dto.auth.*;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 @Service
 public class AuthService {
@@ -44,7 +42,19 @@ public class AuthService {
         User user = new User(username, passwordEncoder.encode(req.password()), firstName, lastName, email, phone);
         userRepository.save(user);
 
-        return new RegisterResponse(username, firstName, lastName, email, phone);
+        return new RegisterResponse(new UserResponse(username, firstName, lastName, email, phone));
+    }
+
+    public LoginResponse login(LoginRequestDto req) {
+        String username = req.username().trim().toLowerCase();
+        String password = req.password();
+
+        User u = userRepository.findByUsername(username).orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+        if (passwordEncoder.matches(password, u.getPasswordHash())) {
+            return new LoginResponse(new UserResponse(u.getUsername(), u.getFirstName(), u.getLastName(), u.getEmail(), u.getPhone()));
+        }
+
+        throw new BadCredentialsException("Invalid username or password");
     }
 
     private String normalizePhone(String phone) {
