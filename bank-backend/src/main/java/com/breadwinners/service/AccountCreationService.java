@@ -1,5 +1,6 @@
 package com.breadwinners.service;
 
+import com.breadwinners.dto.accountcreation.AccountCreatedDto;
 import com.breadwinners.model.*;
 import com.breadwinners.repository.*;
 import com.breadwinners.exception.*;
@@ -15,8 +16,8 @@ public class AccountCreationService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Account createAccount(String username, String accountTypeName,
-                                 String nickname, String pin) {
+    public AccountCreatedDto createAccount(String username, String accountTypeName,
+                                           String nickname, String pin) {
         AccountType acctType = accountTypeRepository
                 .findByMarketingName(accountTypeName)
                 .orElseThrow(() -> new AccountTypeNotFoundException("Account type not found."));
@@ -24,7 +25,8 @@ public class AccountCreationService {
                 .findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         Account account = new Account(acctType, user, nickname, passwordEncoder.encode(pin), null);
-        return this.accountRepository.save(account);
+        Account savedAccount = this.accountRepository.save(account);
+        return new AccountCreatedDto(savedAccount.getAccountNumber());
     }
 
     public AccountCreationService(UserRepository userRepository,
