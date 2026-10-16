@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import com.breadwinners.dto.auth.*;
 import com.breadwinners.exception.*;
 import com.breadwinners.service.AuthService;
+import com.breadwinners.service.RefreshService;
 
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,9 +15,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
+    private final RefreshService refreshService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, RefreshService refreshService) {
         this.authService = authService;
+        this.refreshService = refreshService;
     }
 
     @PostMapping("/login")
@@ -27,6 +30,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequestDto req) {
         return ResponseEntity.status(201).body(authService.register(req));
+    }
+
+    @PostMapping ("/refresh")
+    public ResponseEntity<RefreshResponse> refresh(@CookieValue("refresh-token") String refreshToken) {
+        return ResponseEntity.status(201).body(refreshService.refresh(refreshToken));
     }
 
     @ExceptionHandler(InvalidRegistrationException.class)
@@ -42,5 +50,10 @@ public class AuthController {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<String> handleBadCredentials(BadCredentialsException e) {
         return ResponseEntity.status(401).body("Invalid username or password.");
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<String> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
+        return ResponseEntity.status(403).body("Invalid refresh token.");
     }
 }
