@@ -12,23 +12,34 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.breadwinners.dto.auth.RefreshResponse;
+import com.breadwinners.dto.auth.UserResponse;
 import com.breadwinners.exception.InvalidRefreshTokenException;
 import com.breadwinners.model.RefreshToken;
+import com.breadwinners.model.User;
 import com.breadwinners.repository.RefreshTokenRepository;
+import com.breadwinners.repository.UserRepository;
 import com.breadwinners.security.JwtUtil;
 
 @Service 
 public class RefreshService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public RefreshService(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
+    public RefreshService(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil, UserRepository userRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     public RefreshResponse refresh(String refreshToken) {
-        return new RefreshResponse(jwtUtil.generateToken(this.validateRefreshToken(refreshToken)));
+        String username = validateRefreshToken(refreshToken);
+        User u = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token."));
+
+        return new RefreshResponse(jwtUtil.generateToken(username),
+                new UserResponse(u.getUsername(), u.getFirstName(), u.getLastName(),
+                        u.getEmail(), u.getPhone()));
     }
 
     public String generateRefreshToken(String username) {

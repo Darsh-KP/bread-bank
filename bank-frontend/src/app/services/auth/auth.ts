@@ -71,13 +71,14 @@ export class AuthService {
   }
 
   refresh() {
-    return this.http.post<{ accessToken: string }>(
+    return this.http.post<LoginResponseDto>(
       'http://localhost:8080/auth/refresh',
       {},
       { withCredentials: true },
     ).pipe(
       tap(response => {
         this.accessToken = response.accessToken;
+        this.currentUser = response.userResponse;
       }),
     );
   }
