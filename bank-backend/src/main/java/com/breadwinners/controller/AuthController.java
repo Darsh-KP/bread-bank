@@ -1,6 +1,5 @@
 package com.breadwinners.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +56,7 @@ public class AuthController {
         if (refreshToken == null) {
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.status(201).body(refreshService.refresh(refreshToken));
+        return ResponseEntity.status(200).body(refreshService.refresh(refreshToken));
     }
 
     @ExceptionHandler(InvalidRegistrationException.class)
@@ -77,6 +76,6 @@ public class AuthController {
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
     public ResponseEntity<String> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
-        return ResponseEntity.status(403).body("Invalid refresh token.");
+        return ResponseEntity.status(401).body("Invalid refresh token.");
     }
 }
