@@ -199,7 +199,7 @@ export class ProfileInformationService {
   }
 
   //Used specifically with patch requests for /profile-settings/password
-  updatePassword(request: PasswordChangeRequest): Observable<void> {
-    return from(this.auth.changePassword(request));
-  }
+  // updatePassword(request: PasswordChangeRequest): Observable<void> {
+    // return from(this.auth.changePassword(request));
+  // }
 }

@@ -9,7 +9,7 @@ import {
   UpdatableField,
 } from '../../../services/profile-information/profile-information.interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AuthService } from '../../../services/auth/auth';
 
@@ -74,17 +74,10 @@ export class ProfileSettings {
 
   //Have service verify if password meets requirements, if current password matches
   //and if current password and new password do not match
-  readonly handlePasswordChange = (payload: {
-    oldPassword: string;
-    newPassword: string;
-  }): Observable<void> => {
-    return this.service.updatePassword(payload).pipe(
-      //If successful then notify user that password was updated.
-      tap(() => {
-        this.notifications.success('Password updated successfully!');
-      }),
-    );
-  };
+  // readonly handlePasswordChange = (payload: {
+  //   oldPassword: string;
+  //   newPassword: string;
+  // }): Observable<void> => this.service.updatePassword(payload);
 
   //Fields in profile settings, now Observables
   readonly saveFirstName = (val: string): Observable<ProfileInformationResponse> =>
@@ -110,5 +103,3 @@ export class ProfileSettings {
     );
   }
 }
-
-
