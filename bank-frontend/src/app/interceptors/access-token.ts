@@ -18,6 +18,10 @@ export const accessTokenInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       return authService.refresh().pipe(
+        catchError((refreshError) => {
+          authService.clearSession();
+          return throwError(() => refreshError);
+        }),
         switchMap(() => {
           const newAccessToken = authService.getAccessToken();
           if (!newAccessToken) {
@@ -28,10 +32,6 @@ export const accessTokenInterceptor: HttpInterceptorFn = (req, next) => {
             withCredentials: true,
             setHeaders: { Authorization: `Bearer ${newAccessToken}`}
           }));
-        }),
-        catchError((err) => {
-          authService.clearSession();
-          return throwError(() => err);
         })
       )
     })
