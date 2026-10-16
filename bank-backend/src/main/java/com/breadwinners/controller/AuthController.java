@@ -8,6 +8,7 @@ import com.breadwinners.exception.*;
 import com.breadwinners.service.AuthService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,5 +37,10 @@ public class AuthController {
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<String> handleDuplicateUser(DuplicateUserException e) {
         return ResponseEntity.status(409).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentials(BadCredentialsException e) {
+        return ResponseEntity.status(401).body("Invalid username or password.");
     }
 }
