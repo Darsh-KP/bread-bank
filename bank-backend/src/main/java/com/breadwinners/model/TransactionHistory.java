@@ -50,7 +50,7 @@ public class TransactionHistory {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "transaction_type", nullable = false)
+    @Column(name = "transaction_type", nullable = false, columnDefinition = "single_transaction_type")
     private TransactionType transactionType;
 
     @Column(length = 50)
