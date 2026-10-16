@@ -48,6 +48,7 @@ public class PasswordChangeService {
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
 
         return userRepository.save(user);
+
     }
 
 }
