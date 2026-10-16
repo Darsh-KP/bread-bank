@@ -9,4 +9,16 @@ public class Normalization {
         }
         return digitsOnly;
     }
+
+    public static String camelToTwoWords(String camelCaseStr) {
+        if (camelCaseStr == null || camelCaseStr.isEmpty()) {
+            return camelCaseStr;
+        }
+
+        //put space between any capital letter
+        String spaced = camelCaseStr.replaceAll("(?<!^)(?=[A-Z])", " ");
+
+        //return all lower case
+        return spaced.toLowerCase();
+    }
 }

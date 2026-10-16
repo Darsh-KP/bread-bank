@@ -7,6 +7,7 @@ import com.breadwinners.exception.InvalidPhoneFormatException;
 import com.breadwinners.exception.UserNotFoundException;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
+import com.breadwinners.security.JwtUtil;
 import com.breadwinners.util.Normalization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,30 +16,33 @@ import org.springframework.stereotype.Service;
 public class UserSettingsService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserSettingsService(UserRepository userRepository){
+    public UserSettingsService(UserRepository userRepository, JwtUtil jwtUtil){
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
      * Loads current user information given a username
-     * @param username Username parsed from JWT of user logged in.
+     * @param token JWT of logged-in user
      * @return User model object of current user logged-in, contains info to display to user.
      */
-    public User loadUserInformation(String username) {
+    public User loadUserInformation(String token) {
+        String username = jwtUtil.extractUsername(token);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User data does not exist."));
     }
 
     /**
      * Given an update request, updates the provided fields
-     * @param username Username parsed from JWT of user logged in.
+     * @param token JWT of logged-in user
      * @param request request to update one or more fields of a user's personal information.
-     * @return User model object representing the update to their information.
      */
-    public User updateUserField(String username, UserInformationUpdateRequestDto request) {
+    public void updateUserField(String token, UserInformationUpdateRequestDto request) {
 
+        String username = jwtUtil.extractUsername(token);
         User user = loadUserInformation(username);
 
         //If phone is provided, normalize it and if it is empty then user did not provide correct format.
@@ -77,7 +81,7 @@ public class UserSettingsService {
             user.setEmail(email);
         }
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 }
