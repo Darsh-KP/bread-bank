@@ -1,5 +1,8 @@
 package com.breadwinners.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +12,8 @@ import com.breadwinners.service.AuthService;
 import com.breadwinners.service.RefreshService;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import org.springframework.security.authentication.BadCredentialsException;
 
 @RestController
@@ -23,8 +28,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequestDto req) {
-        return ResponseEntity.status(201).body(authService.login(req));
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequestDto req,
+            HttpServletResponse response) {
+        LoginResponse res = authService.login(req);
+
+        String refreshToken = refreshService.generateRefreshToken(res.userResponse().username());
+
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/auth")
+                .maxAge(Duration.ofDays(7))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/register")
@@ -33,7 +53,10 @@ public class AuthController {
     }
 
     @PostMapping ("/refresh")
-    public ResponseEntity<RefreshResponse> refresh(@CookieValue("refresh-token") String refreshToken) {
+    public ResponseEntity<RefreshResponse> refresh(@CookieValue(name ="refresh_token", required = false) String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.status(201).body(refreshService.refresh(refreshToken));
     }
 

@@ -7,6 +7,7 @@ import com.breadwinners.repository.UserRepository;
 import com.breadwinners.security.JwtUtil;
 
 import com.breadwinners.util.Normalization;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
