@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, LoginRequest } from '../../../services/auth/auth';
+import { AuthService } from '../../../services/auth/auth';
+import { LoginRequestDto } from '../../../dtos/auth';
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { AuthFeatures } from '../../shared/auth-features/auth-features';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -17,7 +18,7 @@ export class Login {
   private readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
 
-  credentials: LoginRequest = { username: '', password: '' };
+  credentials: LoginRequestDto = { username: '', password: '' };
   submitting = signal(false);
   showPassword = signal(false);
 
