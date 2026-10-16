@@ -2,11 +2,12 @@ package com.breadwinners.security;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -14,35 +15,47 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // // Argon2id password encoder
-        // return new Argon2PasswordEncoder(
-        //         16,
-        //         32,
-        //         2,
-        //         131072,
-        //         3
-        // );
-
-        return new BCryptPasswordEncoder();
+    // Constructor injection for required dependencies
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public PasswordEncoder passwordEncoder() {
+         // Argon2id password encoder
+         return new Argon2PasswordEncoder(
+                 16,
+                 32,
+                 2,
+                 131072,
+                 3
+         );
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Enable cors and link our cors config
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+
+                // Disable CSRF protection to avoid unnecessary overhead
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // Endpoint authorization rules
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoint for authentication
                         .requestMatchers("/auth/**").permitAll()
+
+                        // All other endpoints requires valid login
                         .anyRequest().authenticated()
                 )
+
+                // Inject out JWT filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -50,12 +63,30 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        // Define a new cors config
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:3000"));
+
+        // Allow Angular site to make requests (by default port 4200 on localhost)
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+
+        // Allow the CRUD methods
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+
+        // Set the headers the frontend is allowed to send
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
+
+        // Tell the browser to let frontend read the following headers
+        config.setExposedHeaders(List.of("Authorization"));
+
         config.setAllowCredentials(true);
 
+        // Apply cors config
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
