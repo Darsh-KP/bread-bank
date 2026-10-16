@@ -16,7 +16,12 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private accessToken: string | null = null
   currentUser: UserDto | null = null;
+
+  getAccessToken() {
+    return this.accessToken;
+  }
 
   async login(request: LoginRequestDto): Promise<LoginResponseDto> {
     const username = request.username.trim().toLowerCase();
@@ -28,6 +33,7 @@ export class AuthService {
       ...request,
       username,
     }));
+    this.accessToken = loginResponse.accessToken;
     this.currentUser = loginResponse.userResponse;
     return loginResponse;
   }
