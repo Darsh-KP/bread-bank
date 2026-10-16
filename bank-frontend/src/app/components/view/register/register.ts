@@ -82,12 +82,14 @@ export class Register {
     this.submitting.set(true);
     try {
       await this.authService.register(this.registration);
+
       this.notifications.success('Your account was created successfully.', 1500);
+
       await this.router.navigate(['/']);
     } catch (error) {
-      let message = 'We could not create your account. Please try again later.';
+      let message = 'Could not register. Please try again later.';
       if (error instanceof HttpErrorResponse) {
-        if (typeof error.error === 'string' && error.error.trim()) {
+        if (typeof error.error === 'string') {
           message = error.error;
         } else if (error.status === 0) {
           message = 'Could not connect to the server.';
@@ -95,6 +97,7 @@ export class Register {
       } else if (error instanceof Error) {
         message = error.message;
       }
+
       this.notifications.error(
         message,
       );

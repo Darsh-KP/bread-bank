@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, from } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
 import { emailPattern, phonePattern, validate } from '../../../utils/regExps';
 import { validatePassword } from '../../../utils/passwordValidation';
@@ -31,6 +31,11 @@ export interface RegisterResponse {
   userResponse: User;
 }
 
+export interface LoginResponse {
+  userResponse: User;
+  jwt: string;
+}
+
 
 
 @Injectable({ providedIn: 'root' })
@@ -38,13 +43,18 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   currentUser: User | null = null;
 
-  async login(request: LoginRequest): Promise<User> {
+  async login(request: LoginRequest): Promise<LoginResponse> {
     const username = request.username.trim().toLowerCase();
     if (!username || !request.password) {
       throw new Error('Please enter your username and password.');
     }
 
-
+    const loginResponse = await firstValueFrom(this.http.post<LoginResponse>(`http://localhost:8080/auth/login`, {
+      ...request,
+      username,
+    }));
+    this.currentUser = loginResponse.userResponse;
+    return loginResponse;
   }
 
   async register(request: RegistrationRequest): Promise<RegisterResponse> {
