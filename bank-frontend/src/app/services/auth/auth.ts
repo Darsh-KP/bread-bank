@@ -4,52 +4,27 @@ import { firstValueFrom } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
 import { emailPattern, phonePattern, validate } from '../../../utils/regExps';
 import { validatePassword } from '../../../utils/passwordValidation';
-
-export interface RegistrationRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  username: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface User {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-export interface RegisterResponse {
-  userResponse: User;
-}
-
-export interface LoginResponse {
-  userResponse: User;
-  jwt: string;
-}
-
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+  RegisterRequestDto,
+  RegisterResponseDto,
+  UserDto,
+} from '../../dtos/auth';
 
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  currentUser: User | null = null;
+  currentUser: UserDto | null = null;
 
-  async login(request: LoginRequest): Promise<LoginResponse> {
+  async login(request: LoginRequestDto): Promise<LoginResponseDto> {
     const username = request.username.trim().toLowerCase();
     if (!username || !request.password) {
       throw new Error('Please enter your username and password.');
     }
 
-    const loginResponse = await firstValueFrom(this.http.post<LoginResponse>(`http://localhost:8080/auth/login`, {
+    const loginResponse = await firstValueFrom(this.http.post<LoginResponseDto>(`http://localhost:8080/auth/login`, {
       ...request,
       username,
     }));
@@ -57,7 +32,7 @@ export class AuthService {
     return loginResponse;
   }
 
-  async register(request: RegistrationRequest): Promise<RegisterResponse> {
+  async register(request: RegisterRequestDto): Promise<RegisterResponseDto> {
     const firstName = request.firstName.trim();
     const lastName = request.lastName.trim();
     const username = request.username.trim();
@@ -78,7 +53,7 @@ export class AuthService {
       throw new Error(passwordErrors[0]);
     }
 
-    const registerResponse = await firstValueFrom(this.http.post<RegisterResponse>(`http://localhost:8080/auth/register`, {
+    const registerResponse = await firstValueFrom(this.http.post<RegisterResponseDto>(`http://localhost:8080/auth/register`, {
       ...request,
       firstName,
       lastName,
