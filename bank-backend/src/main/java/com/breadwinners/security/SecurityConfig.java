@@ -28,16 +28,14 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //  // Argon2id password encoder
-        //  return new Argon2PasswordEncoder(
-        //          16,
-        //          32,
-        //          2,
-        //          131072,
-        //          3
-        //  );
-
-        return new BCryptPasswordEncoder();
+        // Argon2id password encoder
+        return new Argon2PasswordEncoder(
+                16,
+                32,
+                2,
+                131072,
+                3
+        );
     }
 
     @Bean
