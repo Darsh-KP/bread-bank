@@ -31,7 +31,13 @@ public class UserSettingsService {
      */
     public User loadUserInformation(String token) {
         String username = jwtUtil.extractUsername(token);
-        return userRepository.findByUsername(username)
+        if (username == null) {
+            throw new UserNotFoundException("Invalid token or user not found.");
+        }
+
+        String normalizedUsername = username.trim().toLowerCase();
+
+        return userRepository.findByUsername(normalizedUsername)
                 .orElseThrow(() -> new UserNotFoundException("User data does not exist."));
     }
 
@@ -42,43 +48,43 @@ public class UserSettingsService {
      */
     public void updateUserField(String token, UserInformationUpdateRequestDto request) {
 
-        String username = jwtUtil.extractUsername(token);
-        User user = loadUserInformation(username);
+        User user = loadUserInformation(token);
 
         //If phone is provided, normalize it and if it is empty then user did not provide correct format.
-        String normalizedPhone = request.phone().isEmpty() || request.phone().isBlank() ? null:
-                Normalization.normalizePhone(request.phone());
-        if(normalizedPhone != null && normalizedPhone.isEmpty()){
-            throw new InvalidPhoneFormatException("Phone number must contain digits.");
+        if (request.phone() != null && !request.phone().isBlank()) {
+            String normalizedPhone = Normalization.normalizePhone(request.phone());
+            if (normalizedPhone.isEmpty()) {
+                throw new InvalidPhoneFormatException("Phone number must contain digits.");
+            }
+            //Check if phone is taken by other user
+            if (!normalizedPhone.equals(user.getPhone())) {
+                if (userRepository.existsByPhone(normalizedPhone)) {
+                    throw new DuplicatePhoneException("Phone number already taken by another user.");
+                }
+                user.setPhone(normalizedPhone);
+            }
         }
 
-        String email = request.email().isEmpty() || request.email().isBlank() ? null :
-                request.email();
+        //Check if email is provided or is blank before processing
+        if (request.email() != null && !request.email().isBlank()) {
+            String email = request.email().trim().toLowerCase();
+            //Check if email is taken by other user
+            if (!email.equals(user.getEmail())) {
+                if (userRepository.existsByEmail(email)) {
+                    throw new DuplicateEmailException("Email address already taken by another user.");
+                }
+                user.setEmail(email);
+            }
+        }
 
         //Set first name to new value if provided.
-        if(!request.firstName().isEmpty() && !request.firstName().isBlank()){
-            user.setFirstName(request.firstName());
+        if (request.firstName() != null && !request.firstName().isBlank()) {
+            user.setFirstName(request.firstName().trim());
         }
 
         //Set last name to new value if provided.
-        if(!request.lastName().isEmpty() && !request.lastName().isBlank()){
-            user.setLastName(request.lastName());
-        }
-
-        //Check if phone number was provided and if it is unique
-        if(normalizedPhone != null) {
-            if(userRepository.existsByPhone(normalizedPhone)) {
-                throw new DuplicatePhoneException("Phone number already taken by another user.");
-            }
-            user.setPhone(normalizedPhone);
-        }
-
-        //Check if email number was provided and if it is unique
-        if(email != null){
-            if(userRepository.existsByEmail(email)){
-                throw new DuplicateEmailException("Email address already taken by another user.");
-            }
-            user.setEmail(email);
+        if (request.lastName() != null && !request.lastName().isBlank()) {
+            user.setLastName(request.lastName().trim());
         }
 
         userRepository.save(user);
