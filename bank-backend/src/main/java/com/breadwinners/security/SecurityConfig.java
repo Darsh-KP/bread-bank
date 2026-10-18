@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -27,14 +28,16 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-         // Argon2id password encoder
-         return new Argon2PasswordEncoder(
-                 16,
-                 32,
-                 2,
-                 131072,
-                 3
-         );
+        //  // Argon2id password encoder
+        //  return new Argon2PasswordEncoder(
+        //          16,
+        //          32,
+        //          2,
+        //          131072,
+        //          3
+        //  );
+
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -45,6 +48,10 @@ public class SecurityConfig {
 
                 // Disable CSRF protection to avoid unnecessary overhead
                 .csrf(AbstractHttpConfigurer::disable)
+
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                response.setStatus(401)))
 
                 // Endpoint authorization rules
                 .authorizeHttpRequests(auth -> auth
@@ -83,6 +90,8 @@ public class SecurityConfig {
 
         // Tell the browser to let frontend read the following headers
         config.setExposedHeaders(List.of("Authorization"));
+
+        config.setAllowCredentials(true);
 
         // Apply cors config
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

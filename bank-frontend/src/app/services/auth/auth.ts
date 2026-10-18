@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
 import { emailPattern, phonePattern, validate } from '../../../utils/regExps';
 import { validatePassword } from '../../../utils/passwordValidation';
@@ -68,5 +68,23 @@ export class AuthService {
       phone
     }));
     return registerResponse;
+  }
+
+  refresh() {
+    return this.http.post<LoginResponseDto>(
+      'http://localhost:8080/auth/refresh',
+      {},
+      { withCredentials: true },
+    ).pipe(
+      tap(response => {
+        this.accessToken = response.accessToken;
+        this.currentUser = response.userResponse;
+      }),
+    );
+  }
+
+  clearSession() {
+    this.accessToken = null;
+    this.currentUser = null;
   }
 }

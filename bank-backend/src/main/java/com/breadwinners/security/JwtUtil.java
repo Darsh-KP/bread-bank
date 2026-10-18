@@ -10,9 +10,9 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    // Key used to sign JWT tokens and to validate them
+
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private final long EXPIRATION = 1000 * 60 * 15; // 15 minutes
 
     // Generate a new JWT token
     public String generateToken(String username) {
