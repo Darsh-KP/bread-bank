@@ -1,9 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, LoginRequest } from '../../../services/auth/auth';
+import { AuthService } from '../../../services/auth/auth';
+import { LoginRequestDto } from '../../../dtos/auth';
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { AuthFeatures } from '../../shared/auth-features/auth-features';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   imports: [RouterLink, AuthFeatures, FormsModule],
@@ -16,7 +18,7 @@ export class Login {
   private readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
 
-  credentials: LoginRequest = { userName: '', password: '' };
+  credentials: LoginRequestDto = { username: '', password: '' };
   submitting = signal(false);
   showPassword = signal(false);
 
@@ -31,8 +33,19 @@ export class Login {
 
       await this.router.navigate(['/dashboard']);
     } catch (error) {
+      let message = 'Could not log in. Please try again later.';
+      if (error instanceof HttpErrorResponse) {
+        if (typeof error.error === 'string') {
+          message = error.error;
+        } else if (error.status === 0) {
+          message = 'Could not connect to the server.';
+        }
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
       this.notifications.error(
-        error instanceof Error ? error.message : 'Could not log in. Please try again.',
+        message,
       );
     } finally {
       this.submitting.set(false);

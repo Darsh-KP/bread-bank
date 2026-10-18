@@ -1,10 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthFeatures } from '../../shared/auth-features/auth-features';
-import { RegistrationRequest, AuthService } from '../../../services/auth/auth';
+import { AuthService } from '../../../services/auth/auth';
+import { RegisterRequestDto } from '../../../dtos/auth';
 import { validatePassword } from '../../../../utils/passwordValidation';
 import { emailPattern, phonePattern, validate } from '../../../../utils/regExps';
 import { NotificationService } from '../../shared/notifications/notification.service';
@@ -25,19 +27,19 @@ export class Register {
   showPassword = signal(false);
   confirmPassword = '';
 
-  registration: RegistrationRequest = {
+  registration: RegisterRequestDto = {
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    userName: '',
+    username: '',
     password: '',
   };
 
   nextStep(): void {
     const firstStepFields = ['firstName', 'lastName', 'email', 'phone'];
     if (
-      firstStepFields.some((field) => !this.registration[field as keyof RegistrationRequest].trim())
+      firstStepFields.some((field) => !this.registration[field as keyof RegisterRequestDto].trim())
     ) {
       this.notifications.error('Please complete all fields before continuing.');
       return;
@@ -63,7 +65,7 @@ export class Register {
       this.nextStep();
       return;
     }
-    if (!this.registration.userName.trim()) {
+    if (!this.registration.username.trim()) {
       this.notifications.error('Please enter a username.');
       return;
     }
@@ -81,13 +83,24 @@ export class Register {
     this.submitting.set(true);
     try {
       await this.authService.register(this.registration);
+
       this.notifications.success('Your account was created successfully.', 1500);
+
       await this.router.navigate(['/']);
     } catch (error) {
+      let message = 'Could not register. Please try again later.';
+      if (error instanceof HttpErrorResponse) {
+        if (typeof error.error === 'string') {
+          message = error.error;
+        } else if (error.status === 0) {
+          message = 'Could not connect to the server.';
+        }
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
       this.notifications.error(
-        error instanceof Error
-          ? error.message
-          : 'We could not create your account. Please try again later.',
+        message,
       );
     } finally {
       this.submitting.set(false);

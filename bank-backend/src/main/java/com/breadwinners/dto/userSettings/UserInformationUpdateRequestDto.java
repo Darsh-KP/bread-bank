@@ -5,9 +5,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserInformationUpdateRequestDto(
-    @NotBlank(message = "Username required")
-    @Size(max = 50)
-    String username,
 
     @Size(max = 30, message = "First name can not be over 30 characters")
     String firstName,

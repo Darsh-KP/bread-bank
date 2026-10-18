@@ -39,8 +39,8 @@ export class NavigationBar {
   async loadAccountItems(): Promise<void> {
     if (this.accountsLoaded || this.accountsLoading()) return;
 
-    const userName = this.auth.currentUser?.userName;
-    if (!userName) {
+    const username = this.auth.currentUser?.username;
+    if (!username) {
       this.accountsError.set('Log in to view your accounts.');
       return;
     }
@@ -49,7 +49,7 @@ export class NavigationBar {
     this.accountsError.set('');
 
     try {
-      this.accountItems.set(await this.accountsService.getAccountsForUser({ userName }));
+      this.accountItems.set(await this.accountsService.getAccountsForUser({ username }));
       this.accountsLoaded = true;
     } catch (error) {
       this.accountsError.set(

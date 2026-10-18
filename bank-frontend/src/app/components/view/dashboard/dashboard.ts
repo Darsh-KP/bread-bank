@@ -40,7 +40,7 @@ export class Dashboard {
 
     //Load current user information from profile information service
     //If Observable as not be initalized then do it in the dashboard view
-    this.profileInformationService.initCurrentUser(user.userName)
+    this.profileInformationService.initCurrentUser(user.username)
       .pipe(
         // Runs when initCurrentUser succeeds
         tap((profile) => this.firstName.set(profile?.firstName || '')),
@@ -49,8 +49,8 @@ export class Dashboard {
       )
       .subscribe({
         next: () => {
-          //Load userName data after the profile is active
-          void this.loadAccounts(user.userName);
+          //Load username data after the profile is active
+          void this.loadAccounts(user.username);
         },
         error: (err) => {
           this.errorMessage.set(err.message || 'An error has occurred loading your account details. Please try logging out.');
@@ -59,8 +59,8 @@ export class Dashboard {
       });
   }
 
-  private async loadAccounts(userName: string): Promise<void> {
-    const request: AccountRequest = { userName };
+  private async loadAccounts(username: string): Promise<void> {
+    const request: AccountRequest = { username };
     try {
       this.accounts.set(await this.accountsService.getAccountsForUser(request));
     } catch (error: unknown) {

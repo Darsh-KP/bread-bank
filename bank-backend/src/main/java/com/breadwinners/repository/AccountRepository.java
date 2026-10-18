@@ -11,4 +11,5 @@ import java.util.*;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findAllByUser(User user);
     boolean existsByAccountNumberAndUser(Long accountNumber, User user);
+    Optional<Account> findByAccountNumberAndUser(Long accountNumber, User user);
 }

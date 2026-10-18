@@ -42,16 +42,16 @@ export class ProfileInformationService {
   constructor() {}
 
   //For now, load first user in users, try to link with auth service later
-  initCurrentUser(userName: string): Observable<ProfileInformationResponse> {
+  initCurrentUser(username: string): Observable<ProfileInformationResponse> {
     const user = this.auth.currentUser;
-    if (!user || user.userName !== userName) {
+    if (!user || user.username !== username) {
       this.currentUserSubject.next(null);
       return throwError(() => new Error('Please sign in to view your profile settings.'));
     }
 
     //If user has already been loaded then return the already existing observable
     const currentLoadedUser = this.currentUserSubject.value;
-    if (currentLoadedUser && currentLoadedUser.userName === userName) {
+    if (currentLoadedUser && currentLoadedUser.username === username) {
       return of(currentLoadedUser);
     }
 
@@ -199,7 +199,7 @@ export class ProfileInformationService {
   }
 
   //Used specifically with patch requests for /profile-settings/password
-  updatePassword(request: PasswordChangeRequest): Observable<void> {
-    return from(this.auth.changePassword(request));
-  }
+  // updatePassword(request: PasswordChangeRequest): Observable<void> {
+    // return from(this.auth.changePassword(request));
+  // }
 }
