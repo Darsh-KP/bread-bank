@@ -1,13 +1,14 @@
 <mat-card class="account-card" appearance="outlined" (click)="goToAccount()">
   <mat-card-header>
-    <mat-card-title>{{ account().accountType }}</mat-card-title>
-    <mat-card-subtitle>Account ending in {{ account().lastFour }}</mat-card-subtitle>
+<!--  if nickname is available, display nickname -> otherwise display marketingName  -->
+    <mat-card-title>{{ account().nickname || account().marketingName }}</mat-card-title>
+    <mat-card-subtitle>Account ending in {{ account().accountNumber.toString().slice(-4) }}</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
     <div class="balance-label">Available balance</div>
     <div class="balance">
-      {{ account().balance | currency:'USD':'symbol':'1.2-2' }}
+      {{ account().balanceInCents / 100 | currency:'USD':'symbol':'1.2-2' }}
     </div>
   </mat-card-content>
 
