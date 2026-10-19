@@ -5,7 +5,6 @@ import com.breadwinners.exception.AccountNotFoundException;
 import com.breadwinners.exception.ReusedPasswordException;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
-import com.breadwinners.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,27 +15,24 @@ public class PasswordChangeService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
     @Autowired
     public PasswordChangeService(UserRepository userRepository,
-                                 PasswordEncoder passwordEncoder,
-                                 JwtUtil jwtUtil){
+                                 PasswordEncoder passwordEncoder
+                                 ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
     }
 
     /**
      * Method which takes a request from a currently logged-in user, changes
      * their password if old password matches current in database
      * and if new password is different from old.
-     * @param token JWT of logged-in user
+     * @param username of logged-in user
      * @param request  User password change request (old password, new password)
      */
-    public void changePassword(String token, UserPasswordUpdateRequestDto request){
+    public void changePassword(String username, UserPasswordUpdateRequestDto request){
 
-        String username = jwtUtil.extractUsername(token);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AccountNotFoundException("User with the provided username, could not be found"));
 

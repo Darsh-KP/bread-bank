@@ -1,8 +1,8 @@
 package com.breadwinners.controller;
 
+import com.breadwinners.dto.auth.UserResponse;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.dto.userSettings.UserPasswordUpdateRequestDto;
-import com.breadwinners.model.User;
 import com.breadwinners.service.PasswordChangeService;
 import com.breadwinners.service.UserSettingsService;
 import com.breadwinners.util.Normalization;
@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/profile-settings")
@@ -27,10 +29,11 @@ public class UserSettingsController {
 
     //Loads user information, username is parsed from the JWT in the Authorization header
     @GetMapping
-    public ResponseEntity<User> getUserInformation(
-            @RequestHeader("Authorization") String token){
+    public ResponseEntity<UserResponse> getUserInformation(
+            Principal principal){
 
-        User user = userSettingsService.loadUserInformation(token);
+        UserResponse user = userSettingsService.loadUserInformation(principal.getName());
+
         return ResponseEntity.ok().body(user);
     }
 
@@ -40,9 +43,9 @@ public class UserSettingsController {
     public ResponseEntity<String> updateUserInformation(@Valid
                                                       @RequestBody UserInformationUpdateRequestDto request,
                                                       @PathVariable String field,
-                                                      @RequestHeader("Authorization") String token){
+                                                      Principal principal){
 
-        userSettingsService.updateUserField(token, request);
+        userSettingsService.updateUserField(principal.getName(), request);
         String message = "User " + Normalization.camelToTwoWords(field) + " successfully updated.";
         return ResponseEntity.ok().body(message);
     }
@@ -51,9 +54,9 @@ public class UserSettingsController {
     //Concrete field value of password given for this path, since it will always be password.
     @PatchMapping("/password")
     public ResponseEntity<String> updateUserInformation(@Valid @RequestBody UserPasswordUpdateRequestDto request,
-                                                      @RequestHeader("Authorization") String token){
+                                                      Principal principal){
 
-        passwordChangeService.changePassword(token, request);
+        passwordChangeService.changePassword(principal.getName(), request);
         String message = "User password successfully updated";
         return ResponseEntity.ok().body(message);
     }

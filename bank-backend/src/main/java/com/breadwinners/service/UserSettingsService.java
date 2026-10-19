@@ -1,5 +1,6 @@
 package com.breadwinners.service;
 
+import com.breadwinners.dto.auth.UserResponse;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.exception.DuplicateEmailException;
 import com.breadwinners.exception.DuplicatePhoneException;
@@ -7,7 +8,6 @@ import com.breadwinners.exception.InvalidPhoneFormatException;
 import com.breadwinners.exception.UserNotFoundException;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
-import com.breadwinners.security.JwtUtil;
 import com.breadwinners.util.Normalization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,21 +16,33 @@ import org.springframework.stereotype.Service;
 public class UserSettingsService {
 
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserSettingsService(UserRepository userRepository, JwtUtil jwtUtil){
+    public UserSettingsService(UserRepository userRepository){
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
     }
 
     /**
      * Loads current user information given a username
-     * @param token JWT of logged-in user
+     * @param username of logged in user
      * @return User model object of current user logged-in, contains info to display to user.
      */
-    public User loadUserInformation(String token) {
-        String username = jwtUtil.extractUsername(token);
+    public UserResponse loadUserInformation(String username) {
+        if (username == null) {
+            throw new UserNotFoundException("Invalid token or user not found.");
+        }
+
+        String normalizedUsername = username.trim().toLowerCase();
+
+        User user = userRepository.findByUsername(normalizedUsername)
+                .orElseThrow(() -> new UserNotFoundException("User data does not exist."));
+
+        return new UserResponse(user.getUsername(), user.getFirstName(), user.getLastName(),
+                user.getLastName(), user.getPhone());
+
+    }
+
+    private User loadAllUserInformation(String username) {
         if (username == null) {
             throw new UserNotFoundException("Invalid token or user not found.");
         }
@@ -43,12 +55,12 @@ public class UserSettingsService {
 
     /**
      * Given an update request, updates the provided fields
-     * @param token JWT of logged-in user
+     * @param username of logged in user
      * @param request request to update one or more fields of a user's personal information.
      */
-    public void updateUserField(String token, UserInformationUpdateRequestDto request) {
+    public void updateUserField(String username, UserInformationUpdateRequestDto request) {
 
-        User user = loadUserInformation(token);
+        User user = loadAllUserInformation(username);
 
         //If phone is provided, normalize it and if it is empty then user did not provide correct format.
         if (request.phone() != null && !request.phone().isBlank()) {
