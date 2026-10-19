@@ -1,30 +1,28 @@
 package com.breadwinners.controller;
 
+import com.breadwinners.dto.dashboardaccounts.AllAccountsResponseDto;
+import com.breadwinners.service.DashboardAccountsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.breadwinners.dtos.dashboardaccounts.*;
-
-import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
-    // technically should have a service that should grab the information:
-    // I need user information and account information
-    private final UserSettingsService userSettingsService;
+    private final DashboardAccountsService dashboardAccountsService;
 
-    // constructor injection
-    @Autowired
-    public DashboardController(UserSettingsService userSettingsService) {
-        this.userSettingsService = userSettingsService;
+    public DashboardController(DashboardAccountsService dashboardAccountsService) {
+        this.dashboardAccountsService = dashboardAccountsService;
     }
 
     @GetMapping
-    public ResponseEntity<AllAccountsResponseDto> getAccounts(@RequestHeader("Authorization") String token) {
-        User user = userSettingsService.getUserByToken(token);
-
-        // using this user, grab its username to then grab its associated account information
-        String username
+    public ResponseEntity<AllAccountsResponseDto> getAccounts(
+            @AuthenticationPrincipal String username
+    ) {
+        return ResponseEntity.ok(
+                dashboardAccountsService.getAccountsForUser(username)
+        );
     }
 }
