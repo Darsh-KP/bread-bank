@@ -6,12 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
 
-// TODO: refactor to not have this interface
 export interface AccountSummary {
-  id: number;
-  accountType: string;
-  lastFour: string;
-  balance: number;
+  accountNumber: number;
+  nickname: string;
+  marketingName: string;
+  balanceInCents: number;
 }
 
 @Component({

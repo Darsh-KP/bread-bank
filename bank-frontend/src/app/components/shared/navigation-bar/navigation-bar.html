@@ -84,16 +84,16 @@
   } @else if (accountItems().length === 0) {
     <button mat-menu-item disabled>No accounts found</button>
   } @else {
-    @for (account of accountItems(); track account.id) {
+    @for (account of accountItems(); track account.accountNumber) {
       <button
         mat-menu-item
         routerLink="/account"
         (click)="closeMobileNav()"
-        [attr.aria-label]="account.accountType + ', ending in ' + account.lastFour"
+        [attr.aria-label]="account.nickname || account.marketingName + ', ending in ' + account.accountNumber.toString().slice(-4)"
       >
-        <span class="account-item-label">{{ account.accountType }}</span>
+        <span class="account-item-label">{{ account.nickname || account.marketingName }}</span>
         <span class="account-item-description">
-          Ending in {{ account.lastFour }} · {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+          Ending in {{ account.accountNumber.toString().slice(-4) }} · {{ account.balanceInCents / 100 | currency:'USD':'symbol':'1.2-2' }}
         </span>
       </button>
     }

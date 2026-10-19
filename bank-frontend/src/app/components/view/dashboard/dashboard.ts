@@ -24,7 +24,7 @@ export class Dashboard {
   readonly errorMessage = signal('');
   readonly firstName = signal('');
   readonly totalBalance = computed(() =>
-    this.accounts().reduce((total, account) => total + account.balance, 0),
+    this.accounts().reduce((total, account) => total + account.balanceInCents, 0),
   );
 
   //Used to keep memory from leaking when component destroyed
