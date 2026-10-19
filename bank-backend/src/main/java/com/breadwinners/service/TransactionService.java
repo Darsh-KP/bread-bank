@@ -27,22 +27,20 @@ public class TransactionService {
     // Maximum valid balance
     private static final BigDecimal MAX_BALANCE = new BigDecimal("999999999999999.99");
 
+    // Constructor injection to initialize required dependencies
     public TransactionService(UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean verifyAccountPin(String username, VerifyPinRequestDto verifyPinRequestDto) {
+    public void verifyAccountPin(String username, VerifyPinRequestDto verifyPinRequestDto) {
         // Verify the PIN
         getValidatedAccount(
                 username,
                 verifyPinRequestDto.accountNumber(),
                 verifyPinRequestDto.pin()
         );
-
-        // PINs match, verified!
-        return true;
     }
 
     @Transactional
@@ -78,7 +76,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionResponseDto processWithdraw(String username, TransactionRequestDto transactionRequestDto) {
+    public TransactionResponseDto processWithdrawal(String username, TransactionRequestDto transactionRequestDto) {
         // Get the account
         Account account = getValidatedAccount(
                 username,
