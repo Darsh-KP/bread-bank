@@ -2,15 +2,15 @@ package com.breadwinners.service;
 
 import com.breadwinners.dto.auth.UserResponse;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
-import com.breadwinners.exception.DuplicateEmailException;
-import com.breadwinners.exception.DuplicatePhoneException;
-import com.breadwinners.exception.InvalidPhoneFormatException;
-import com.breadwinners.exception.UserNotFoundException;
+import com.breadwinners.exception.*;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.UserRepository;
 import com.breadwinners.util.Normalization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static com.breadwinners.util.Normalization.MAX_PHONE_LENGTH;
+import static com.breadwinners.util.Normalization.MIN_PHONE_LENGTH;
 
 @Service
 public class UserSettingsService {
@@ -25,7 +25,7 @@ public class UserSettingsService {
     /**
      * Loads current user information given a username
      * @param username of logged in user
-     * @return User model object of current user logged-in, contains info to display to user.
+     * @return User response object of current user logged-in, contains info to display to user.
      */
     public UserResponse loadUserInformation(String username) {
         if (username == null) {
@@ -38,10 +38,15 @@ public class UserSettingsService {
                 .orElseThrow(() -> new UserNotFoundException("User data does not exist."));
 
         return new UserResponse(user.getUsername(), user.getFirstName(), user.getLastName(),
-                user.getLastName(), user.getPhone());
+                user.getEmail(), user.getPhone());
 
     }
 
+    /**
+     * Private method to load whole user profile including password hash
+     * @param username of logged in user
+     * @return Whole user object of current user logged-in, contains info to display to user.
+     */
     private User loadAllUserInformation(String username) {
         if (username == null) {
             throw new UserNotFoundException("Invalid token or user not found.");
@@ -65,8 +70,9 @@ public class UserSettingsService {
         //If phone is provided, normalize it and if it is empty then user did not provide correct format.
         if (request.phone() != null && !request.phone().isBlank()) {
             String normalizedPhone = Normalization.normalizePhone(request.phone());
-            if (normalizedPhone.isEmpty()) {
-                throw new InvalidPhoneFormatException("Phone number must contain digits.");
+            if (normalizedPhone.isEmpty() ||
+                    normalizedPhone.length() < MIN_PHONE_LENGTH || normalizedPhone.length() > MAX_PHONE_LENGTH) {
+                throw new InvalidPhoneFormatException("Phone number must contain only 10-14 digits.");
             }
             //Check if phone is taken by other user
             if (!normalizedPhone.equals(user.getPhone())) {
@@ -90,12 +96,18 @@ public class UserSettingsService {
         }
 
         //Set first name to new value if provided.
-        if (request.firstName() != null && !request.firstName().isBlank()) {
+        if (request.firstName() != null) {
+            if(request.firstName().isBlank()){
+                throw new BlankFieldException("First name can not be blank");
+            }
             user.setFirstName(request.firstName().trim());
         }
 
         //Set last name to new value if provided.
-        if (request.lastName() != null && !request.lastName().isBlank()) {
+        if (request.lastName() != null) {
+            if(request.lastName().isBlank()){
+                throw new BlankFieldException("Last name can not be blank");
+            }
             user.setLastName(request.lastName().trim());
         }
 

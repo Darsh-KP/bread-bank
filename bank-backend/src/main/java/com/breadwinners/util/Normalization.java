@@ -2,6 +2,9 @@ package com.breadwinners.util;
 
 public class Normalization {
 
+    public static final int MIN_PHONE_LENGTH = 10;
+    public static final int MAX_PHONE_LENGTH = 14;
+
     public static String normalizePhone(String phone) {
         String digitsOnly = phone.trim().replaceAll("\\D", "");
         if (digitsOnly.length() == 11 && digitsOnly.startsWith("1")) {

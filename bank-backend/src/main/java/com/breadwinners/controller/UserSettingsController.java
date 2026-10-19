@@ -1,5 +1,6 @@
 package com.breadwinners.controller;
 
+import com.breadwinners.dto.GenericMessageResponseDTO;
 import com.breadwinners.dto.auth.UserResponse;
 import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.dto.userSettings.UserPasswordUpdateRequestDto;
@@ -27,7 +28,7 @@ public class UserSettingsController {
         this.passwordChangeService = passwordChangeService;
     }
 
-    //Loads user information, username is parsed from the JWT in the Authorization header
+    //Loads user information, username is provided by Principal
     @GetMapping
     public ResponseEntity<UserResponse> getUserInformation(
             Principal principal){
@@ -40,25 +41,25 @@ public class UserSettingsController {
     //Updates the user's first name, last name, email or phone
     //Field path variable is normalized in response method
     @PatchMapping("/{field}")
-    public ResponseEntity<String> updateUserInformation(@Valid
+    public ResponseEntity<GenericMessageResponseDTO> updateUserInformation(@Valid
                                                       @RequestBody UserInformationUpdateRequestDto request,
                                                       @PathVariable String field,
                                                       Principal principal){
 
         userSettingsService.updateUserField(principal.getName(), request);
         String message = "User " + Normalization.camelToTwoWords(field) + " successfully updated.";
-        return ResponseEntity.ok().body(message);
+        return ResponseEntity.ok().body(new GenericMessageResponseDTO(message));
     }
 
     //Updates user's password
     //Concrete field value of password given for this path, since it will always be password.
     @PatchMapping("/password")
-    public ResponseEntity<String> updateUserInformation(@Valid @RequestBody UserPasswordUpdateRequestDto request,
-                                                      Principal principal){
+    public ResponseEntity<GenericMessageResponseDTO> updateUserInformation(@Valid @RequestBody UserPasswordUpdateRequestDto request,
+                                                                           Principal principal){
 
         passwordChangeService.changePassword(principal.getName(), request);
         String message = "User password successfully updated";
-        return ResponseEntity.ok().body(message);
+        return ResponseEntity.ok().body(new GenericMessageResponseDTO(message));
     }
 
 }

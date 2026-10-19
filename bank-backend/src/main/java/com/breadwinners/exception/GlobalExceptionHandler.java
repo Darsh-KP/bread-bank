@@ -39,7 +39,8 @@ public class GlobalExceptionHandler {
             InvalidRefreshTokenException.class,
             InvalidRegistrationException.class,
             ReusedPasswordException.class,
-            UserNotFoundException.class
+            UserNotFoundException.class,
+            BlankFieldException.class
     })
     public ResponseEntity<GenericMessageResponseDTO> handleServiceException(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
