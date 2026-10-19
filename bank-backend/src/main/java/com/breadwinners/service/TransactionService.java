@@ -7,11 +7,8 @@ import com.breadwinners.exception.AccountNotFoundException;
 import com.breadwinners.exception.BalanceExceededException;
 import com.breadwinners.exception.InsufficientBalanceException;
 import com.breadwinners.model.Account;
-import com.breadwinners.model.User;
 import com.breadwinners.repository.AccountRepository;
-import com.breadwinners.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +17,6 @@ import java.math.BigDecimal;
 
 @Service
 public class TransactionService {
-    private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,8 +24,7 @@ public class TransactionService {
     private static final BigDecimal MAX_BALANCE = new BigDecimal("999999999999999.99");
 
     // Constructor injection to initialize required dependencies
-    public TransactionService(UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public TransactionService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -66,9 +61,6 @@ public class TransactionService {
         // Update the balance
         account.setBalance(newBalance);
 
-        // Save the updated balance
-        accountRepository.save(account);
-
         // Transaction successful!
         return new TransactionResponseDto(
                 transactionRequestDto.amountInCents()
@@ -98,9 +90,6 @@ public class TransactionService {
         // Update the new balance
         account.setBalance(newBalance);
 
-        // Save the updated balance
-        accountRepository.save(account);
-
         // Transaction successful!
         return new  TransactionResponseDto(
                 transactionRequestDto.amountInCents()
@@ -109,13 +98,9 @@ public class TransactionService {
 
     // Helper method to validate PIN and get account
     private Account getValidatedAccount(String username, Long accountNumber, String rawPin) {
-        // Find the user
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-
         // Find the account
-        Account account = accountRepository.findByAccountNumberAndUser(accountNumber, user)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found."));
+        Account account = accountRepository.findByAccountNumberAndUser_Username(accountNumber, username)
+                .orElseThrow(() -> new AccountNotFoundException("Account or user not found."));
 
         // Check if the PIN matches
         if (!passwordEncoder.matches(rawPin, account.getPinHash())) {
