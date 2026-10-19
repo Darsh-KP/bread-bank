@@ -31,6 +31,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // Handle transaction failure exceptions
+    @ExceptionHandler({
+            BalanceExceededException.class,
+            InsufficientBalanceException.class
+    })
+    public ResponseEntity<GenericMessageResponseDTO> handleTransactionException(Exception e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(
+                new GenericMessageResponseDTO(e.getMessage())
+        );
+    }
+
     // Handle service exceptions (custom)
     @ExceptionHandler({
             AccountNotFoundException.class,
