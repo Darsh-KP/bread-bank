@@ -4,10 +4,10 @@ import { AsyncPipe } from '@angular/common';
 import { pinPattern } from '../../../../utils/regExps';
 import {NavigationBar} from '../../shared/navigation-bar/navigation-bar'
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 type DialogState = 'none' | 'prompt' | 'congratulate';
-type Account = { marketingName: string; annualYieldRate: number; maturationDays: number };
+type Account = { name: string; apy: string; };
 type Approval = { approved: boolean; acctNum: string; };
 type newAcctRq = { owner: string; accountName: string; accountType: string; pin: string };
 
@@ -21,7 +21,6 @@ export class CreateAccount implements OnInit {
   private dialog = new BehaviorSubject<DialogState>('none');
   dialog$: Observable<DialogState> = this.dialog.asObservable();
 
-  allProducts$!: Observable<Account[]>;
   accounts$!: Observable<Account[]>;
   certificateDeposits$!: Observable<Account[]>;
   
@@ -33,9 +32,8 @@ export class CreateAccount implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
-    this.allProducts$ = this.http.get<Account[]>('http://localhost:8080/account-types');
-    this.certificateDeposits$ = this.allProducts$.pipe(map(accounts => accounts.filter(account => /CD$/.test(account.marketingName))));
-    this.accounts$ =  this.allProducts$.pipe(map(accounts => accounts.filter(account => !/CD$/.test(account.marketingName))));
+    this.accounts$ = this.http.get<Account[]>('/mock-data/accountTypes.json');
+    this.certificateDeposits$ = this.http.get<Account[]>('/mock-data/certificatesDeposit.json');
   }
 
   continueCreation() {
