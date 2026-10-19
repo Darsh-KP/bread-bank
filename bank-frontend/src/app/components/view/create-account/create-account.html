@@ -8,9 +8,9 @@
     <h2>Today's account offerings</h2>
     <div>
         @if (accounts$ | async; as accounts) {
-            @for (acc of accounts; track acc.name) {
+            @for (acc of accounts; track acc.marketingName) {
                 <label class="group">
-                <input type="radio" name="product" [value]="acc.name" (click)="selectProduct();">{{acc.name}}, {{acc.apy}} APY
+                <input type="radio" name="product" [value]="acc.marketingName" (click)="selectProduct();">{{acc.marketingName}}, {{acc.annualYieldRate}}% APY
                 </label>
                 <br />
             }
@@ -20,9 +20,9 @@
     <h2>Today's certificates of deposit</h2>
     <div>
         @if (certificateDeposits$ | async; as certificateDeposits) {
-            @for (cd of certificateDeposits; track cd.name) {
+            @for (cd of certificateDeposits; track cd.marketingName) {
                 <label class="group">
-                <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.name}}, {{cd.apy}} APY
+                <input type="radio" name="product" [value]="cd" (click)="selectProduct();">  {{cd.marketingName}}, {{cd.annualYieldRate}}% APY
                 </label>
                 <br />
             }
