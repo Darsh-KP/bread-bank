@@ -30,7 +30,7 @@
       <p class="dashboard-message">There are no accounts associated with your profile yet.</p>
     } @else {
       <section class="account-grid" aria-label="Your accounts">
-        @for (account of accounts(); track account.id) {
+        @for (account of accounts(); track account.accountNumber) {
           <app-dashboard-card [account]="account" />
         }
       </section>
