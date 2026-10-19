@@ -13,7 +13,6 @@ import com.breadwinners.service.RefreshService;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
-import org.springframework.security.authentication.BadCredentialsException;
 
 @RestController
 @RequestMapping("/auth")
@@ -57,25 +56,5 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.status(200).body(refreshService.refresh(refreshToken));
-    }
-
-    @ExceptionHandler(InvalidRegistrationException.class)
-    public ResponseEntity<String> handleInvalidRegistration(InvalidRegistrationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateUserException.class)
-    public ResponseEntity<String> handleDuplicateUser(DuplicateUserException e) {
-        return ResponseEntity.status(409).body(e.getMessage());
-    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentials(BadCredentialsException e) {
-        return ResponseEntity.status(401).body("Invalid username or password.");
-    }
-
-    @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<String> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
-        return ResponseEntity.status(401).body("Invalid refresh token.");
     }
 }

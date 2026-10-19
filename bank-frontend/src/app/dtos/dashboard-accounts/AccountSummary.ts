@@ -1,7 +1,6 @@
 export interface AccountSummary {
-  accountId: number;
-  accountTypeName: string;
+  accountNumber: number;
+  marketingName: string;
   nickname: string | null;
-  lastFour: string;
   balanceInCents: number;
 }

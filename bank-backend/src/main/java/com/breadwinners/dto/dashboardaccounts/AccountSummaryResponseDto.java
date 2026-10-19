@@ -1,9 +1,10 @@
 package com.breadwinners.dto.dashboardaccounts;
 
+import java.math.BigInteger;
+
 public record AccountSummaryResponseDto(
-        Long accountId,
-        String accountTypeName,
+        Long accountNumber,
+        String marketingName,
         String nickname,
-        String lastFour,
-        Integer balanceInCents
+        BigInteger balanceInCents
 ) {}

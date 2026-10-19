@@ -60,6 +60,6 @@ public class AuthService {
             return new LoginResponse(new UserResponse(u.getUsername(), u.getFirstName(), u.getLastName(), u.getEmail(), u.getPhone()), jwtUtil.generateToken(username));
         }
 
-        throw new BadCredentialsException("Invalid username or password");
+        throw new BadCredentialsException("Invalid username or password.");
     }
 }
