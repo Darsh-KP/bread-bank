@@ -1,5 +1,8 @@
 package com.breadwinners.aspect;
 
+import com.breadwinners.dto.auth.LoginRequestDto;
+import com.breadwinners.dto.auth.LoginResponse;
+import com.breadwinners.dto.auth.UserResponse;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class LoggingAspect {
 
-    private static Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
     //Define a central pointcut for service package
     @Pointcut("execution(* com.breadwinners.service.*.*(..))")
@@ -19,19 +22,46 @@ public class LoggingAspect {
     //Logging service layer calls before method execution
     @Before("serviceLayer()")
     public void logBeginningOfService(JoinPoint jp) {
-        logger.info("Calling method: {} with arguments: {}", jp.getSignature().getName(), jp.getArgs());
+        Object [] cleanedArgs = returnCleanedPII(jp.getArgs());
+        logger.info("Calling method: {} with arguments: {}", jp.getSignature().getName(), cleanedArgs);
     }
 
     //Logging successfully method return with results.
     @AfterReturning(pointcut = "serviceLayer()", returning = "result")
     public void logSuccessfulServiceMethods(JoinPoint jp, Object result) {
-        logger.info("{} successfully returned: {}", jp.getSignature().getName(), result);
+        Object cleanedResult = returnCleanedPII(result);
+        logger.info("{} successfully returned: {}", jp.getSignature().getName(), cleanedResult);
     }
 
     //Logging failed method calls with specific exception thrown.
-    @AfterThrowing(pointcut="execution(* com.revature.services.*.*(..))", throwing="exc")
+    @AfterThrowing(pointcut="serviceLayer()", throwing="exc")
     public void logServiceExceptions(JoinPoint jp, Throwable exc){
-        logger.error(jp.getSignature().getName() + " threw: " + exc);
+        logger.error(jp.getSignature().getName() + " threw: ", exc);
+    }
+
+    private Object [] returnCleanedPII(Object [] args){
+        Object [] cleanedArgs = new Object[args.length];
+        for (int i = 0; i < args.length; i++){
+            cleanedArgs[i] = returnCleanedPII(args[i]);
+        }
+        return cleanedArgs;
+    }
+
+    private Object returnCleanedPII(Object requestResponse){
+        if(requestResponse instanceof LoginResponse){
+            return cleanPII((LoginResponse) requestResponse);
+        } else if (requestResponse instanceof LoginRequestDto) {
+            return cleanPII((LoginRequestDto) requestResponse);
+        }
+        return requestResponse;
+    }
+
+    private String cleanPII(LoginRequestDto request) {
+        return request.username();
+    }
+
+    private UserResponse cleanPII(LoginResponse response){
+        return response.userResponse();
     }
 
 }
