@@ -5,6 +5,7 @@ import { emailPattern, phonePattern } from '../../../../utils/regExps';
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
 import {
+  PasswordChangeRequest,
   ProfileInformationResponse,
   UpdatableField,
 } from '../../../services/profile-information/profile-information.interfaces';
@@ -33,8 +34,7 @@ export class ProfileSettings {
   readonly initialLoadError = signal('');
   readonly errorMessage = 'We could not load your profile settings. Please try logging in.';
 
-  readonly username? : string | undefined = undefined;
-
+  readonly username?: string | undefined = undefined;
 
   protected readonly emailPattern = emailPattern;
   protected readonly phonePattern = phonePattern;
@@ -74,10 +74,12 @@ export class ProfileSettings {
 
   //Have service verify if password meets requirements, if current password matches
   //and if current password and new password do not match
-  // readonly handlePasswordChange = (payload: {
-  //   oldPassword: string;
-  //   newPassword: string;
-  // }): Observable<void> => this.service.updatePassword(payload);
+  readonly handlePasswordChange = (payload: PasswordChangeRequest): Observable<void> =>
+    this.service.updatePassword(payload).pipe(
+      tap(() => {
+        this.notifications.success('Password updated successfully.');
+      }),
+    );
 
   //Fields in profile settings, now Observables
   readonly saveFirstName = (val: string): Observable<ProfileInformationResponse> =>

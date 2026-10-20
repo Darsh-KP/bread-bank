@@ -71,9 +71,18 @@ export class ProfileInformationService {
     // Send payload matching the specific field to backend
     const body = { [field]: value };
 
-    return this.http.patch<ProfileInformationResponse>(`${this.dataUrl}/${field}`, body).pipe(
+    return this.http.patch<ProfileInformationResponse | void>(`${this.dataUrl}/${field}`, body).pipe(
+      map((response) => {
+        // Safely merge existing user state with backend response (handling null/partial responses)
+        const updatedUser: ProfileInformationResponse = {
+          ...currentUser,
+          ...(response && typeof response === 'object' ? response : {}),
+          [field]: value, // Ensure the specific field is explicitly updated
+        };
+        return updatedUser;
+      }),
       tap((updatedUser) => {
-        // Broadcast new updates to application state
+        // Broadcast fully synchronized state to application
         this.currentUserSubject.next(updatedUser);
       }),
       catchError(this.handleError)
@@ -89,10 +98,21 @@ export class ProfileInformationService {
 
   // Centralized HTTP/Error handler helper
   private handleError(error: HttpErrorResponse | Error): Observable<never> {
-    const errorMessage: string =
-      error instanceof HttpErrorResponse
-        ? `Error Status Code: ${error.status} - ${error.message}`
-        : error.message;
+    let errorMessage = 'An unexpected error occurred. Please try again.';
+
+    if (error instanceof HttpErrorResponse) {
+      // Check if error.error is an object (like your GenericMessageResponseDTO)
+      if (error.error && typeof error.error === 'object') {
+        // Adjust 'message' to match the exact field name inside your GenericMessageResponseDTO class in Java
+        errorMessage = error.error.message || error.message;
+      }
+      // Fallback if the backend sent a plain text string
+      else if (typeof error.error === 'string') {
+        errorMessage = error.error;
+      }
+    } else {
+      errorMessage = error.message;
+    }
 
     return throwError(() => new Error(errorMessage));
   }
