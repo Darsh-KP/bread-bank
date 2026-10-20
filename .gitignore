@@ -67,3 +67,4 @@ buildNumber.properties
 .ionide
 /logs/info/application-2026-10-19.0.log.gz
 /logs/warn/application-2026-10-19.0.log.gz
+/logs/error/application-2026-10-19.0.log.gz
