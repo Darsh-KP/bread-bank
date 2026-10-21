@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './components/view/login/login';
 import { Register } from './components/view/register/register';
 import { CreateAccount } from './components/view/create-account/create-account';
-import { Account } from './components/view/account/account';
+import {accountSelectedGuard} from './guards/account-selected.guard';
 
 export const routes: Routes = [
   {
@@ -50,6 +50,13 @@ export const routes: Routes = [
   },
   {
     path: 'account',
-    component: Account,
+    loadComponent: () => import('./components/view/account/account').then(
+      (m) => m.Account
+    ),
+    canActivate: [accountSelectedGuard]
   },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];

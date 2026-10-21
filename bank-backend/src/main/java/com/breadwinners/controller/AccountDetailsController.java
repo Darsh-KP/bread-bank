@@ -32,7 +32,7 @@ public class AccountDetailsController {
     }
 
     // Update the nickname for the account
-    @PatchMapping
+    @PatchMapping("/nickname")
     public ResponseEntity<UpdateNicknameResponseDto> modifyNickname(
             @Valid @RequestBody UpdateNicknameRequestDto updateNicknameRequestDto
     ) {
