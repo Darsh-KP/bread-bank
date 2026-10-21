@@ -1,3 +1,3 @@
 export interface TransactionResponseDTO {
-  amountInCents: bigint;
+  amountInCents: number;
 }
