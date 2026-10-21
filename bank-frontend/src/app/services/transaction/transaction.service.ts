@@ -1,41 +1,30 @@
-import { Service, signal } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import {VerifyPinRequestDTO} from '../../dtos/transaction/VerifyPinRequestDTO';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {TransactionRequestDTO} from '../../dtos/transaction/TransactionRequestDTO';
 import {TransactionResponseDTO} from '../../dtos/transaction/TransactionResponseDTO';
+import { HttpClient } from '@angular/common/http';
 
 @Service()
 export class TransactionService {
-  public accountBalanceInCents = signal<number>(284576);
+  private http = inject(HttpClient);
+  private BASE_URL = 'http://localhost:8080/transaction';
 
-  // TODO
-  verifyPin(request: VerifyPinRequestDTO): void {
-    // // Success case
-    // if (request.pin === '1234') {
-    //   return of({
-    //     success: true,
-    //   }).pipe(delay(800));
-    // }
-    //
-    // // Failure
-    // return of({
-    //   success: false,
-    // }).pipe(delay(800));
+  verifyPin(
+    verifyPinRequestDTO: VerifyPinRequestDTO
+  ): Observable<unknown> {
+    return this.http.post<unknown>(`${this.BASE_URL}/verify-pin`, verifyPinRequestDTO);
   }
 
-  processTransaction(request: TransactionRequestDTO): Observable<TransactionResponseDTO> {
-    // Failure case
-    if (request.amountInCents > this.accountBalanceInCents()) {
-      return of({
-        success: false,
-        amountInCents: request.amountInCents,
-      });
-    }
+  processDepositTransaction (
+    transactionRequestDTO: TransactionRequestDTO
+  ): Observable<TransactionResponseDTO> {
+    return this.http.post<TransactionResponseDTO>(`${this.BASE_URL}/deposit`, transactionRequestDTO);
+  }
 
-    // Success
-    return of({
-      success: true,
-      amountInCents: request.amountInCents,
-    });
+  processWithdrawTransaction (
+    transactionRequestDTO: TransactionRequestDTO
+  ): Observable<TransactionResponseDTO> {
+    return this.http.post<TransactionResponseDTO>(`${this.BASE_URL}/withdraw`, transactionRequestDTO);
   }
 }

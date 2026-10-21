@@ -10,6 +10,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { AMOUNT_REGEX, PIN_REGEX } from '../../../../utils/regExps';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   imports: [
@@ -31,8 +32,9 @@ export class MoneyTransactionModal implements OnInit {
   private readonly activeModal = inject(NgbActiveModal);
   private readonly transactionService = inject(TransactionService);
 
-  // Ask the caller to set the type of transaction
+  // Ask the caller to provide required inputs
   transactionType = model.required<SingleTransactionType>();
+  accountNumber = model.required<number>();
 
   // Set loading as the starting phase
   phase = signal<TransactionPhase>('loading');
@@ -130,42 +132,46 @@ export class MoneyTransactionModal implements OnInit {
     this.isProcessing.set(true);
     this.errorMessage.set('');
 
-    // TODO
     // Attempt to verify PIN by calling the service
     this.transactionService
-      // .verifyPin({
-      //   pin: this.pinControl.value,
-      // })
-      // .subscribe({
-      //   next: (response) => {
-      //     // End the processing
-      //     this.isProcessing.set(false);
-      //
-      //     // Check if the PIN is authenticated
-      //     if (!response.success) {
-      //       // Set incorrect PIN error message
-      //       this.errorMessage.set('Incorrect PIN.');
-      //
-      //       // Reset the input field for PIN
-      //       this.pinControl.reset();
-      //       this.checkPinValidation();
-      //
-      //       return;
-      //     }
-      //
-      //     // If PIN is correct, go to next phase
-      //     this.phase.set('amount');
-      //   },
-      //
-      //   // Handle errors from the service
-      //   error: () => {
-      //     // End the processing
-      //     this.isProcessing.set(false);
-      //
-      //     // Set the error message to something generic
-      //     this.errorMessage.set('Unable to verify your PIN. Please try again.');
-      //   },
-      // });
+      .verifyPin({
+        accountNumber: this.accountNumber(),
+        pin: this.pinControl.value,
+      })
+      .subscribe({
+        next: () => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          // The PIN is correct, go to next phase
+          this.phase.set('amount');
+        },
+
+        // Handle errors from the service
+        error: (error: unknown) => {
+          // End the processing
+          this.isProcessing.set(false);
+
+          if (error instanceof HttpErrorResponse) {
+            switch (error.status) {
+              case 401:
+                // Set incorrect PIN error message
+                this.errorMessage.set('Incorrect PIN.');
+                break;
+              default:
+                // Badly formed request or something went wrong in backend
+                this.errorMessage.set('Something went wrong. Please try again later.');
+            }
+
+            // Reset the input field for PIN
+            this.pinControl.reset();
+            this.checkPinValidation();
+          } else {
+            // Client error
+            this.errorMessage.set('Please check your internet connection.');
+          }
+        }
+      });
   }
 
   // Handle amount input events
@@ -230,47 +236,63 @@ export class MoneyTransactionModal implements OnInit {
     // Get the PIN from the previous form
     const userPin = this.pinControl.value ?? '';
 
-    // TODO
+    // Create the payload for the reuqest
+    const transactionPayload = {
+      accountNumber: this.accountNumber(),
+      pin: userPin,
+      amountInCents,
+    }
+
+    // Select the correct method to call in the service
+    const transactionRequest$ = this.transactionType() === 'DEPOSIT'
+      ? this.transactionService.processDepositTransaction(transactionPayload)
+      : this.transactionService.processWithdrawTransaction(transactionPayload);
+
     // Attempt to process the transaction by calling the service
-    this.transactionService
-      .processTransaction({
-        accountNumber: 0,
-        pin: userPin,
-        amountInCents,
-      })
-      .subscribe({
-        next: (response) => {
+    transactionRequest$.subscribe({
+        next: () => {
           // End the processing
           this.isProcessing.set(false);
 
-          // Save the transaction result
-          this.transactionResult.set(response);
-
-          // TODO
-          // Check if the transaction was successful
-          if (response) {
-            // Show transaction successful result screen
-            this.isSuccess.set(true);
-          } else {
-            // Show transaction failed result screen
-            this.isSuccess.set(false);
-
-            // Set transaction failed error message
-            this.errorMessage.set('Transaction could not be completed.');
-          }
+          // Set the transaction as successful
+          this.isSuccess.set(true);
 
           // Go to next phase
           this.phase.set('result');
         },
 
         // Handle errors from the service
-        error: () => {
+        error: (error: unknown) => {
           // End the processing
           this.isProcessing.set(false);
 
-          // Set the error message to something generic
-          this.errorMessage.set('Unable to complete the transaction. Please try again.');
-        },
+          // Set the transaction as failure
+          this.isSuccess.set(false);
+
+          if (error instanceof HttpErrorResponse) {
+            switch (error.status) {
+              case 401:
+                // Set incorrect PIN error message
+                this.errorMessage.set('Incorrect PIN.');
+                break;
+              case 422:
+                // Set max balance will fail error message
+                const message = this.transactionType() === 'DEPOSIT'
+                  ? 'Deposit will violate maximum balance.'
+                  : 'Insufficient balance.';
+                this.errorMessage.set(message);
+                break;
+              default:
+                // Badly formed request or something went wrong in backend
+                this.errorMessage.set('Something went wrong. Please try again later.');
+            }
+
+            this.checkAmountValidation();
+          } else {
+            // Client error
+            this.errorMessage.set('Please check your internet connection.');
+          }
+        }
       });
   }
 
@@ -288,19 +310,8 @@ export class MoneyTransactionModal implements OnInit {
 
   // When transaction is done and dismissed, close the modal
   finish(): void {
-    // TODO
-    const resultResponse = this.transactionResult()
-    // const isSuccessful = resultResponse ? resultResponse.success : false;
-
-    // Get the transaction info
-    const result: TransactionResponseDTO = {
-      // success: isSuccessful,
-      // transactionType: this.transactionType(),
-      amountInCents: 0,
-    };
-
-    // Close the modal, and return the transaction info
-    this.activeModal.close(result);
+    // Close the modal, and return if it was successful
+    this.activeModal.close(this.isSuccess());
   }
 
   // Close the modal, if the user clicks Cancel
@@ -337,11 +348,10 @@ export class MoneyTransactionModal implements OnInit {
     const result = this.transactionResult();
     const amount = result ? result.amountInCents : 0;
 
-    // TODO
     // Format the amount from cents to decimal and return it
-    // return (amount / 100).toLocaleString('en-US', {
-    //   style: 'currency',
-    //   currency: 'USD'
-    // });
+    return (amount / 100).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
   });
 }
