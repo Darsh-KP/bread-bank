@@ -6,7 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth';
-import { AccountSummary } from '../dashboard-card/dashboard-card';
+import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
 
 @Component({
@@ -39,8 +39,7 @@ export class NavigationBar {
   async loadAccountItems(): Promise<void> {
     if (this.accountsLoaded || this.accountsLoading()) return;
 
-    const username = this.auth.currentUser?.username;
-    if (!username) {
+    if (!this.auth.currentUser) {
       this.accountsError.set('Log in to view your accounts.');
       return;
     }
@@ -49,7 +48,7 @@ export class NavigationBar {
     this.accountsError.set('');
 
     try {
-      this.accountItems.set(await this.accountsService.getAccountsForUser({ username }));
+      this.accountItems.set(await this.accountsService.getAccounts());
       this.accountsLoaded = true;
     } catch (error) {
       this.accountsError.set(

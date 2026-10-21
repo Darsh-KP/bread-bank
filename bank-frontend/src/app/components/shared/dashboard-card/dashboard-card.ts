@@ -5,13 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
-
-export interface AccountSummary {
-  accountNumber: number;
-  nickname: string;
-  marketingName: string;
-  balanceInCents: number;
-}
+import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
 
 @Component({
   selector: 'app-dashboard-card',
