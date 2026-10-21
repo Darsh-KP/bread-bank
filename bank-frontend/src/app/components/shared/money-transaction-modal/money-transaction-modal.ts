@@ -250,7 +250,10 @@ export class MoneyTransactionModal implements OnInit {
 
     // Attempt to process the transaction by calling the service
     transactionRequest$.subscribe({
-        next: () => {
+        next: (response) => {
+          // Save the transaction response
+          this.transactionResult.set(response);
+
           // End the processing
           this.isProcessing.set(false);
 
@@ -278,9 +281,15 @@ export class MoneyTransactionModal implements OnInit {
               case 422:
                 // Set max balance will fail error message
                 const message = this.transactionType() === 'DEPOSIT'
-                  ? 'Deposit will violate maximum balance.'
+                  ? 'Deposit exceeds the maximum allowed account balance.'
                   : 'Insufficient balance.';
                 this.errorMessage.set(message);
+
+                // Switch to error phase
+                this.transactionResult.set({
+                  amountInCents: amountInCents
+                })
+                this.phase.set('result');
                 break;
               default:
                 // Badly formed request or something went wrong in backend

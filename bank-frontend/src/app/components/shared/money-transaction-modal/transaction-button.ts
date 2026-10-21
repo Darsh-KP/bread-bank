@@ -24,6 +24,7 @@ export class TransactionButtonComponent {
   private readonly modalService = inject(NgbModal);
 
   type = input.required<SingleTransactionType>();
+  accountNumber = input.required<number>();
 
   transactionSuccess = output<boolean>();
 
@@ -48,6 +49,7 @@ export class TransactionButtonComponent {
     );
 
     modalRef.componentInstance.transactionType.set(this.type());
+    modalRef.componentInstance.accountNumber.set(this.accountNumber())
 
     modalRef.result
       .then(() => this.transactionSuccess.emit(true))
