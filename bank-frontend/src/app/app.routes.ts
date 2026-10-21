@@ -3,15 +3,18 @@ import { Login } from './components/view/login/login';
 import { Register } from './components/view/register/register';
 import { CreateAccount } from './components/view/create-account/create-account';
 import { Account } from './components/view/account/account';
+import { guestGuard } from './guards/guest';
 
 export const routes: Routes = [
   {
     path: '',
     component: Login,
+    canActivate: [guestGuard],
   },
   {
     path: 'register',
     component: Register,
+    canActivate: [guestGuard],
   },
   {
     path: 'history',
