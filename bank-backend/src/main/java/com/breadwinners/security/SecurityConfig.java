@@ -56,6 +56,9 @@ public class SecurityConfig {
                         // Public endpoint for authentication
                         .requestMatchers("/auth/**").permitAll()
 
+                        // Fetching BFS' products does not require authorization
+                        .requestMatchers("/account-types").permitAll()
+
                         // All other endpoints requires valid login
                         .anyRequest().authenticated()
                 )
