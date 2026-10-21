@@ -32,6 +32,13 @@ export class RecentTransactions {
   /** Where the "Show all transactions" button goes. */
   readonly viewAllLink = input('/history');
 
+  /** Account to open in the full history view. When set, the link becomes /history?accountNumber=... */
+  readonly accountNumber = input<string | number | null>(null);
+  readonly viewAllQueryParams = computed(() => {
+    const account = this.accountNumber();
+    return account ? { accountNumber: account } : {};
+  });
+
   private readonly all = signal<Transaction[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
