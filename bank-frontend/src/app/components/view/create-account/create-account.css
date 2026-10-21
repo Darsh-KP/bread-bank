@@ -21,7 +21,6 @@ h1, h2 {
     width: 70%;
     height: 96px;
     display: flex;
-    background-color: white;
     color: var(--color-primary);
     border-style: solid;
     border-color: var(--color-primary);
@@ -31,6 +30,22 @@ h1, h2 {
     justify-self: center;
     align-items: center;
     font-size: 18pt;
+}
+
+.group {
+  background: white;
+  color: var(--color-primary);
+
+}
+
+.group.selected {
+  background: var(--color-primary);
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .group input {
