@@ -130,41 +130,42 @@ export class MoneyTransactionModal implements OnInit {
     this.isProcessing.set(true);
     this.errorMessage.set('');
 
+    // TODO
     // Attempt to verify PIN by calling the service
     this.transactionService
-      .verifyPin({
-        pin: this.pinControl.value,
-      })
-      .subscribe({
-        next: (response) => {
-          // End the processing
-          this.isProcessing.set(false);
-
-          // Check if the PIN is authenticated
-          if (!response.success) {
-            // Set incorrect PIN error message
-            this.errorMessage.set('Incorrect PIN.');
-
-            // Reset the input field for PIN
-            this.pinControl.reset();
-            this.checkPinValidation();
-
-            return;
-          }
-
-          // If PIN is correct, go to next phase
-          this.phase.set('amount');
-        },
-
-        // Handle errors from the service
-        error: () => {
-          // End the processing
-          this.isProcessing.set(false);
-
-          // Set the error message to something generic
-          this.errorMessage.set('Unable to verify your PIN. Please try again.');
-        },
-      });
+      // .verifyPin({
+      //   pin: this.pinControl.value,
+      // })
+      // .subscribe({
+      //   next: (response) => {
+      //     // End the processing
+      //     this.isProcessing.set(false);
+      //
+      //     // Check if the PIN is authenticated
+      //     if (!response.success) {
+      //       // Set incorrect PIN error message
+      //       this.errorMessage.set('Incorrect PIN.');
+      //
+      //       // Reset the input field for PIN
+      //       this.pinControl.reset();
+      //       this.checkPinValidation();
+      //
+      //       return;
+      //     }
+      //
+      //     // If PIN is correct, go to next phase
+      //     this.phase.set('amount');
+      //   },
+      //
+      //   // Handle errors from the service
+      //   error: () => {
+      //     // End the processing
+      //     this.isProcessing.set(false);
+      //
+      //     // Set the error message to something generic
+      //     this.errorMessage.set('Unable to verify your PIN. Please try again.');
+      //   },
+      // });
   }
 
   // Handle amount input events
@@ -229,10 +230,11 @@ export class MoneyTransactionModal implements OnInit {
     // Get the PIN from the previous form
     const userPin = this.pinControl.value ?? '';
 
+    // TODO
     // Attempt to process the transaction by calling the service
     this.transactionService
       .processTransaction({
-        type: this.transactionType(),
+        accountNumber: 0,
         pin: userPin,
         amountInCents,
       })
@@ -244,8 +246,9 @@ export class MoneyTransactionModal implements OnInit {
           // Save the transaction result
           this.transactionResult.set(response);
 
+          // TODO
           // Check if the transaction was successful
-          if (response.success) {
+          if (response) {
             // Show transaction successful result screen
             this.isSuccess.set(true);
           } else {
@@ -285,14 +288,15 @@ export class MoneyTransactionModal implements OnInit {
 
   // When transaction is done and dismissed, close the modal
   finish(): void {
+    // TODO
     const resultResponse = this.transactionResult()
-    const isSuccessful = resultResponse ? resultResponse.success : false;
+    // const isSuccessful = resultResponse ? resultResponse.success : false;
 
     // Get the transaction info
     const result: TransactionResponseDTO = {
-      success: isSuccessful,
-      transactionType: this.transactionType(),
-      amountInCents: this.convertToCents(this.amountControl.value),
+      // success: isSuccessful,
+      // transactionType: this.transactionType(),
+      amountInCents: 0,
     };
 
     // Close the modal, and return the transaction info
@@ -333,10 +337,11 @@ export class MoneyTransactionModal implements OnInit {
     const result = this.transactionResult();
     const amount = result ? result.amountInCents : 0;
 
+    // TODO
     // Format the amount from cents to decimal and return it
-    return (amount / 100).toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    });
+    // return (amount / 100).toLocaleString('en-US', {
+    //   style: 'currency',
+    //   currency: 'USD'
+    // });
   });
 }

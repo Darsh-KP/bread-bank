@@ -50,12 +50,9 @@ export class TransactionButtonComponent {
 
     modalRef.componentInstance.transactionType.set(this.type());
 
+    // TODO
     modalRef.result
-      .then((result: TransactionResponseDTO) => {
-        if (result && result.success) {
-          this.transactionSuccess.emit(result);
-        }
-      })
+      .then((result: TransactionResponseDTO) => this.transactionSuccess.emit(result))
       .catch(reason => {
         console.log('Transaction modal dismissed:', reason);
       });
