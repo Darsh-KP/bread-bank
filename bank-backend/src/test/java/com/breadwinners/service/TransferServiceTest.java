@@ -9,7 +9,6 @@ import com.breadwinners.model.Account;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.AccountRepository;
 import com.breadwinners.repository.UserRepository;
-import com.breadwinners.security.JwtUtil;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,9 +34,6 @@ class TransferServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private JwtUtil jwtUtil;
-
     @InjectMocks
     private TransferService transferService;
 
@@ -44,7 +41,7 @@ class TransferServiceTest {
     private Account source;
     private Account destination;
 
-    private final String token = "test-token";
+    private final String username = "testuser";
     private final Long sourceNumber = 123456789012L;
     private final Long destinationNumber = 987654321098L;
 
@@ -56,10 +53,9 @@ class TransferServiceTest {
     }
 
     private void mockAuthenticatedUser() {
-        when(jwtUtil.extractUsername(token)).thenReturn("testuser");
-        when(userRepository.findByUsername("testuser"))
+        when(userRepository.findByUsername(username))
                 .thenReturn(Optional.of(user));
-    }
+        }
 
     private void mockAccounts() {
         when(accountRepository.findByAccountNumberAndUser(sourceNumber, user))
@@ -80,7 +76,7 @@ class TransferServiceTest {
                 sourceNumber, destinationNumber, BigInteger.valueOf(10000)
         );
 
-        TransferResponseDto response = transferService.transfer(token, request);
+        TransferResponseDto response = transferService.transfer(username, request);
 
         verify(source).setBalance(new BigDecimal("400.00"));
         verify(destination).setBalance(new BigDecimal("300.00"));
@@ -104,7 +100,7 @@ class TransferServiceTest {
         );
 
         assertThrows(InvalidTransferException.class,
-                () -> transferService.transfer(token, request));
+                () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
     }
@@ -116,7 +112,7 @@ class TransferServiceTest {
         );
 
         assertThrows(InvalidTransferException.class,
-                () -> transferService.transfer(token, request));
+                () -> transferService.transfer(username, request));
 
         verifyNoInteractions(accountRepository);
     }
@@ -133,7 +129,7 @@ class TransferServiceTest {
         );
 
         assertThrows(AccountNotFoundException.class,
-                () -> transferService.transfer(token, request));
+                () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
     }
@@ -153,7 +149,7 @@ class TransferServiceTest {
         );
 
         assertThrows(AccountNotFoundException.class,
-                () -> transferService.transfer(token, request));
+                () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
     }
@@ -170,7 +166,7 @@ class TransferServiceTest {
                 sourceNumber, destinationNumber, BigInteger.valueOf(2500)
         );
 
-        TransferResponseDto response = transferService.transfer(token, request);
+        TransferResponseDto response = transferService.transfer(username, request);
 
         assertTrue(response.isSuccessful());
         assertEquals(BigInteger.valueOf(2500), response.amountInCents());
