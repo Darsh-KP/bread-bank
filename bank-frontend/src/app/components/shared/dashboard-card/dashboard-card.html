@@ -13,9 +13,17 @@
   </mat-card-content>
 
   <mat-card-actions align="end" (click)="$event.stopPropagation()">
-    <transaction-button type="DEPOSIT" (click)="$event.stopPropagation()"/>
+    <transaction-button
+      type="DEPOSIT"
+      [accountNumber] = "account().accountNumber"
+      (click)="$event.stopPropagation()"
+    />
 
-    <transaction-button type="WITHDRAW" (click)="$event.stopPropagation()"/>
+    <transaction-button
+      type="WITHDRAW"
+      [accountNumber] = "account().accountNumber"
+      (click)="$event.stopPropagation()"
+    />
 
     <button mat-stroked-button color="primary" routerLink="/transfer">
       <mat-icon>compare_arrows</mat-icon>
