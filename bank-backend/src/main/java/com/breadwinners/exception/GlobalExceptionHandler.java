@@ -79,6 +79,13 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<GenericMessageResponseDTO> handleNullPointerException(NullPointerException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new GenericMessageResponseDTO("Not found within the database.")
+        );
+    }
+
     // Catch-all for any unhandled exceptions across application
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GenericMessageResponseDTO> handleCatchAll(Exception e) {
