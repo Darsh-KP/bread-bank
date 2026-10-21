@@ -10,4 +10,5 @@ import com.breadwinners.model.RefreshToken;
 @Repository 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByTokenHash(String hash);
+    void deleteByTokenHash(String tokenHash);
 }

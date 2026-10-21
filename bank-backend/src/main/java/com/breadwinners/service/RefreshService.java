@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.breadwinners.dto.auth.RefreshResponse;
 import com.breadwinners.dto.auth.UserResponse;
@@ -59,6 +60,16 @@ public class RefreshService {
         }
 
         return rt.get().getUsername();
+    }
+
+    @Transactional
+    public void revokeRefreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            // this will not revoke a refreshToken if empty
+            return;
+        }
+
+        refreshTokenRepository.deleteByTokenHash(hash(refreshToken));
     }
 
     private String hash(String token) {
