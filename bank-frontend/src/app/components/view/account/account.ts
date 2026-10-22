@@ -73,7 +73,6 @@ export class Account {
 
   // Fields to be shown
   protected readonly accountName = computed(() => {
-    console.log(this.accountDetails()?.marketingName);
     return this.localNicknameOverride() ?? this.accountDetails()?.nickname ?? this.accountDetails()?.marketingName ?? 'Loading Account...';
   });
 
