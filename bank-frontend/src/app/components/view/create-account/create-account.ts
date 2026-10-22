@@ -1,124 +1,94 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AsyncPipe } from '@angular/common';
-import { pinPattern } from '../../../../utils/regExps';
-import {NavigationBar} from '../../shared/navigation-bar/navigation-bar'
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+  import { Component, OnInit, signal, computed } from '@angular/core';
+  import { HttpClient, HttpHeaders } from '@angular/common/http';
+  import { AsyncPipe } from '@angular/common';
+  import { pinPattern } from '../../../../utils/regExps';
+  import {NavigationBar} from '../../shared/navigation-bar/navigation-bar'
+  import { Router } from '@angular/router';
+  import { BehaviorSubject, Observable, firstValueFrom, map } from 'rxjs';
 
-type DialogState = 'none' | 'prompt' | 'congratulate';
-type Account = { name: string; apy: string; };
-type Approval = { approved: boolean; acctNum: string; };
-type newAcctRq = { owner: string; accountName: string; accountType: string; pin: string };
+  type Dialog = 'none' | 'prompt' | 'congratulate';
+  type Account = { marketingName: string; annualYieldRate: number; maturationDays: number };
+  type Approval = {accountNumber: number};
 
-@Component({
-  imports: [ AsyncPipe, NavigationBar ],
-  selector: 'app-create-account',
-  styleUrl: './create-account.css',
-  templateUrl: './create-account.html',
-})
-export class CreateAccount implements OnInit {
-  private dialog = new BehaviorSubject<DialogState>('none');
-  dialog$: Observable<DialogState> = this.dialog.asObservable();
+  @Component({
+    imports: [ NavigationBar ],
+    selector: 'app-create-account',
+    styleUrl: './create-account.css',
+    templateUrl: './create-account.html',
+  })
+  export class CreateAccount implements OnInit {
+    readonly products = signal<Account[]>([]);
+    readonly selected = signal<string | null>(null);
+    readonly dialog = signal<Dialog>('none');
+    readonly waiting = signal(false);
+    readonly error = signal<string | null>(null);
 
-  accounts$!: Observable<Account[]>;
-  certificateDeposits$!: Observable<Account[]>;
-  
-  waiting: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  waiting$: Observable<boolean> = this.waiting.asObservable();
+    readonly certificateDeposits = computed(() =>
+      this.products().filter(a => a.marketingName.endsWith('CD')));
 
-  selected?: string;
-  
-  constructor(private http: HttpClient, private router: Router) {}
-
-  ngOnInit() {
-    this.accounts$ = this.http.get<Account[]>('/mock-data/accountTypes.json');
-    this.certificateDeposits$ = this.http.get<Account[]>('/mock-data/certificatesDeposit.json');
-  }
-
-  continueCreation() {
-    this.dialog.next('prompt');
-  }
-
-  closeDialog() {
-    this.dialog.next('none');
-  }
-
-  goToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
-
-  async delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
-
-  async newAccount(pin: HTMLInputElement, acctName: HTMLInputElement) {
-    if (!pinPattern.test(pin.value)) {
-    document.getElementById("pinWarning")!.innerText =
-      "A four-digit number is required.";
-    } else {
-      const accessToken = null;
-      const header = new HttpHeaders({ Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }); 
-
-      this.waiting.next(true);
-      await this.delay(500);
-      let rq : newAcctRq = {owner: "", accountName: acctName.value, accountType: this.selected!, pin: pin.value};
-
-      this.http.post<Approval>("/mock-data/new-account.json", rq, {headers: header}).subscribe(r => 
-        { this.dialog.next(r.approved ? 'congratulate' : 'prompt');
-          this.waiting.next(false) });
-    }
-  }
-
-  clearSelection() {
-    const radios = document.querySelectorAll<HTMLInputElement>(
-      'input[type="radio"][name="product"]');
-
-    radios.forEach(e => e.checked = false);
+    readonly accounts = computed(() =>
+      this.products().filter(a => !a.marketingName.endsWith('CD')));  
     
-    const labels = document.querySelectorAll<HTMLElement>(".group");
-    labels.forEach(e => e.style.backgroundColor = "white");
-    labels.forEach(e => e.style.color = "rgb(154, 88, 51)");
-    
+    constructor(private http: HttpClient, private router: Router) {}
 
-    let clsBtn = <HTMLInputElement> document.getElementById('clsBtn');
-    let contBtn = <HTMLInputElement> document.getElementById('contBtn');
-    clsBtn.style.backgroundColor = "#fffefc";
-    clsBtn.style.color = "rgb(154, 88, 51)";
-    clsBtn.disabled = true;
-    contBtn.style.backgroundColor = "#fffefc";
-    contBtn.style.color = "rgb(154, 88, 51)";
-    contBtn.disabled = true;
-  }
-
-  selectProduct() {
-    let clsBtn = <HTMLInputElement> document.getElementById("clsBtn");
-    let contBtn = <HTMLInputElement> document.getElementById("contBtn");
-    clsBtn.style.backgroundColor = "#77762f";
-    clsBtn.style.color = "white";
-    clsBtn.disabled = false;
-    contBtn.style.backgroundColor = "#77762f";
-    contBtn.style.color = "white";
-    contBtn.disabled = false;
-
-    const labels = document.querySelectorAll<HTMLElement>(".group");
-    labels.forEach(e => e.style.backgroundColor = "white");
-    labels.forEach(e => e.style.color = "rgb(154, 88, 51)");
-
-    const radios = document.querySelectorAll<HTMLInputElement>(
-      'input[type="radio"][name="product"]');
-
-    let selectedBtn = null;
-    for(let i = 0; i < radios.length; i++) {
-      if(radios[i].checked === true) { selectedBtn = radios[i]; this.selected = radios[i].innerText.split(",")[0]; }
-      let parent = radios[i].parentElement;
-      if(parent !== null) {
-        parent.style.backgroundColor = "white";
+    async ngOnInit() {
+      try {
+        const products = await firstValueFrom(this.http.get<Account[]>('http://localhost:8080/account-types'));
+        this.products.set(products);
+      } catch {
+        this.error.set('Could not fetch BFS\' products.');
       }
     }
 
-    let parent = selectedBtn?.parentElement;
-    parent!.style.backgroundColor = "#9a5833";
-    parent!.style.color = "white";
+    selectProduct(name: string) {
+      this.selected.set(name);
+    }
+
+    clearSelection() {
+      this.selected.set(null);
+    }
+
+    closeDialog() {
+      this.dialog.set('none');
+    }
+
+    continueCreation() {
+      if(this.selected() !== null)  {
+        this.error.set(null);
+        this.dialog.set('prompt');
+      }
+    }
+
+    goToDashboard() {
+      this.router.navigate(['/dashboard']);
+    }
+
+    async newAccount(pin: string, marketingName: string) {
+      const accountType = this.selected();
+
+      if(this.waiting() || accountType == null) return;
+
+      if(!pinPattern.test(pin)) {
+        this.error.set('A four-digit numerical pin is required.');
+        return;
+      }
+
+      this.error.set(null);
+      this.waiting.set(true);
+
+      try {
+        const response = await firstValueFrom(this.http.post<Approval>
+          ('http://localhost:8080/create-account', 
+          {marketingName, accountType, pin}));
+          
+        if(!response || typeof response.accountNumber !== 'number')
+          throw new Error('Invalid server response');
+
+        this.dialog.set('congratulate');
+      } catch {
+        this.error.set('Account creation failed.');
+      } finally {
+        this.waiting.set(false);
+      }
   }
 }

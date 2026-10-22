@@ -55,6 +55,9 @@ public class SecurityConfig {
                         // Public endpoint for authentication
                         .requestMatchers("/auth/**").permitAll()
 
+                        // Fetching BFS' products does not require authorization
+                        .requestMatchers("/account-types").permitAll()
+
                         // All other endpoints requires valid login
                         .anyRequest().authenticated()
                 )
@@ -74,7 +77,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:4200"));
 
         // Allow the CRUD methods
-         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PATCH", "OPTIONS"));
 
         // Set the headers the frontend is allowed to send
         config.setAllowedHeaders(List.of(

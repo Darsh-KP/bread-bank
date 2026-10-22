@@ -94,3 +94,11 @@ CREATE TABLE IF NOT EXISTS public.refresh_token
 CREATE INDEX IF NOT EXISTS idx_transactions_destination_account ON public.transactions_history USING btree (destination_account ASC NULLS LAST);
 CREATE INDEX IF NOT EXISTS idx_transactions_instant ON public.transactions_history USING btree (instant ASC NULLS LAST);
 CREATE INDEX IF NOT EXISTS idx_transactions_source_account ON public.transactions_history USING btree (source_account ASC NULLS LAST);
+
+-- Insert account types
+INSERT INTO account_type (marketing_name, interest_rate, maturation_days) 
+VALUES ('Plain Checking', 0.00, 0),
+       ('Sourdough Savings', 3.10, 0), 
+       ('3-month CD', 3.5, 90),
+       ('6-month CD', 3.75, 180),
+       ('11-month CD', 4.0, 330);
