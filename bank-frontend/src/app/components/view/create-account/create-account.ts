@@ -63,7 +63,7 @@
       this.router.navigate(['/dashboard']);
     }
 
-    async newAccount(pin: string, marketingName: string) {
+    async newAccount(pin: string, nickname: string) {
       const accountType = this.selected();
 
       if(this.waiting() || accountType == null) return;
@@ -79,7 +79,7 @@
       try {
         const response = await firstValueFrom(this.http.post<Approval>
           ('http://localhost:8080/create-account', 
-          {marketingName, accountType, pin}));
+          {accountType: this.selected(), nickname, pin}));
           
         if(!response || typeof response.accountNumber !== 'number')
           throw new Error('Invalid server response');
