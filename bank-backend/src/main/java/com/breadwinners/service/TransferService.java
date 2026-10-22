@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 @Service
 public class TransferService {
@@ -69,10 +68,11 @@ public class TransferService {
 
         accountRepository.save(source);
         accountRepository.save(destination);
+
         transactionHistoryRepository.save(new TransactionHistory(
                 source.getAccountNumber(),
                 destination.getAccountNumber(),
-                LocalDateTime.now(ZoneOffset.UTC),
+                LocalDateTime.now(),
                 amount,
                 source.getBalance(),        // source balance after the transfer
                 destination.getBalance(),   // destination balance after the transfer

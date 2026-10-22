@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class TransactionHistoryService {
                 row.getAmount(),
                 balanceAfter,
                 row.getDescription(),
-                row.getCreatedAt().toInstant(ZoneOffset.UTC)
+                row.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()
         );
     }
 }
