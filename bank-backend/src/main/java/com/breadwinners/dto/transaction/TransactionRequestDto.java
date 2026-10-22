@@ -15,5 +15,8 @@ public record TransactionRequestDto(
 
         @NotNull(message = "Amount is required.")
         @Min(value = 1, message = "Amount cannot be 0 or negative.")
-        BigInteger amountInCents
+        BigInteger amountInCents,
+
+        @Size(max = 50, message = "Description cannot have more than 50 characters.")
+        String description
 ) {}

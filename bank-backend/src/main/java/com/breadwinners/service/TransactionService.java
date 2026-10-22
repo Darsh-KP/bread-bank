@@ -7,25 +7,31 @@ import com.breadwinners.exception.AccountNotFoundException;
 import com.breadwinners.exception.BalanceExceededException;
 import com.breadwinners.exception.InsufficientBalanceException;
 import com.breadwinners.model.Account;
+import com.breadwinners.model.TransactionHistory;
+import com.breadwinners.model.TransactionType;
 import com.breadwinners.repository.AccountRepository;
+import com.breadwinners.repository.TransactionHistoryRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class TransactionService {
     private final AccountRepository accountRepository;
+    private final TransactionHistoryRepository transactionHistoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     // Maximum valid balance
     private static final BigDecimal MAX_BALANCE = new BigDecimal("999999999999999.99");
 
     // Constructor injection to initialize required dependencies
-    public TransactionService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+    public TransactionService(AccountRepository accountRepository, TransactionHistoryRepository transactionHistoryRepository, PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
+        this.transactionHistoryRepository = transactionHistoryRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,6 +53,10 @@ public class TransactionService {
                 transactionRequestDto.pin()
         );
 
+        // Get the description
+        String description = transactionRequestDto.description();
+        description = description == null || description.isBlank() ? null : description.trim();
+
         // Get the amount for transaction
         BigDecimal amount = new BigDecimal(transactionRequestDto.amountInCents()).movePointLeft(2);
 
@@ -60,6 +70,21 @@ public class TransactionService {
 
         // Update the balance
         account.setBalance(newBalance);
+
+        // Create the transaction history
+        TransactionHistory transactionHistory = new TransactionHistory(
+                transactionRequestDto.accountNumber(),
+                null,
+                LocalDateTime.now(),
+                amount,
+                newBalance,
+                null,
+                TransactionType.DEPOSIT,
+                description
+        );
+
+        // Save the transaction history
+        transactionHistoryRepository.save(transactionHistory);
 
         // Transaction successful!
         return new TransactionResponseDto(
@@ -76,6 +101,10 @@ public class TransactionService {
                 transactionRequestDto.pin()
         );
 
+        // Get the description
+        String description = transactionRequestDto.description();
+        description = description == null || description.isBlank() ? null : description.trim();
+
         // Get the amount for transaction
         BigDecimal amount = new BigDecimal(transactionRequestDto.amountInCents()).movePointLeft(2);
 
@@ -89,6 +118,21 @@ public class TransactionService {
 
         // Update the new balance
         account.setBalance(newBalance);
+
+        // Create the transaction history
+        TransactionHistory transactionHistory = new TransactionHistory(
+                transactionRequestDto.accountNumber(),
+                null,
+                LocalDateTime.now(),
+                amount,
+                newBalance,
+                null,
+                TransactionType.WITHDRAW,
+                description
+        );
+
+        // Save the transaction history
+        transactionHistoryRepository.save(transactionHistory);
 
         // Transaction successful!
         return new  TransactionResponseDto(

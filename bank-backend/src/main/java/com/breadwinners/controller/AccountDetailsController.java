@@ -21,7 +21,7 @@ public class AccountDetailsController {
     }
 
     // Fetches required account details for the account view page
-    @GetMapping()
+    @PostMapping()
     public ResponseEntity<AccountInformationResponseDto> fetchAccountInformation(
             @Valid @RequestBody AccountInformationRequestDto accountInformationRequestDto
     ) {
@@ -32,7 +32,7 @@ public class AccountDetailsController {
     }
 
     // Update the nickname for the account
-    @PatchMapping
+    @PatchMapping("/nickname")
     public ResponseEntity<UpdateNicknameResponseDto> modifyNickname(
             @Valid @RequestBody UpdateNicknameRequestDto updateNicknameRequestDto
     ) {

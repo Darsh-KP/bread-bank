@@ -1,13 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import {NavigationBar} from '../../shared/navigation-bar/navigation-bar';
 import {TransactionButtonComponent} from '../../shared/money-transaction-modal/transaction-button';
-import {RouterLink} from '@angular/router';
-import {TransactionResponseDTO} from '../../../dtos/transaction/TransactionResponseDTO';
+import {Router, RouterLink} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput} from '@angular/material/input';
 import { RecentTransactions } from '../../shared/recent-transactions/recent-transactions';
-import { TransactionService } from '../../../services/transaction/transaction.service';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {AccountService} from '../../../services/account-view/account.service';
+import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
+import {NotificationService} from '../../shared/notifications/notification.service';
+import {AccountStateService} from './account-state/account-state.service';
 
 @Component({
   imports: [
@@ -26,35 +29,82 @@ import { TransactionService } from '../../../services/transaction/transaction.se
   templateUrl: './account.html',
 })
 export class Account {
-  // State variables to store mock data
-  accountName = signal<string>('Everyday Checking');
-  rawAccountNumber = signal<string>('123456784812');
+  // Inject required dependencies
+  private accountState = inject(AccountStateService);
+  private accountService = inject(AccountService);
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
 
-  // Inject Transaction Service to get accountBalance
-  transactionService = inject(TransactionService);
-  accountBalanceCents = this.transactionService.accountBalanceInCents;
+  // Get account number from selected account state service
+  private readonly selectedAccountNumber = computed(() =>
+    this.accountState.selectedAccountNumber()!,
+  );
+
+  // State variables for when operations updates visible fields
+  private readonly localNicknameOverride = signal<string | null>(null);
+
+  // Refresh account details trigger
+  private readonly refreshTrigger$ = new BehaviorSubject<void>(undefined);
+
+  // Call account service to load initial account details, and upon refresh
+  private readonly accountDetails = toSignal(
+    this.refreshTrigger$.pipe(
+      switchMap(() =>
+        this.accountService
+          .getAccountDetails({
+            accountNumber: this.selectedAccountNumber(),
+          })
+          .pipe(
+            catchError((error: Error) => {
+              // Unable to load account details, show error
+              this.notificationService.error(error.message);
+              this.notificationService.error('Redirecting...');
+
+              // Redirect to dashboard
+              void this.router.navigate(['dashboard']);
+
+              return of(null);
+            }),
+          ),
+      ),
+    ),
+    {initialValue: null}
+  );
+
+  // Fields to be shown
+  protected readonly accountName = computed(() => {
+    return this.localNicknameOverride() ?? this.accountDetails()?.nickname ?? 'Loading Account...';
+  });
+
+  protected readonly accountNumber = computed(
+    () => this.accountDetails()?.accountNumber ?? this.selectedAccountNumber(),
+  );
+
+  protected readonly accountBalanceInCents = computed(() => {
+    return this.accountDetails()?.balanceInCents ?? 0;
+  });
 
   // String to store account nickname when being edited
-  updatedNickname = signal<string>('');
+  protected readonly updatedNickname = signal<string>('');
 
   // State variable to toggle name edit UI
-  isEditingName = signal<boolean>(false);
+  protected readonly isEditingName = signal<boolean>(false);
 
   // State variable to toggle account number
-  isAccountNumberVisible = signal<boolean>(false);
+  protected readonly isAccountNumberVisible = signal<boolean>(false);
 
   // Helper method to convert transaction amount from cents to decimal
-  readonly formattedBalance = computed(() => {
-    return (this.accountBalanceCents() / 100).toLocaleString('en-US', {
+  protected readonly formattedBalance = computed(() => {
+    return (this.accountBalanceInCents() / 100).toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
     });
   });
 
   // Method to toggle full account number
-  readonly displayedAccountNumber = computed(() => {
+  protected readonly displayedAccountNumber = computed(() => {
     // Get the raw account number
-    const raw = this.rawAccountNumber();
+    const raw = this.accountNumber().toString();
 
     // Check if account number is toggled to visible
     if (this.isAccountNumberVisible()) {
@@ -68,7 +118,7 @@ export class Account {
   });
 
   // Start editing nickname, set input text to current account name
-  startEditingNickname(): void {
+  protected startEditingNickname(): void {
     // Set the editing name to current name
     this.updatedNickname.set(this.accountName());
 
@@ -77,44 +127,58 @@ export class Account {
   }
 
   // Save new nickname for current account
-  saveNickname(): void {
+  protected saveNickname(): void {
     const sanitized = this.updatedNickname().trim();
 
-    if (sanitized) {
-      this.accountName.set(sanitized);
+    // Check if nickname is empty
+    if (!sanitized) {
+      this.notificationService.warning('Nickname cannot be empty.');
+      return;
     }
 
-    // Editing is completed
-    this.isEditingName.set(false);
+    // Check if nickname is the same
+    if (sanitized === this.accountName()) {
+      this.isEditingName.set(false);
+      return;
+    }
+
+    // Call account service to update nickname
+    this.accountService
+      .updateAccountNickname({
+        accountNumber: this.accountNumber(),
+        nickname: sanitized,
+      })
+      .subscribe({
+        next: (response) => {
+          // Success, show updated nickname
+          this.localNicknameOverride.set(response.nickname);
+          this.notificationService.success('Nickname updated successfully.');
+          this.isEditingName.set(false);
+        },
+        error: (error: Error) => {
+          // Unable to update nickname, show error
+          this.notificationService.error(error.message);
+          this.notificationService.error('Please try again later...');
+        },
+      });
   }
 
   // Discard any unsaved nickname
-  cancelEditingNickname(): void {
-    // Editing is canceled
+  protected cancelEditingNickname(): void {
     this.isEditingName.set(false);
   }
 
   // Toggle account number visibility state
-  toggleAccountNumberVisibility(): void {
+  protected toggleAccountNumberVisibility(): void {
     this.isAccountNumberVisible.update((visible) => !visible);
   }
 
   // Update balance on a transaction completion
-  onTransactionSuccess(event: TransactionResponseDTO): void {
-    // Update balance to reflect transaction
-    this.accountBalanceCents.update((currentBalanceCents) => {
-      // Check if transaction was successful
-      if (event.success) {
-        // Check the transaction type
-        if (event.transactionType === 'DEPOSIT') {
-          return currentBalanceCents + event.amountInCents;
-        } else if (event.transactionType === 'WITHDRAW') {
-          return Math.max(0, currentBalanceCents - event.amountInCents);
-        }
-      }
+  onTransactionSuccess(event: boolean): void {
+    // Check if the transaction was successful or not
+    if (!event) return;
 
-      // Fallback
-      return currentBalanceCents;
-    });
+    // Refresh account details to reflect transaction
+    this.refreshTrigger$.next();
   }
 }
