@@ -11,6 +11,7 @@ import {AccountService} from '../../../services/account-view/account.service';
 import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import {NotificationService} from '../../shared/notifications/notification.service';
 import {AccountStateService} from './account-state/account-state.service';
+import { viewChild } from '@angular/core';
 
 @Component({
   imports: [
@@ -31,6 +32,7 @@ import {AccountStateService} from './account-state/account-state.service';
 export class Account {
   // Inject required dependencies
   private accountState = inject(AccountStateService);
+  private readonly recentTransactions = viewChild(RecentTransactions);
   private accountService = inject(AccountService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
@@ -175,10 +177,13 @@ export class Account {
 
   // Update balance on a transaction completion
   onTransactionSuccess(event: boolean): void {
+    console.log('transactionSuccess fired:', event, 'widget:', this.recentTransactions());
     // Check if the transaction was successful or not
     if (!event) return;
 
     // Refresh account details to reflect transaction
     this.refreshTrigger$.next();
+
+    this.recentTransactions()?.reload();
   }
 }
