@@ -6,8 +6,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth';
-import { AccountSummary } from '../dashboard-card/dashboard-card';
+import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
+import { NotificationService } from '../notifications/notification.service';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -28,6 +29,7 @@ export class NavigationBar {
   private readonly auth = inject(AuthService);
   private readonly accountsService = inject(DashboardAccountsService);
   private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
 
   readonly mobileNavOpen = signal(false);
   readonly accountItems = signal<AccountSummary[]>([]);
@@ -39,8 +41,7 @@ export class NavigationBar {
   async loadAccountItems(): Promise<void> {
     if (this.accountsLoaded || this.accountsLoading()) return;
 
-    const username = this.auth.currentUser?.username;
-    if (!username) {
+    if (!this.auth.currentUser) {
       this.accountsError.set('Log in to view your accounts.');
       return;
     }
@@ -49,7 +50,7 @@ export class NavigationBar {
     this.accountsError.set('');
 
     try {
-      this.accountItems.set(await this.accountsService.getAccountsForUser({ username }));
+      this.accountItems.set(await this.accountsService.getAccounts());
       this.accountsLoaded = true;
     } catch (error) {
       this.accountsError.set(
@@ -60,16 +61,24 @@ export class NavigationBar {
     }
   }
 
+  async logout(): Promise<void> {
+    try {
+      await this.auth.logout();
+      this.notificationService.success('Successfully logged out.');
+    } catch {
+      this.notificationService.error(
+        'Could not confirm logout with the server. Your local session was cleared, but the refresh session may still be active.',
+        );
+    } finally {
+      await this.router.navigate(['/']);
+    }
+  }
+
   toggleMobileNav(): void {
     this.mobileNavOpen.update((isOpen) => !isOpen);
   }
 
   closeMobileNav(): void {
     this.mobileNavOpen.set(false);
-  }
-
-  logout(): void {
-    this.auth.currentUser = null;
-    void this.router.navigate(['/']);
   }
 }

@@ -2,11 +2,10 @@ package com.breadwinners.controller;
 
 import com.breadwinners.dto.accountcreation.*;
 import com.breadwinners.model.AccountType;
-import com.breadwinners.model.User;
 import com.breadwinners.service.*;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,13 +16,13 @@ public class AccountCreationController {
     private final AccountCreationService accountCreationService;
     private final AccountTypeService accountTypeService;
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create-account")
-    public AccountCreatedDto createAccount(@AuthenticationPrincipal User user,
-                                           @Valid @RequestBody CreateAccountRequestDto card) {
-        return accountCreationService
-                .createAccount(user.getUsername(), card.accountType(),
-                        card.nickname(), card.pin());
+    public ResponseEntity<AccountCreatedDto> createAccount(Authentication authentication,
+                                                           @Valid @RequestBody CreateAccountRequestDto card) {
+        AccountCreatedDto acd = accountCreationService.createAccount(
+                authentication.getName(), card.accountType(),
+                card.nickname(), card.pin());
+        return ResponseEntity.status(201).body(acd);
     }
 
     @ResponseStatus(HttpStatus.OK)

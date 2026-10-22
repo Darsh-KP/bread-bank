@@ -70,6 +70,21 @@ export class AuthService {
     return registerResponse;
   }
 
+  async logout(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post<void>(
+          'http://localhost:8080/auth/logout',
+          {},
+          { withCredentials: true },
+        ),
+      );
+    } finally {
+      // this will ensure that the user and in-memory access token are cleared no matter what
+      this.clearSession();
+    }
+  }
+
   refresh() {
     return this.http.post<LoginResponseDto>(
       'http://localhost:8080/auth/refresh',
