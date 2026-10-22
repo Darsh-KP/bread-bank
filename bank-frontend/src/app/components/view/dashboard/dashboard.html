@@ -17,7 +17,7 @@
       @if (accounts().length > 0) {
         <div class="total-balance" aria-label="Total available balance">
           <span>Total available balance</span>
-          <strong>{{ totalBalance() | currency:'USD':'symbol':'1.2-2' }}</strong>
+          <strong>{{ totalBalance() / 100 | currency:'USD':'symbol':'1.2-2' }}</strong>
         </div>
       }
     </header>
