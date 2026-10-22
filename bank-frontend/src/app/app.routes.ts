@@ -23,7 +23,7 @@ export const routes: Routes = [
       import('./components/view/transaction-history/transaction-history').then(
         (m) => m.TransactionHistory,
       ),
-    canActivate: [userAuthenticatedGuard]
+    canActivate: [userAuthenticatedGuard, accountSelectedGuard]
   },
   {
     path: 'profile-settings',

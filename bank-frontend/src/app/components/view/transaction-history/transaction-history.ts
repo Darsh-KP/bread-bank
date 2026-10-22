@@ -1,6 +1,5 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { AgGridAngular } from 'ag-grid-angular';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from 'ag-grid-community';
@@ -10,11 +9,12 @@ import { isMoneyOut } from '../../../services/transaction_history';
 import { TransactionHistoryService } from '../../../services/transaction-history/transaction-history.service';
 import { TransactionHistoryItemDto } from '../../../dtos/transaction-history/TransactionHistoryItemDto';
 import { TransactionHistoryType } from '../../../dtos/transaction-history/TransactionHistoryType';
+import { AccountStateService } from '../account/account-state/account-state.service';
 
-
+// Register the AG Grid features once. Later this can be narrowed to only the modules we use.
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-
+/** A transaction plus a signed amount (negative = money out) so the grid can sort and filter on it. */
 interface Row extends TransactionHistoryItemDto {
   signedAmount: number;
 }
@@ -30,15 +30,17 @@ const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' 
 const dateTime = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' });
 const dateShort = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
 
-
+// Below this width the grid switches to a smaller set of columns (see NARROW_COLUMNS).
 const NARROW_QUERY = '(max-width: 720px)';
 
-
+// Cell renderers return HTML strings, so escape any text that came from data.
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 const GREEN = '#2e7d32';
 const RED = '#c0392b';
+
+// The date filter compares whole days, so strip the time from the cell value.
 const dateFilterParams = {
   comparator: (filterDate: Date, cellValue: Date) => {
     const day = new Date(cellValue.getFullYear(), cellValue.getMonth(), cellValue.getDate());
@@ -139,18 +141,18 @@ const NARROW_COLUMNS: ColDef<Row>[] = [
 })
 export class TransactionHistory {
   private readonly historyService = inject(TransactionHistoryService);
-  private readonly route = inject(ActivatedRoute);
+  private readonly accountState = inject(AccountStateService);
 
   readonly transactions = signal<TransactionHistoryItemDto[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
 
-
+  /** What the grid displays. */
   readonly rows = computed<Row[]>(() =>
     this.transactions().map((t) => ({ ...t, signedAmount: isMoneyOut(t.type) ? -t.amount : t.amount })),
   );
 
-  
+  /** True on phone-sized screens. Updates live when the window is resized or the phone is rotated. */
   readonly narrow = signal(false);
 
   readonly columnDefs = computed<ColDef<Row>[]>(() => (this.narrow() ? NARROW_COLUMNS : WIDE_COLUMNS));
@@ -160,13 +162,14 @@ export class TransactionHistory {
     resizable: true,
     flex: 1,
     minWidth: 110,
+    // The header filter icon takes too much room on a phone.
     suppressHeaderFilterButton: this.narrow(),
   }));
 
   readonly rowHeight = computed(() => (this.narrow() ? 56 : undefined));
   readonly pageSizes = computed(() => (this.narrow() ? false : [5, 10, 25]));
 
- 
+  // Colors follow the team palette (BANK-43). Switch these to the shared CSS variables once that is merged.
   readonly theme = themeQuartz.withParams({
     fontFamily: 'inherit',
     backgroundColor: '#fffefc',
@@ -188,8 +191,8 @@ export class TransactionHistory {
       inject(DestroyRef).onDestroy(() => query.removeEventListener('change', onChange));
     }
 
-    
-    const accountNumber = Number(this.route.snapshot.queryParamMap.get('accountNumber'));
+    // The account comes from the shared selection (set on the dashboard / nav bar), not the URL.
+    const accountNumber = Number(this.accountState.selectedAccountNumber());
     if (!Number.isInteger(accountNumber) || accountNumber <= 0) {
       this.error.set('Choose an account to see its transaction history.');
       this.loading.set(false);
