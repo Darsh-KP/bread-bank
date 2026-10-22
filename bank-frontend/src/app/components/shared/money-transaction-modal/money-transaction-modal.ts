@@ -65,6 +65,9 @@ export class MoneyTransactionModal implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.pattern(AMOUNT_REGEX), Validators.min(0.01)],
     }),
+    description: new FormControl('', {
+      validators: [Validators.maxLength(50)],
+    }),
   });
 
   // Get the pin form control
@@ -72,6 +75,9 @@ export class MoneyTransactionModal implements OnInit {
 
   // Get the amount form control
   readonly amountControl = this.amountForm.controls.amount;
+
+  // Get the description form control
+  readonly descriptionControl = this.amountForm.controls.description;
 
   // State variables for field validations
   isPinInvalid = signal<boolean>(false);
@@ -170,7 +176,7 @@ export class MoneyTransactionModal implements OnInit {
             // Client error
             this.errorMessage.set('Please check your internet connection.');
           }
-        }
+        },
       });
   }
 
@@ -229,6 +235,9 @@ export class MoneyTransactionModal implements OnInit {
       return;
     }
 
+    // Get the description
+    const description = this.descriptionControl.value?.trim() ?? null;
+
     // Start processing the transaction
     this.isProcessing.set(true);
     this.errorMessage.set('');
@@ -241,68 +250,71 @@ export class MoneyTransactionModal implements OnInit {
       accountNumber: this.accountNumber(),
       pin: userPin,
       amountInCents,
-    }
+      description: description,
+    };
 
     // Select the correct method to call in the service
-    const transactionRequest$ = this.transactionType() === 'DEPOSIT'
-      ? this.transactionService.processDepositTransaction(transactionPayload)
-      : this.transactionService.processWithdrawTransaction(transactionPayload);
+    const transactionRequest$ =
+      this.transactionType() === 'DEPOSIT'
+        ? this.transactionService.processDepositTransaction(transactionPayload)
+        : this.transactionService.processWithdrawTransaction(transactionPayload);
 
     // Attempt to process the transaction by calling the service
     transactionRequest$.subscribe({
-        next: (response) => {
-          // Save the transaction response
-          this.transactionResult.set(response);
+      next: (response) => {
+        // Save the transaction response
+        this.transactionResult.set(response);
 
-          // End the processing
-          this.isProcessing.set(false);
+        // End the processing
+        this.isProcessing.set(false);
 
-          // Set the transaction as successful
-          this.isSuccess.set(true);
+        // Set the transaction as successful
+        this.isSuccess.set(true);
 
-          // Go to next phase
-          this.phase.set('result');
-        },
+        // Go to next phase
+        this.phase.set('result');
+      },
 
-        // Handle errors from the service
-        error: (error: unknown) => {
-          // End the processing
-          this.isProcessing.set(false);
+      // Handle errors from the service
+      error: (error: unknown) => {
+        // End the processing
+        this.isProcessing.set(false);
 
-          // Set the transaction as failure
-          this.isSuccess.set(false);
+        // Set the transaction as failure
+        this.isSuccess.set(false);
 
-          if (error instanceof HttpErrorResponse) {
-            switch (error.status) {
-              case 401:
-                // Set incorrect PIN error message
-                this.errorMessage.set('Incorrect PIN.');
-                break;
-              case 422:
-                // Set max balance will fail error message
-                const message = this.transactionType() === 'DEPOSIT'
+        if (error instanceof HttpErrorResponse) {
+          switch (error.status) {
+            case 401:
+              // Set incorrect PIN error message
+              this.errorMessage.set('Incorrect PIN.');
+              break;
+            case 422:
+              // Set max balance will fail error message
+              const message =
+                this.transactionType() === 'DEPOSIT'
                   ? 'Deposit exceeds the maximum allowed account balance.'
                   : 'Insufficient balance.';
-                this.errorMessage.set(message);
+              this.errorMessage.set(message);
 
-                // Switch to error phase
-                this.transactionResult.set({
-                  amountInCents: amountInCents
-                })
-                this.phase.set('result');
-                break;
-              default:
-                // Badly formed request or something went wrong in backend
-                this.errorMessage.set('Something went wrong. Please try again later.');
-            }
-
-            this.checkAmountValidation();
-          } else {
-            // Client error
-            this.errorMessage.set('Please check your internet connection.');
+              // Switch to error phase
+              this.transactionResult.set({
+                amountInCents: amountInCents,
+              });
+              this.phase.set('result');
+              break;
+            default:
+              // Badly formed request or something went wrong in backend
+              this.errorMessage.set('Something went wrong. Please try again later.');
           }
+
+          this.checkAmountValidation();
+        } else {
+          // Client error
+          this.errorMessage.set('Please check your internet connection.');
         }
-      });
+      },
+    });
   }
 
   // Helper methods to convert amount input to cents for better precision
@@ -360,7 +372,7 @@ export class MoneyTransactionModal implements OnInit {
     // Format the amount from cents to decimal and return it
     return (amount / 100).toLocaleString('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     });
   });
 }
