@@ -45,4 +45,13 @@ export class Dashboard {
       this.loading.set(false);
     }
   }
+
+  async refreshAccounts(): Promise<void> {
+    try {
+      this.accounts.set(await this.accountsService.getAccounts());
+      this.errorMessage.set('');
+    } catch {
+      this.errorMessage.set('We could not refresh your accounts. Please try again later.');
+    }
+  }
 }
