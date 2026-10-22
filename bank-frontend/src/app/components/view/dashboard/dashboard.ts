@@ -1,7 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AuthService } from '../../../services/auth/auth';
+import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
 import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
 import { DashboardCard } from '../../shared/dashboard-card/dashboard-card';
@@ -14,12 +16,15 @@ import { DashboardCard } from '../../shared/dashboard-card/dashboard-card';
 })
 export class Dashboard {
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileInformationService);
   private readonly accountsService = inject(DashboardAccountsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly accounts = signal<AccountSummary[]>([]);
   readonly loading = signal(true);
   readonly errorMessage = signal('');
   readonly firstName = signal('');
+
   readonly totalBalance = computed(() =>
     this.accounts().reduce((total, account) => total + account.balanceInCents, 0),
   );
@@ -32,8 +37,19 @@ export class Dashboard {
       return;
     }
 
-    this.firstName.set(user.firstName);
-    void this.loadAccounts();
+    // Fetch user profile info via ProfileInformationService to ensure we get up-to-date profile data
+    this.profileService.initCurrentUser(user.username)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile) => {
+          this.firstName.set(profile.firstName);
+          void this.loadAccounts();
+        },
+        error: () => {
+          this.errorMessage.set('We could not load your profile settings. Please try logging in again.');
+          this.loading.set(false);
+        }
+      });
   }
 
   private async loadAccounts(): Promise<void> {
