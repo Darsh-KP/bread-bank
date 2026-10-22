@@ -31,7 +31,10 @@
     } @else {
       <section class="account-grid" aria-label="Your accounts">
         @for (account of accounts(); track account.accountNumber) {
-          <app-dashboard-card [account]="account" />
+          <app-dashboard-card
+            [account]="account"
+            (transactionCompleted)="refreshAccounts()"
+          />
         }
       </section>
     }

@@ -16,12 +16,14 @@
     <transaction-button
       type="DEPOSIT"
       [accountNumber] = "account().accountNumber"
+      (transactionSuccess)="onTransactionSuccess($event)"
       (click)="$event.stopPropagation()"
     />
 
     <transaction-button
       type="WITHDRAW"
       [accountNumber] = "account().accountNumber"
+      (transactionSuccess)="onTransactionSuccess($event)"
       (click)="$event.stopPropagation()"
     />
 
