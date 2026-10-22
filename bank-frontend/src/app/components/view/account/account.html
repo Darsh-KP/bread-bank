@@ -11,7 +11,7 @@
               matInput
               [value]="updatedNickname()"
               (input)="updatedNickname.set(nameInput.value)"
-              maxlength="30"
+              maxlength="50"
               (keyup.enter)="saveNickname()"
             />
           </mat-form-field>
@@ -58,11 +58,13 @@
   <div class="quick-actions-bar d-flex align-items-center flex-wrap gap-3 mb-5">
     <transaction-button
       type="DEPOSIT"
+      [accountNumber]="selectedAccountNumber()"
       (transactionSuccess)="onTransactionSuccess($event)">
     </transaction-button>
 
     <transaction-button
       type="WITHDRAW"
+      [accountNumber]="selectedAccountNumber()"
       (transactionSuccess)="onTransactionSuccess($event)">
     </transaction-button>
 

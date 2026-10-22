@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +26,11 @@ public class TransactionController {
     // Authenticates the provided account with its credentials
     @PostMapping("/verify-pin")
     public ResponseEntity<Void> authenticateAccount(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal String username,
             @Valid @RequestBody VerifyPinRequestDto verifyPinRequestDto
     ) {
         // Call the service to verify PIN
-        transactionService.verifyAccountPin(userDetails.getUsername(), verifyPinRequestDto);
+        transactionService.verifyAccountPin(username, verifyPinRequestDto);
 
         // Validated, return no content
         return ResponseEntity.noContent().build();
@@ -40,24 +39,24 @@ public class TransactionController {
     // Authenticate the account and process the deposit
     @PostMapping("/deposit")
     public ResponseEntity<TransactionResponseDto> depositToAccount(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal String username,
             @Valid @RequestBody TransactionRequestDto transactionRequestDto
     ) {
         // Call the service and process the deposit
         return ResponseEntity.status(HttpStatus.OK).body(
-                transactionService.processDeposit(userDetails.getUsername(), transactionRequestDto)
+                transactionService.processDeposit(username, transactionRequestDto)
         );
     }
 
     // Authenticate the account and process the withdrawal
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionResponseDto> withdrawFromAccount(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal String username,
             @Valid @RequestBody TransactionRequestDto transactionRequestDto
     ) {
         // Call the service and process the withdrawal
         return ResponseEntity.status(HttpStatus.OK).body(
-                transactionService.processWithdrawal(userDetails.getUsername(), transactionRequestDto)
+                transactionService.processWithdrawal(username, transactionRequestDto)
         );
     }
 }

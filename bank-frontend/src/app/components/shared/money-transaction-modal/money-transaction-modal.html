@@ -132,6 +132,7 @@
             inputmode="decimal"
             autocomplete="off"
             placeholder="0.00"
+            maxlength="18"
             formControlName="amount"
             (input)="onAmountInput($event); checkAmountValidation()"
             (blur)="checkAmountValidation()"
@@ -152,6 +153,22 @@
               }
             </mat-error>
           }
+
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          class="full-width w-100 mt-3">
+
+          <mat-label>Description (Optional)</mat-label>
+
+          <input
+            matInput
+            type="text"
+            autocomplete="off"
+            placeholder=""
+            formControlName="description"
+          />
 
         </mat-form-field>
 
