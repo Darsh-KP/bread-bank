@@ -18,7 +18,7 @@
     <h2>Today's certificates of deposit</h2>
     <div>
         @for (cd of certificateDeposits(); track cd.marketingName) {
-            <label class="group">
+            <label class="group" [class.selected]="selected() === cd.marketingName">
             <input type="radio" name="product" [value]="cd" (click)="selectProduct(cd.marketingName);">  {{cd.marketingName}}, {{cd.annualYieldRate}}% APY
             </label>
             <br />
@@ -61,10 +61,9 @@
         <div class="modal-backdrop">
             <div class="modal" role="dialog" aria-modal="true">
                 <h2>Success!</h2>
-                <div class="modal-actions">
-                    <button (click)="goToDashboard()">View this account</button>
-                    <button (click)="goToDashboard()">Back to dashboard</button>
+                <div class="modal-action-success">
                     <button (click)="closeDialog()">Close</button>
+                    <button (click)="goToDashboard()">Back to dashboard</button>
                 </div>
             </div>
         </div>
