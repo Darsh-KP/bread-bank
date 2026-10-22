@@ -27,6 +27,7 @@ public class AccountDetailsService {
                 .map(
                         account -> new AccountInformationResponseDto(
                                 account.getAccountNumber(),
+                                account.getAccountType().getMarketingName(),
                                 account.getNickname(),
                                 account.getBalance().multiply(new BigDecimal("100")).toBigInteger()
                         )
