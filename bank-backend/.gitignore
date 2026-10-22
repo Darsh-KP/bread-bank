@@ -65,3 +65,5 @@ buildNumber.properties
 .history/
 *.vsix
 .ionide
+
+logs/
