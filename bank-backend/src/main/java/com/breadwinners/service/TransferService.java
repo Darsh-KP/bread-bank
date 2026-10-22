@@ -7,25 +7,32 @@ import com.breadwinners.exception.AccountNotFoundException;
 import com.breadwinners.exception.UserNotFoundException;
 import com.breadwinners.exception.InvalidTransferException;
 import com.breadwinners.model.Account;
+import com.breadwinners.model.TransactionHistory;
+import com.breadwinners.model.TransactionType;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.AccountRepository;
 import com.breadwinners.repository.UserRepository;
+import com.breadwinners.repository.TransactionHistoryRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class TransferService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final TransactionHistoryRepository transactionHistoryRepository;
 
     public TransferService(AccountRepository accountRepository,
-                       UserRepository userRepository) {
+                       UserRepository userRepository,
+                       TransactionHistoryRepository transactionHistoryRepository) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.transactionHistoryRepository = transactionHistoryRepository;
         }
 
     @Transactional
@@ -61,6 +68,17 @@ public class TransferService {
 
         accountRepository.save(source);
         accountRepository.save(destination);
+
+        transactionHistoryRepository.save(new TransactionHistory(
+                source.getAccountNumber(),
+                destination.getAccountNumber(),
+                LocalDateTime.now(),
+                amount,
+                source.getBalance(),        // source balance after the transfer
+                destination.getBalance(),   // destination balance after the transfer
+                TransactionType.TRANSFER,
+                null                        // description (optional, max 50 chars)
+        ));
 
         return new TransferResponseDto(true, request.amountInCents());
     }
