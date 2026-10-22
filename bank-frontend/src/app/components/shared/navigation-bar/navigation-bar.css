@@ -5,7 +5,7 @@
   min-height: 72px;
   height: auto;
   padding: 0 1.5rem;
-  background: linear-gradient(135deg, #7d4226 0%, #9a5833 100%);
+  background: var(--color-primary);
   color: #fff;
   box-shadow: 0 2px 12px rgba(64, 21, 7, 0.2);
 }
