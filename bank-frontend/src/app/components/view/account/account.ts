@@ -177,7 +177,7 @@ export class Account {
 
   // Update balance on a transaction completion
   onTransactionSuccess(event: boolean): void {
-    console.log('transactionSuccess fired:', event, 'widget:', this.recentTransactions());
+    
     // Check if the transaction was successful or not
     if (!event) return;
 
