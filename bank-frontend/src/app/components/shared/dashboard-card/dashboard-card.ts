@@ -29,9 +29,9 @@ export class DashboardCard {
   readonly transactionCompleted = output<void>();
   constructor(private router: Router) {}
 
-  goToAccount() {
-    this.router.navigate(['/account']);
+  goToAccount(): void {
     this.accountStateService.setActiveAccount(this.account().accountNumber);
+    this.router.navigate(['/account']);
   }
 
   onTransactionSuccess(success: boolean): void {

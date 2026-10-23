@@ -9,6 +9,7 @@ import { AuthService } from '../../../services/auth/auth';
 import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
 import { NotificationService } from '../notifications/notification.service';
+import { AccountStateService } from '../../view/account/account-state/account-state.service';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -30,6 +31,7 @@ export class NavigationBar {
   private readonly accountsService = inject(DashboardAccountsService);
   private readonly router = inject(Router);
   private readonly notificationService = inject(NotificationService);
+  private readonly accountState = inject(AccountStateService);
 
   readonly mobileNavOpen = signal(false);
   readonly accountItems = signal<AccountSummary[]>([]);
@@ -37,6 +39,12 @@ export class NavigationBar {
   readonly accountsError = signal('');
 
   private accountsLoaded = false;
+
+  openAccount(accountNumber: number): void {
+    this.accountState.setActiveAccount(accountNumber);
+    this.closeMobileNav();
+    void this.router.navigate(['/account']);
+  }
 
   async loadAccountItems(): Promise<void> {
     if (this.accountsLoaded || this.accountsLoading()) return;

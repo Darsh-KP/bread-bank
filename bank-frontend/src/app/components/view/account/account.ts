@@ -8,7 +8,8 @@ import {MatFormField, MatInput} from '@angular/material/input';
 import { RecentTransactions } from '../../shared/recent-transactions/recent-transactions';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AccountService} from '../../../services/account-view/account.service';
-import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, catchError, of, switchMap, combineLatest } from 'rxjs';
 import {NotificationService} from '../../shared/notifications/notification.service';
 import {AccountStateService} from './account-state/account-state.service';
 import { viewChild } from '@angular/core';
@@ -50,7 +51,10 @@ export class Account {
 
   // Call account service to load initial account details, and upon refresh
   private readonly accountDetails = toSignal(
-    this.refreshTrigger$.pipe(
+    combineLatest([
+      toObservable(this.selectedAccountNumber),
+      this.refreshTrigger$
+    ]).pipe(
       switchMap(() =>
         this.accountService
           .getAccountDetails({
