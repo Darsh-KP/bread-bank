@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <p id="pinWarning"></p>
-                @if ( waiting() === true ) {
+                @if ( waiting() ) {
                     <p>Validating. Please wait.</p>
                 }
                 @if ( error() !== null ) {

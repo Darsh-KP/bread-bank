@@ -1,10 +1,9 @@
   import { Component, OnInit, signal, computed } from '@angular/core';
-  import { HttpClient, HttpHeaders } from '@angular/common/http';
-  import { AsyncPipe } from '@angular/common';
+  import { HttpClient } from '@angular/common/http';
   import { pinPattern } from '../../../../utils/regExps';
   import {NavigationBar} from '../../shared/navigation-bar/navigation-bar'
   import { Router } from '@angular/router';
-  import { BehaviorSubject, Observable, firstValueFrom, map } from 'rxjs';
+  import { firstValueFrom } from 'rxjs';
 
   type Dialog = 'none' | 'prompt' | 'congratulate';
   type Account = { marketingName: string; annualYieldRate: number; maturationDays: number };
@@ -27,8 +26,8 @@
       this.products().filter(a => a.marketingName.endsWith('CD')));
 
     readonly accounts = computed(() =>
-      this.products().filter(a => !a.marketingName.endsWith('CD')));  
-    
+      this.products().filter(a => !a.marketingName.endsWith('CD')));
+
     constructor(private http: HttpClient, private router: Router) {}
 
     async ngOnInit() {
@@ -78,9 +77,9 @@
 
       try {
         const response = await firstValueFrom(this.http.post<Approval>
-          ('http://localhost:8080/create-account', 
+          ('http://localhost:8080/create-account',
           {accountType: this.selected(), nickname, pin}));
-          
+
         if(!response || typeof response.accountNumber !== 'number')
           throw new Error('Invalid server response');
 

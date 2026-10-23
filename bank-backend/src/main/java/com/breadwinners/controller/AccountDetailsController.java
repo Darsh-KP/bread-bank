@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/account")
 public class AccountDetailsController {
-    AccountDetailsService accountDetailsService;
+    private final AccountDetailsService accountDetailsService;
 
     // Constructor injection to initialize required dependencies
     public AccountDetailsController(AccountDetailsService accountDetailsService) {

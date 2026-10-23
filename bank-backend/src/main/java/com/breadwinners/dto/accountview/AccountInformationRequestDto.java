@@ -1,8 +1,6 @@
 package com.breadwinners.dto.accountview;
 
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record AccountInformationRequestDto(

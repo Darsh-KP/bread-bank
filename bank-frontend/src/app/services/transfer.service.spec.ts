@@ -2,7 +2,6 @@
 import { TestBed } from '@angular/core/testing';
 import {
   provideHttpClient,
-  HttpClient,
 } from '@angular/common/http';
 import {
   provideHttpClientTesting,
