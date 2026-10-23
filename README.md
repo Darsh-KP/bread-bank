@@ -1,13 +1,14 @@
 # Breadwinners Financial Services (BFS)
 
-A modern, responsive, and interactive banking application designed to provide a professional digital banking experience. The application enables users to securely access their bank accounts, view balances, perform transactions, and review transaction history through an intuitive dashboard.
-
-> The project is structured to support a full-stack architecture, with a dedicated frontend and a backend planned for future integration. Currently, the application uses mock services and simulated API responses to demonstrate core banking functionality, with a foundation designed to support integration with real backend services and persistent data.
-
+A modern, responsive, and interactive full-stack banking application designed to provide a secure and professional digital banking experience. Users can access their bank accounts, view balances, perform financial transactions, and review transaction history through an intuitive dashboard.
 
 ## Features
 
 - Authentication and User Management
+  - JWT (JSON Web Token) authentication
+  - Refresh tokens
+  - Protected routes in frontned
+  - Protected backend API endpoints
 - Banking Dashboard
 - Multiple Bank Accounts
 - Transactions
@@ -15,14 +16,18 @@ A modern, responsive, and interactive banking application designed to provide a 
   - Withdraw
   - Transfer
 - Transaction History
+- Data Persistency
 
 ## Getting Started
 
-See the README files in each directory for setup instructions.
+Refer to the README files in the bank-frontend/ and bank-backend/ directories for setup instructions, configuration requirements, and application startup procedures.
+
+To initialize the database, execute the appropriate SQL scripts from the data/ directory against your PostgreSQL database. Configure the database connection and authentication settings in the backend before starting the application.
 
 ## Project Structure
 - bank-frontend/ — Angular frontend application.
-> Coming soon: bank-backend/ — Backend API.
+- bank-backend/ — Spring Boot backend API.
+- data/ - Database setup scripts (PostgreSQL).
 
 ## Team Breadwinners
 
