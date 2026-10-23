@@ -166,26 +166,38 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 420px) {
   .editable-row {
     padding: 0.5rem 0.6rem;
     gap: 0.25rem 0.5rem;
+    flex-wrap: nowrap; /* Keep items on a single row if possible, or handle via inner layout */
   }
 
   .row-label {
-    font-size: 0.75rem; /* Shrinks "Phone Number:" slightly to fit */
-    letter-spacing: -0.02em;
+    font-size: 0.75rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Let the content take remaining space and handle text truncation */
+  .row-content {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .row-input,
   .row-input.editing {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.4rem;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.3rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .btn-icon {
     width: 1.85rem;
     height: 1.85rem;
     font-size: 0.75rem;
+    flex: 0 0 auto;
   }
 }
