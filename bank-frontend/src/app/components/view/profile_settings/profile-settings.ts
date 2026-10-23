@@ -10,7 +10,7 @@ import {
   UpdatableField,
 } from '../../../services/profile-information/profile-information.interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, tap, throwError } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AuthService } from '../../../services/auth/auth';
 

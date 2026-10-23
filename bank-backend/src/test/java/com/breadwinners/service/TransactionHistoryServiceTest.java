@@ -63,8 +63,8 @@ class TransactionHistoryServiceTest {
         TransactionHistoryResponseDto result = service.getHistory("breadboi", SENDER, 10);
 
         assertThat(result.transactions()).hasSize(1);
-        assertThat(result.transactions().get(0).type()).isEqualTo(TransactionHistoryType.TRANSFER_OUT);
-        assertThat(result.transactions().get(0).balanceAfter()).isEqualByComparingTo("3295.50");
+        assertThat(result.transactions().getFirst().type()).isEqualTo(TransactionHistoryType.TRANSFER_OUT);
+        assertThat(result.transactions().getFirst().balanceAfter()).isEqualByComparingTo("3295.50");
     }
 
     @Test
@@ -75,8 +75,8 @@ class TransactionHistoryServiceTest {
 
         TransactionHistoryResponseDto result = service.getHistory("breadboi", RECEIVER, 10);
 
-        assertThat(result.transactions().get(0).type()).isEqualTo(TransactionHistoryType.TRANSFER_IN);
-        assertThat(result.transactions().get(0).balanceAfter()).isEqualByComparingTo("480.00");
+        assertThat(result.transactions().getFirst().type()).isEqualTo(TransactionHistoryType.TRANSFER_IN);
+        assertThat(result.transactions().getFirst().balanceAfter()).isEqualByComparingTo("480.00");
     }
 
     @Test

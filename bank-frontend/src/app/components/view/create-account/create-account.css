@@ -67,7 +67,7 @@ button:disabled {
     margin-right: auto;
     gap: 4px;
 
-    button {    
+    button {
         border-style: solid;
         border-color: var(--color-primary);
         color: var(--color-text-primary);
@@ -86,8 +86,7 @@ button:disabled {
 .modal-backdrop {
     background-color: var(--color-page-background);
     border-radius: 1.25rem;
-    padding: 2rem;
-    padding-bottom: 0.5rem;
+    padding: 2rem 2rem 0.5rem;
     max-width: 384px;
     height: auto;
     position: fixed;
@@ -104,7 +103,7 @@ button:disabled {
     justify-content: center;
     text-align: center;
 
-    button {    
+    button {
         border-style: solid;
         border-color: var(--color-primary);
         color: var(--color-text-primary);

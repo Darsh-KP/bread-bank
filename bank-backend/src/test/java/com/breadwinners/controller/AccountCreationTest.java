@@ -31,15 +31,4 @@ public class AccountCreationTest {
 
         verifyNoInteractions(this.acs);
     }
-
-    /*@Test
-    void goodAccount() throws Exception {
-        mvc.perform(post("/create-account")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"accountType\": \"Plain Checking\", \"nickname\": \"\", \"pin\": \"1234\"}")
-                .principal(this.auth))
-                .andExpect(status().is2xxSuccessful());
-
-        verify(this.ats);
-    }*/
 }

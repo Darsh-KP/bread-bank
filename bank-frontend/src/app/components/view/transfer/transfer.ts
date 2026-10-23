@@ -47,7 +47,7 @@ export class Transfer {
       return;
     }
 
-    if (this.amount !== null && this.amount <= 0) {
+    if (this.amount <= 0) {
       this.notificationService.warning('Transfer amount must be greater than zero.');
       return;
     }

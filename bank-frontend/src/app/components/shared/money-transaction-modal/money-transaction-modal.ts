@@ -245,7 +245,7 @@ export class MoneyTransactionModal implements OnInit {
     // Get the PIN from the previous form
     const userPin = this.pinControl.value ?? '';
 
-    // Create the payload for the reuqest
+    // Create the payload for the request
     const transactionPayload = {
       accountNumber: this.accountNumber(),
       pin: userPin,

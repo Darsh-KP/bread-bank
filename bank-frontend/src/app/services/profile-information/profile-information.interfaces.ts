@@ -1,4 +1,4 @@
-// Interface representing response json from backend api
+// Interface representing response JSON from backend api
 export interface ProfileInformationResponse {
   username: string;
   firstName: string;

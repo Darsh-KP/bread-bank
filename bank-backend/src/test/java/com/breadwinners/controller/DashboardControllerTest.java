@@ -63,7 +63,7 @@ class DashboardControllerTest {
                 .thenReturn(new AllAccountsResponseDto(List.of(account)));
 
         mockMvc.perform(get("/dashboard")
-                        .principal(authenticatedAs(USERNAME)))
+                        .principal(authenticatedAs()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accounts").isArray())
                 .andExpect(jsonPath("$.accounts[0].accountNumber").value(100000000001L))
@@ -80,16 +80,16 @@ class DashboardControllerTest {
                 .thenThrow(new UserNotFoundException("User data does not exist."));
 
         mockMvc.perform(get("/dashboard")
-                        .principal(authenticatedAs(USERNAME)))
+                        .principal(authenticatedAs()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("User data does not exist."));
 
         verify(dashboardAccountsService).getAccountsForUser(USERNAME);
     }
 
-    private Authentication authenticatedAs(String username) {
+    private Authentication authenticatedAs() {
         Authentication authentication =
-                new UsernamePasswordAuthenticationToken(username, null, List.of());
+                new UsernamePasswordAuthenticationToken(DashboardControllerTest.USERNAME, null, List.of());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);

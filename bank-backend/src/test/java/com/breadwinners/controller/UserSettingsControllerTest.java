@@ -5,7 +5,6 @@ import com.breadwinners.dto.userSettings.UserInformationUpdateRequestDto;
 import com.breadwinners.exception.DuplicateEmailException;
 import com.breadwinners.exception.GlobalExceptionHandler;
 import com.breadwinners.exception.UserNotFoundException;
-import com.breadwinners.service.PasswordChangeService;
 import com.breadwinners.service.UserSettingsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
         import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
         import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,9 +28,6 @@ class UserSettingsControllerTest {
 
     @Mock
     private UserSettingsService userSettingsService;
-
-    @Mock
-    private PasswordChangeService passwordChangeService;
 
     @InjectMocks
     private UserSettingsController userSettingsController;
@@ -104,7 +98,7 @@ class UserSettingsControllerTest {
         // is to do nothing, which is exactly what we want for a successful run.
 
         mockMvc.perform(patch("/profile-settings/{field}", field)
-                        .principal((Principal) () -> username)
+                        .principal(() -> username)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -130,7 +124,7 @@ class UserSettingsControllerTest {
 
         // Perform PATCH request
         mockMvc.perform(patch("/profile-settings/{field}", field)
-                        .principal((Principal) () -> username)
+                        .principal(() -> username)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict()) // Expects 409
