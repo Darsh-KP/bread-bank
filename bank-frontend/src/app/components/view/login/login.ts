@@ -37,6 +37,8 @@ export class Login {
       if (error instanceof HttpErrorResponse) {
         if (typeof error.error === 'string') {
           message = error.error;
+        } else if (error.error?.message) {
+          message = error.error.message;
         } else if (error.status === 0) {
           message = 'Could not connect to the server.';
         }
