@@ -17,7 +17,7 @@
       @if (accounts().length > 0) {
         <div class="total-balance" aria-label="Total available balance">
           <span>Total available balance</span>
-          <strong>{{ totalBalance() | currency:'USD':'symbol':'1.2-2' }}</strong>
+          <strong>{{ totalBalance() / 100 | currency:'USD':'symbol':'1.2-2' }}</strong>
         </div>
       }
     </header>
@@ -30,8 +30,11 @@
       <p class="dashboard-message">There are no accounts associated with your profile yet.</p>
     } @else {
       <section class="account-grid" aria-label="Your accounts">
-        @for (account of accounts(); track account.id) {
-          <app-dashboard-card [account]="account" />
+        @for (account of accounts(); track account.accountNumber) {
+          <app-dashboard-card
+            [account]="account"
+            (transactionCompleted)="refreshAccounts()"
+          />
         }
       </section>
     }

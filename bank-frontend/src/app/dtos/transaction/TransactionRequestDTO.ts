@@ -1,7 +1,6 @@
-import {SingleTransactionType} from './SingleTransactionType';
-
 export interface TransactionRequestDTO {
-  type: SingleTransactionType;
+  accountNumber: number;
   pin: string;
   amountInCents: number;
+  description: string | null;
 }

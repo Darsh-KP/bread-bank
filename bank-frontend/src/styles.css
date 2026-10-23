@@ -37,3 +37,23 @@ body {
   background-color: var(--color-page-background);
   color: var(--color-text-primary);
 }
+
+.auth-page {
+    position: relative;
+    isolation: isolate;
+}
+
+.auth-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: url('/bread-pattern.svg');
+    pointer-events: none;
+}
+
+.auth-page .login-content,
+.auth-page .features-side > * {
+  position: relative;
+  z-index: 2;
+}

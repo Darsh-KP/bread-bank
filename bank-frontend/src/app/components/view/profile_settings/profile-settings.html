@@ -4,6 +4,7 @@
   <!-- SVG Clip Path Definition -->
   <svg width="0" height="0" style="position: absolute;">
     <defs>
+      <!-- Original Bread Slice Shape (Desktop) -->
       <clipPath id="breadSliceShape" clipPathUnits="objectBoundingBox">
         <path d="M 0.05,0.2
                  C 0.05,0.05 0.25,0 0.5,0
@@ -14,7 +15,17 @@
                  L 0.2,1
                  C 0.15,1 0.1,0.97 0.1,0.92
                  L 0.1,0.28
-                 C 0.1,0.25 0.05,0.24 0.05,0.2 C 0.05,0.2 0.05,0.2 0.05,0.2 Z" />
+                 C 0.1,0.25 0.05,0.24 0.05,0.2 Z" />
+      </clipPath>
+
+      <!-- New Baguette Shape (Mobile View) -->
+      <clipPath id="baguetteShape" clipPathUnits="objectBoundingBox">
+        <path d="M 0.2,0.05
+                 C 0.08,0.05 0.02,0.15 0.02,0.5
+                 C 0.02,0.85 0.08,0.95 0.2,0.95
+                 L 0.8,0.95
+                 C 0.92,0.95 0.98,0.85 0.98,0.5
+                 C 0.98,0.15 0.92,0.05 0.8,0.05 Z" />
       </clipPath>
     </defs>
   </svg>
@@ -48,7 +59,7 @@
           <section class="user-name-row">
             <label class="row-label" for="username">Username:</label>
             <div class="row-content">
-              <input class="row-input" type="text" id="username" [value]="profile.userName" readonly />
+              <input class="row-input" type="text" id="username" [value]="profile.username" readonly />
             </div>
 
             <!-- Non-clickable Badge using Bootstrap Icon -->

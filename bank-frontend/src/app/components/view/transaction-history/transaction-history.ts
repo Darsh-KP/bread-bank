@@ -1,20 +1,25 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AgGridAngular } from 'ag-grid-angular';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AllCommunityModule, ModuleRegistry, themeQuartz } from 'ag-grid-community';
 import type { ColDef, ICellRendererParams, ValueFormatterParams } from 'ag-grid-community';
 
-import { Transaction, TransactionService, TransactionType, isMoneyOut } from '../../../services/transaction_history';
+import { isMoneyOut } from '../../../services/transaction_history';
+import { TransactionHistoryService } from '../../../services/transaction-history/transaction-history.service';
+import { TransactionHistoryItemDto } from '../../../dtos/transaction-history/TransactionHistoryItemDto';
+import { TransactionHistoryType } from '../../../dtos/transaction-history/TransactionHistoryType';
+import { AccountStateService } from '../account/account-state/account-state.service';
 
 // Register the AG Grid features once. Later this can be narrowed to only the modules we use.
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 /** A transaction plus a signed amount (negative = money out) so the grid can sort and filter on it. */
-interface Row extends Transaction {
+interface Row extends TransactionHistoryItemDto {
   signedAmount: number;
 }
 
-const TYPE_LABEL: Record<TransactionType, string> = {
+const TYPE_LABEL: Record<TransactionHistoryType, string> = {
   DEPOSIT: 'Deposit',
   WITHDRAW: 'Withdrawal',
   TRANSFER_IN: 'Transfer in',
@@ -135,9 +140,10 @@ const NARROW_COLUMNS: ColDef<Row>[] = [
   styleUrl: './transaction-history.css',
 })
 export class TransactionHistory {
-  private readonly service = inject(TransactionService);
+  private readonly historyService = inject(TransactionHistoryService);
+  private readonly accountState = inject(AccountStateService);
 
-  readonly transactions = signal<Transaction[]>([]);
+  readonly transactions = signal<TransactionHistoryItemDto[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
 
@@ -185,10 +191,24 @@ export class TransactionHistory {
       inject(DestroyRef).onDestroy(() => query.removeEventListener('change', onChange));
     }
 
-    this.service
-      .getTransactions()
+    // The account comes from the shared selection (set on the dashboard / nav bar), not the URL.
+    const accountNumber = Number(this.accountState.selectedAccountNumber());
+    if (!Number.isInteger(accountNumber) || accountNumber <= 0) {
+      this.error.set('Choose an account to see its transaction history.');
+      this.loading.set(false);
+      return;
+    }
+
+    this.historyService
+      .getHistory({ accountNumber })
       .then((list) => this.transactions.set(list))
-      .catch(() => this.error.set("We couldn't load your transactions. Please try again."))
+      .catch((err: HttpErrorResponse) =>
+        this.error.set(
+          err.status === 404
+            ? "We couldn't find that account."
+            : "We couldn't load your transactions. Please try again.",
+        ),
+      )
       .finally(() => this.loading.set(false));
   }
 }

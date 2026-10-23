@@ -5,6 +5,7 @@ import { emailPattern, phonePattern } from '../../../../utils/regExps';
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
 import {
+  PasswordChangeRequest,
   ProfileInformationResponse,
   UpdatableField,
 } from '../../../services/profile-information/profile-information.interfaces';
@@ -33,8 +34,7 @@ export class ProfileSettings {
   readonly initialLoadError = signal('');
   readonly errorMessage = 'We could not load your profile settings. Please try logging in.';
 
-  readonly userName? : string | undefined = undefined;
-
+  readonly username?: string | undefined = undefined;
 
   protected readonly emailPattern = emailPattern;
   protected readonly phonePattern = phonePattern;
@@ -48,10 +48,10 @@ export class ProfileSettings {
       return;
     }
 
-    this.userName = currentUser.userName;
+    this.username = currentUser.username;
 
     this.service
-      .initCurrentUser(this.userName)
+      .initCurrentUser(this.username)
       .pipe(
         takeUntilDestroyed(this.destroyRef), //Prevents memory leaks when component destroyed
       )
@@ -74,17 +74,12 @@ export class ProfileSettings {
 
   //Have service verify if password meets requirements, if current password matches
   //and if current password and new password do not match
-  readonly handlePasswordChange = (payload: {
-    oldPassword: string;
-    newPassword: string;
-  }): Observable<void> => {
-    return this.service.updatePassword(payload).pipe(
-      //If successful then notify user that password was updated.
+  readonly handlePasswordChange = (payload: PasswordChangeRequest): Observable<void> =>
+    this.service.updatePassword(payload).pipe(
       tap(() => {
-        this.notifications.success('Password updated successfully!');
+        this.notifications.success('Password updated successfully.');
       }),
     );
-  };
 
   //Fields in profile settings, now Observables
   readonly saveFirstName = (val: string): Observable<ProfileInformationResponse> =>
@@ -110,5 +105,3 @@ export class ProfileSettings {
     );
   }
 }
-
-

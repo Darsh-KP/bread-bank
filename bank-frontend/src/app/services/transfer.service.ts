@@ -1,4 +1,10 @@
-import { Injectable } from '@angular/core';
+
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { DashboardAccountsService } from './dashboard-accounts/dashboard-accounts';
+import { TransferRequestDTO } from '../dtos/transfer/TransferRequestDTO';
+import { TransferResponseDTO } from '../dtos/transfer/TransferResponseDTO';
 
 export interface Account {
   id: string;
@@ -12,48 +18,28 @@ export interface TransferRequest {
   amount: number;
 }
 
-const MOCK_ACCOUNTS: Account[] = [
-  {
-    id: 'checking',
-    name: 'Checking',
-    balance: 2500,
-  },
-  {
-    id: 'savings',
-    name: 'Savings',
-    balance: 5000,
-  },
-];
-
 @Injectable({ providedIn: 'root' })
 export class TransferService {
-  private accounts: Account[] = MOCK_ACCOUNTS.map((account) => ({ ...account }));
-
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  private readonly http = inject(HttpClient);
+  private readonly dashboardAccountsService = inject(DashboardAccountsService);
+  private readonly transferUrl = 'http://localhost:8080/transfer';
 
   async getAccounts(): Promise<Account[]> {
-    await this.delay(500);
-    return this.accounts.map((account) => ({ ...account }));
+    const accounts = await this.dashboardAccountsService.getAccounts();
+
+    return accounts.map((account) => ({
+      id: String(account.accountNumber),
+      name: account.marketingName,
+      balance: account.balanceInCents / 100,
+    }));
   }
 
   async transfer(request: TransferRequest): Promise<Account[]> {
-    await this.delay(500);
-
-    const fromAccount = this.accounts.find(
-      (account) => account.id === request.fromAccountId,
-    );
-
-    const toAccount = this.accounts.find(
-      (account) => account.id === request.toAccountId,
-    );
-
-    if (!fromAccount || !toAccount) {
+    if (!request.fromAccountId || !request.toAccountId) {
       throw new Error('Please select valid accounts.');
     }
 
-    if (fromAccount.id === toAccount.id) {
+    if (request.fromAccountId === request.toAccountId) {
       throw new Error('Source and destination accounts must be different.');
     }
 
@@ -61,13 +47,42 @@ export class TransferService {
       throw new Error('Transfer amount must be greater than zero.');
     }
 
-    if (request.amount > fromAccount.balance) {
-      throw new Error('Insufficient funds.');
+    const amountInCents = Math.round(request.amount * 100);
+
+    if (
+      amountInCents <= 0 ||
+      !Number.isSafeInteger(amountInCents) ||
+      Math.abs(request.amount * 100 - amountInCents) > 1e-7
+    ) {
+      throw new Error('Please enter a valid amount with at most two decimal places.');
     }
 
-    fromAccount.balance -= request.amount;
-    toAccount.balance += request.amount;
+    const fromAccountNumber = Number(request.fromAccountId);
+    const toAccountNumber = Number(request.toAccountId);
 
-    return this.accounts.map((account) => ({ ...account }));
+    if (
+      !Number.isSafeInteger(fromAccountNumber) ||
+      !Number.isSafeInteger(toAccountNumber) ||
+      fromAccountNumber <= 0 ||
+      toAccountNumber <= 0
+    ) {
+      throw new Error('Invalid account number.');
+    }
+
+    const transferRequest: TransferRequestDTO = {
+      fromAccountNumber,
+      toAccountNumber,
+      amountInCents,
+    };
+
+    const response = await firstValueFrom(
+      this.http.post<TransferResponseDTO>(this.transferUrl, transferRequest),
+    );
+
+    if (!response.isSuccessful) {
+      throw new Error('Transfer could not be completed.');
+    }
+
+    return this.getAccounts();
   }
 }

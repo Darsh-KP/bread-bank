@@ -4,7 +4,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SingleTransactionType} from '../../../dtos/transaction/SingleTransactionType';
 import {MoneyTransactionModal} from './money-transaction-modal';
-import {TransactionResponseDTO} from '../../../dtos/transaction/TransactionResponseDTO';
 
 @Component({
   selector: 'transaction-button',
@@ -25,8 +24,9 @@ export class TransactionButtonComponent {
   private readonly modalService = inject(NgbModal);
 
   type = input.required<SingleTransactionType>();
+  accountNumber = input.required<number>();
 
-  transactionSuccess = output<TransactionResponseDTO>();
+  transactionSuccess = output<boolean>();
 
   buttonText = computed(() => this.type() === 'DEPOSIT' ? 'Deposit' : 'Withdraw');
   buttonIcon = computed(() => this.type() === 'DEPOSIT' ? 'attach_money' : 'money_off');
@@ -49,15 +49,10 @@ export class TransactionButtonComponent {
     );
 
     modalRef.componentInstance.transactionType.set(this.type());
+    modalRef.componentInstance.accountNumber.set(this.accountNumber())
 
     modalRef.result
-      .then((result: TransactionResponseDTO) => {
-        if (result && result.success) {
-          this.transactionSuccess.emit(result);
-        }
-      })
-      .catch(reason => {
-        console.log('Transaction modal dismissed:', reason);
-      });
+      .then(() => this.transactionSuccess.emit(true))
+      .catch(() => this.transactionSuccess.emit(false));
   }
 }

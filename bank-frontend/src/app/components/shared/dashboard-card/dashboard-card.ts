@@ -1,17 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import {Component, inject, input, output} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { TransactionButtonComponent } from '../money-transaction-modal/transaction-button';
-
-export interface AccountSummary {
-  id: number;
-  accountType: string;
-  lastFour: string;
-  balance: number;
-}
+import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
+import {AccountStateService} from '../../view/account/account-state/account-state.service';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -28,10 +23,21 @@ export interface AccountSummary {
   styleUrl: './dashboard-card.css',
 })
 export class DashboardCard {
+  accountStateService = inject(AccountStateService);
+
   readonly account = input.required<AccountSummary>();
+  readonly transactionCompleted = output<void>();
   constructor(private router: Router) {}
 
-  goToAccount() {
+  goToAccount(): void {
+    this.accountStateService.setActiveAccount(this.account().accountNumber);
     this.router.navigate(['/account']);
+  }
+
+  onTransactionSuccess(success: boolean): void {
+    if (success) {
+      // this will notify parent component about successful transaction
+      this.transactionCompleted.emit();
+    }
   }
 }

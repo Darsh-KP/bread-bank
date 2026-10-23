@@ -1,12 +1,12 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationBar } from '../../shared/navigation-bar/navigation-bar';
 import { AuthService } from '../../../services/auth/auth';
-import { DashboardAccountsService, AccountRequest } from '../../../services/dashboard-accounts/dashboard-accounts';
-import { AccountSummary, DashboardCard } from '../../shared/dashboard-card/dashboard-card';
 import { ProfileInformationService } from '../../../services/profile-information/profile-information.service';
-import { tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
+import { AccountSummary } from '../../../dtos/dashboard-accounts/AccountSummary';
+import { DashboardCard } from '../../shared/dashboard-card/dashboard-card';
 
 @Component({
   imports: [NavigationBar, CurrencyPipe, DashboardCard],
@@ -16,19 +16,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class Dashboard {
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileInformationService);
   private readonly accountsService = inject(DashboardAccountsService);
-  private readonly profileInformationService = inject(ProfileInformationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly accounts = signal<AccountSummary[]>([]);
   readonly loading = signal(true);
   readonly errorMessage = signal('');
   readonly firstName = signal('');
-  readonly totalBalance = computed(() =>
-    this.accounts().reduce((total, account) => total + account.balance, 0),
-  );
 
-  //Used to keep memory from leaking when component destroyed
-  private readonly destroyRef = inject(DestroyRef);
+  readonly totalBalance = computed(() =>
+    this.accounts().reduce((total, account) => total + account.balanceInCents, 0),
+  );
 
   constructor() {
     const user = this.authService.currentUser;
@@ -38,39 +37,37 @@ export class Dashboard {
       return;
     }
 
-    //Load current user information from profile information service
-    //If Observable as not be initalized then do it in the dashboard view
-    this.profileInformationService.initCurrentUser(user.userName)
-      .pipe(
-        // Runs when initCurrentUser succeeds
-        tap((profile) => this.firstName.set(profile?.firstName || '')),
-        // Automatically cleans up the subscription when the component destroys
-        takeUntilDestroyed(this.destroyRef)
-      )
+    // Fetch user profile info via ProfileInformationService to ensure we get up-to-date profile data
+    this.profileService.initCurrentUser(user.username)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          //Load userName data after the profile is active
-          void this.loadAccounts(user.userName);
+        next: (profile) => {
+          this.firstName.set(profile.firstName);
+          void this.loadAccounts();
         },
-        error: (err) => {
-          this.errorMessage.set(err.message || 'An error has occurred loading your account details. Please try logging out.');
+        error: () => {
+          this.errorMessage.set('We could not load your profile settings. Please try logging in again.');
           this.loading.set(false);
         }
       });
   }
 
-  private async loadAccounts(userName: string): Promise<void> {
-    const request: AccountRequest = { userName };
+  private async loadAccounts(): Promise<void> {
     try {
-      this.accounts.set(await this.accountsService.getAccountsForUser(request));
-    } catch (error: unknown) {
-      this.errorMessage.set(
-        error instanceof Error
-          ? error.message
-          : 'We could not load your accounts. Please try again later.',
-      );
+      this.accounts.set(await this.accountsService.getAccounts());
+    } catch {
+      this.errorMessage.set('We could not load your accounts. Please try again later.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async refreshAccounts(): Promise<void> {
+    try {
+      this.accounts.set(await this.accountsService.getAccounts());
+      this.errorMessage.set('');
+    } catch {
+      this.errorMessage.set('We could not refresh your accounts. Please try again later.');
     }
   }
 }

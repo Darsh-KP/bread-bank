@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="416" viewBox="0 0 320 416">
+  <defs>
+    <g id="bread" fill="none" stroke="#9a5833" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 20C3 19 2 11 7 7c3-3 7-3 10-2 4-4 12-4 16 0 4-1 8 0 10 3 4 5 2 11-3 12v20H9Z"/>
+      <path d="M16 16v5m9-7v6m9-4v5"/>
+    </g>
+  </defs>
+  <use href="#bread" transform="translate(16 28)" opacity=".18"/>
+  <use href="#bread" transform="translate(176 28)" opacity=".06"/>
+  <use href="#bread" transform="translate(96 132)" opacity=".06"/>
+  <use href="#bread" transform="translate(256 132)" opacity=".18"/>
+  <use href="#bread" transform="translate(16 236)" opacity=".06"/>
+  <use href="#bread" transform="translate(176 236)" opacity=".18"/>
+  <use href="#bread" transform="translate(96 340)" opacity=".18"/>
+  <use href="#bread" transform="translate(256 340)" opacity=".06"/>
+</svg>

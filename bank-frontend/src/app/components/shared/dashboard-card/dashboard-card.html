@@ -1,20 +1,31 @@
 <mat-card class="account-card" appearance="outlined" (click)="goToAccount()">
   <mat-card-header>
-    <mat-card-title>{{ account().accountType }}</mat-card-title>
-    <mat-card-subtitle>Account ending in {{ account().lastFour }}</mat-card-subtitle>
+<!--  if nickname is available, display nickname -> otherwise display marketingName  -->
+    <mat-card-title>{{ account().nickname || account().marketingName }}</mat-card-title>
+    <mat-card-subtitle>Account ending in {{ account().accountNumber.toString().slice(-4) }}</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
     <div class="balance-label">Available balance</div>
     <div class="balance">
-      {{ account().balance | currency:'USD':'symbol':'1.2-2' }}
+      {{ account().balanceInCents / 100 | currency:'USD':'symbol':'1.2-2' }}
     </div>
   </mat-card-content>
 
   <mat-card-actions align="end" (click)="$event.stopPropagation()">
-    <transaction-button type="DEPOSIT" (click)="$event.stopPropagation()"/>
+    <transaction-button
+      type="DEPOSIT"
+      [accountNumber] = "account().accountNumber"
+      (transactionSuccess)="onTransactionSuccess($event)"
+      (click)="$event.stopPropagation()"
+    />
 
-    <transaction-button type="WITHDRAW" (click)="$event.stopPropagation()"/>
+    <transaction-button
+      type="WITHDRAW"
+      [accountNumber] = "account().accountNumber"
+      (transactionSuccess)="onTransactionSuccess($event)"
+      (click)="$event.stopPropagation()"
+    />
 
     <button mat-stroked-button color="primary" routerLink="/transfer">
       <mat-icon>compare_arrows</mat-icon>

@@ -4,6 +4,7 @@ import { AuthService } from '../../../services/auth/auth';
 import { DashboardAccountsService } from '../../../services/dashboard-accounts/dashboard-accounts';
 import { NavigationBar } from './navigation-bar';
 
+// TODO: refactor these tests, if time allows
 describe('NavigationBar', () => {
   let component: NavigationBar;
   let fixture: ComponentFixture<NavigationBar>;
@@ -20,7 +21,7 @@ describe('NavigationBar', () => {
         provideRouter([]),
         {
           provide: AuthService,
-          useValue: { currentUser: { userName: 'itsYaBreadBoi' } },
+          useValue: { currentUser: { username: 'itsYaBreadBoi' } },
         },
         {
           provide: DashboardAccountsService,
@@ -56,7 +57,7 @@ describe('NavigationBar', () => {
     await component.loadAccountItems();
     fixture.detectChanges();
 
-    expect(getAccountsForUser).toHaveBeenCalledWith({ userName: 'itsYaBreadBoi' });
+    expect(getAccountsForUser).toHaveBeenCalledWith({ username: 'itsYaBreadBoi' });
     expect(component.accountItems()).toEqual(accounts);
 
     const menuButton = fixture.nativeElement.querySelector<HTMLButtonElement>(

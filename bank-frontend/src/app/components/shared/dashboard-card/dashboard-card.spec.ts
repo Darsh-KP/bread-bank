@@ -6,6 +6,7 @@ describe('DashboardCard', () => {
   let component: DashboardCard;
   let fixture: ComponentFixture<DashboardCard>;
 
+  // TODO: refactor these tests, if time allows
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DashboardCard],

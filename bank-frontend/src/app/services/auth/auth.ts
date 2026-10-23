@@ -1,108 +1,51 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { normalizePhone } from '../../../utils/normalization';
 import { emailPattern, phonePattern, validate } from '../../../utils/regExps';
 import { validatePassword } from '../../../utils/passwordValidation';
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+  RegisterRequestDto,
+  RegisterResponseDto,
+  UserDto,
+} from '../../dtos/auth';
 
-export interface RegistrationRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  userName: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  userName: string;
-  password: string;
-}
-
-export interface RegisteredUser {
-  userName: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-interface MockRegisteredUser extends RegisteredUser {
-  passwordHash: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private users?: Promise<MockRegisteredUser[]>;
-  currentUser: RegisteredUser | null = null;
+  private accessToken: string | null = null
+  currentUser: UserDto | null = null;
 
-  async login(request: LoginRequest): Promise<RegisteredUser> {
-    const userName = request.userName.trim().toLowerCase();
-    if (!userName || !request.password) {
+  getAccessToken() {
+    return this.accessToken;
+  }
+
+  async login(request: LoginRequestDto): Promise<LoginResponseDto> {
+    const username = request.username.trim().toLowerCase();
+    if (!username || !request.password) {
       throw new Error('Please enter your username and password.');
     }
 
-    await this.delay(500);
-
-    const users = await this.loadUsers();
-
-    const user = users.find(
-      (user) =>
-        user.userName.trim().toLowerCase() === userName && user.passwordHash === request.password,
-    );
-    if (!user) throw new Error('Invalid username or password.');
-
-    const { passwordHash, ...profile } = user;
-    this.currentUser = profile;
-
-    return { ...profile };
-  }
-
-  async changePassword(request: { oldPassword: string; newPassword: string }): Promise<void> {
-    const currentUser = this.currentUser;
-    if (!currentUser) throw new Error('Please sign in to change your password.');
-
-    const users = await this.loadUsers();
-    if (this.currentUser !== currentUser) {
-      throw new Error('Your session changed. Please try again.');
-    }
-    const user = users.find((candidate) => candidate.userName === currentUser.userName);
-    if (!user || user.passwordHash !== request.oldPassword) {
-      throw new Error('Incorrect current password.');
-    }
-    if (request.oldPassword === request.newPassword) {
-      throw new Error('New password cannot be the same as your current password.');
-    }
-    const errors = validatePassword(request.newPassword);
-    if (errors.length) throw new Error(errors[0]);
-
-    user.passwordHash = request.newPassword;
-  }
-
-  private loadUsers(): Promise<MockRegisteredUser[]> {
-    return (this.users ??= firstValueFrom(
-      this.http.get<MockRegisteredUser[]>('/mock-data/users.json'),
-    ).catch(() => {
-      this.users = undefined;
-      throw new Error('Could not load account data. Please try again.');
+    const loginResponse = await firstValueFrom(this.http.post<LoginResponseDto>(`http://localhost:8080/auth/login`, {
+      ...request,
+      username,
     }));
+    this.accessToken = loginResponse.accessToken;
+    this.currentUser = loginResponse.userResponse;
+    return loginResponse;
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  async register(request: RegistrationRequest): Promise<RegisteredUser> {
-    await this.delay(500);
-
+  async register(request: RegisterRequestDto): Promise<RegisterResponseDto> {
     const firstName = request.firstName.trim();
     const lastName = request.lastName.trim();
-    const userName = request.userName.trim();
+    const username = request.username.trim();
     const email = request.email.trim().toLowerCase();
     const phone = normalizePhone(request.phone);
 
-    if (!firstName || !lastName || !userName || !email || !phone || !request.password) {
+    if (!firstName || !lastName || !username || !email || !phone || !request.password) {
       throw new Error('All registration fields are required.');
     }
     if (!validate(email, emailPattern)) {
@@ -116,28 +59,47 @@ export class AuthService {
       throw new Error(passwordErrors[0]);
     }
 
-    const users = await this.loadUsers();
-    if (users.some((user) => user.userName.trim().toLowerCase() === userName.toLowerCase())) {
-      throw new Error('This username is already taken.');
-    }
-    if (users.some((user) => user.email.trim().toLowerCase() === email)) {
-      throw new Error('This email is already taken.');
-    }
-    if (users.some((user) => normalizePhone(user.phone) === phone)) {
-      throw new Error('This phone number is already taken.');
-    }
-
-    const user: MockRegisteredUser = {
-      userName,
+    const registerResponse = await firstValueFrom(this.http.post<RegisterResponseDto>(`http://localhost:8080/auth/register`, {
+      ...request,
       firstName,
       lastName,
+      username,
       email,
-      phone,
-      passwordHash: request.password,
-    };
-    users.push(user);
+      phone
+    }));
+    return registerResponse;
+  }
 
-    const { passwordHash: _passwordHash, ...registeredUser } = user;
-    return { ...registeredUser };
+  async logout(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post<void>(
+          'http://localhost:8080/auth/logout',
+          {},
+          { withCredentials: true },
+        ),
+      );
+    } finally {
+      // this will ensure that the user and in-memory access token are cleared no matter what
+      this.clearSession();
+    }
+  }
+
+  refresh() {
+    return this.http.post<LoginResponseDto>(
+      'http://localhost:8080/auth/refresh',
+      {},
+      { withCredentials: true },
+    ).pipe(
+      tap(response => {
+        this.accessToken = response.accessToken;
+        this.currentUser = response.userResponse;
+      }),
+    );
+  }
+
+  clearSession() {
+    this.accessToken = null;
+    this.currentUser = null;
   }
 }

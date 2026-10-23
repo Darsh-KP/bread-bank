@@ -1,48 +1,19 @@
 import { inject, Injectable } from '@angular/core';
-import { AccountSummary } from '../../components/shared/dashboard-card/dashboard-card';
-import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-
-export interface AccountRequest {
-  userName: string;
-}
-
-interface MockAccount extends AccountSummary {
-  userName: string;
-}
+import { firstValueFrom } from 'rxjs';
+import { AllAccountsResponseDTO } from '../../dtos/dashboard-accounts/AllAccountsResponseDTO';
+import { AccountSummary } from '../../dtos/dashboard-accounts/AccountSummary';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardAccountsService {
   private readonly http = inject(HttpClient);
-  private accounts?: Promise<MockAccount[]>;
+  private readonly dashboardUrl = 'http://localhost:8080/dashboard';
 
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  private loadAccounts(): Promise<MockAccount[]> {
-    return (this.accounts ??= firstValueFrom(
-      this.http.get<MockAccount[]>('/mock-data/accounts.json'),
-    ).catch(() => {
-      this.accounts = undefined;
-      throw new Error('Could not load account data. Please try again.');
-    }));
-  }
-
-  async getAccountsForUser(request: AccountRequest): Promise<AccountSummary[]> {
-    const normalizedUserName = request.userName.trim().toLowerCase();
-    if (normalizedUserName === null || normalizedUserName === '') {
-      throw new Error('Invalid request body');
-    }
-
-    await this.delay(500);
-
-    const accounts = await this.loadAccounts();
-
-    return accounts.filter(
-      (account) => account.userName.trim().toLowerCase() === normalizedUserName,
-    ).map(
-      ({ userName: _userName, ...account }) => ({ ...account })
+  async getAccounts(): Promise<AccountSummary[]> {
+    const response = await firstValueFrom(
+      this.http.get<AllAccountsResponseDTO>(this.dashboardUrl),
     );
+
+    return response.accounts;
   }
 }
