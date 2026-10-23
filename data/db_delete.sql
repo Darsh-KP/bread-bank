@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS refresh_token;
 DROP TABLE IF EXISTS transactions_history;
 DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS account_type;
