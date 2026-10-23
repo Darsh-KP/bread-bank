@@ -443,35 +443,51 @@ main.profile-container editable-label {
   }
 }
 
-@media (max-width: 560px) {
-  /* Increase horizontal padding so contents are safely away from the curved crust */
-  main.profile-container .bread-card .bread-content {
-    padding: 3rem 10% 3rem 10%;
-  }
+@media (max-width: 420px) {
 
-  /* Keep header and badge side-by-side */
+  /* 1. Header & Title Adjustments */
   .toast-header {
-    gap: 0.5rem;
-    padding: 0.5rem 0.25rem 0.5rem;
-    margin-bottom: 1.25rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
   }
 
-  /* Reduce font size slightly so it fits comfortably inside the margins */
+  .header-title-group {
+    flex-direction: row; /* Keep title and badge next to each other, or wrap if needed */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.25rem 0.5rem;
+  }
+
   .header-title {
-    font-size: 1.0rem;
-    white-space: nowrap;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    white-space: normal; /* Allows "PROFILE" and "SETTINGS" to stack if needed */
+    text-align: center;
+    line-height: 1.1;
   }
 
   .header-badge {
-    width: 2rem;
-    height: 2rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
     transform: translateY(0);
   }
 
-  /* Match the static username row styling to the editable rows */
+  /* 2. Bread Card Content Padding */
+  main.profile-container .bread-card .bread-content {
+    padding: 2.5rem 6%;
+  }
+
+  /* 3. Static Username Row Mobile Alignment */
   main.profile-container .user-name-row {
-    padding: 0.5rem 0.6rem;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
     gap: 0.25rem 0.5rem;
+    padding: 0.5rem 0.6rem;
     max-width: 100%;
     box-sizing: border-box;
   }
@@ -479,32 +495,19 @@ main.profile-container editable-label {
   main.profile-container .user-name-row .row-label {
     font-size: 0.75rem;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  main.profile-container .user-name-row .row-content {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   main.profile-container .user-name-row .row-input {
     font-size: 0.8rem;
     padding: 0.2rem 0.4rem;
-  }
-
-  main.profile-container .user-name-row .badge-icon {
-    width: 1.85rem;
-    height: 1.85rem;
-    font-size: 0.75rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fce8bd;
-    border: 0.0625rem solid #e8c480;
-    border-radius: 0.5rem;
-    color: #4a230a;
-  }
-
-  /* Fix the button for 480px view */
-  .primary-btn {
-    width: fit-content;
-    min-width: unset;
-    padding: 0.65rem 1.25rem;
-    margin: 1rem auto 0.5rem;
-    font-size: 0.9rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
