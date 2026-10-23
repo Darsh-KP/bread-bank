@@ -2,9 +2,9 @@
 
 ## Overview
 
-The frontend is a banking application built with Angular and TypeScript. It currently uses mock data to simulate authentication, bank accounts, deposits, withdrawals, transfers, and transaction history.
+The frontend is built with Angular and TypeScript. It integrates with a Spring Boot REST API backend and a PostgreSQL database to support authentication, bank account management, deposits, withdrawals, transfers, and transaction history.
 
-> **Note:** All data is currently mocked and is not persisted through a backend. Release 2 will introduce a REST API backend to support persistent data storage.
+The application uses JWT-based authentication with refresh token support to manage authenticated access to protected backend endpoints. Banking data is stored in the database, enabling persistent data management across sessions.
 
 ## Getting Started
 
@@ -36,17 +36,3 @@ npm start
 ```
 
 Open [http://localhost:4200](http://localhost:4200) in your browser.
-
-## Test Accounts
-
-Use the following mock credentials to log in:
-
-| Username | Password |
-|---|---|
-| `itsYaBreadBoi` | `myPassword123!` |
-| `yeasterSunday` | `myPassword123!` |
-
-These accounts are for frontend testing only and do not represent real banking accounts.
-
-
-- **Data:** Mock data and simulated API responses
