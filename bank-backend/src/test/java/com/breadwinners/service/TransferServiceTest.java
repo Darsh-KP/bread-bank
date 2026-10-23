@@ -6,9 +6,12 @@ import com.breadwinners.dto.transfer.TransferResponseDto;
 import com.breadwinners.exception.AccountNotFoundException;
 import com.breadwinners.exception.InvalidTransferException;
 import com.breadwinners.model.Account;
+import com.breadwinners.model.TransactionHistory;
+import com.breadwinners.model.TransactionType;
 import com.breadwinners.model.User;
 import com.breadwinners.repository.AccountRepository;
 import com.breadwinners.repository.UserRepository;
+import com.breadwinners.repository.TransactionHistoryRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,6 +39,9 @@ class TransferServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private TransactionHistoryRepository transactionHistoryRepository;
 
     @InjectMocks
     private TransferService transferService;
@@ -63,6 +72,14 @@ class TransferServiceTest {
         when(accountRepository.findById(destinationNumber))
                 .thenReturn(Optional.of(destination));
     }
+
+    
+    private Account realAccount(Long number, String balance) {
+        Account account = BeanUtils.instantiateClass(Account.class);
+        ReflectionTestUtils.setField(account, "accountNumber", number);
+        ReflectionTestUtils.setField(account, "balance", new BigDecimal(balance));
+        return account;
+}
 
     @Test
     void successfulTransferUpdatesBothBalances() {
@@ -103,6 +120,7 @@ class TransferServiceTest {
                 () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionHistoryRepository, never()).save(any());
     }
 
     @Test
@@ -114,7 +132,7 @@ class TransferServiceTest {
         assertThrows(InvalidTransferException.class,
                 () -> transferService.transfer(username, request));
 
-        verifyNoInteractions(accountRepository);
+        verifyNoInteractions(accountRepository, transactionHistoryRepository);
     }
 
     @Test
@@ -132,6 +150,7 @@ class TransferServiceTest {
                 () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionHistoryRepository, never()).save(any());
     }
 
     @Test
@@ -152,6 +171,7 @@ class TransferServiceTest {
                 () -> transferService.transfer(username, request));
 
         verify(accountRepository, never()).save(any(Account.class));
+        verify(transactionHistoryRepository, never()).save(any());
     }
 
     @Test
@@ -171,4 +191,37 @@ class TransferServiceTest {
         assertTrue(response.isSuccessful());
         assertEquals(BigInteger.valueOf(2500), response.amountInCents());
     }
+
+    @Test
+    void successfulTransferRecordsTransactionHistory() {
+    Account realSource = realAccount(sourceNumber, "500.00");
+    Account realDestination = realAccount(destinationNumber, "200.00");
+
+    when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+    when(accountRepository.findByAccountNumberAndUser(sourceNumber, user))
+            .thenReturn(Optional.of(realSource));
+    when(accountRepository.findById(destinationNumber))
+            .thenReturn(Optional.of(realDestination));
+
+    TransferRequestDto request = new TransferRequestDto(
+            sourceNumber, destinationNumber, BigInteger.valueOf(10000)   );
+
+    transferService.transfer(username, request);
+
+    // check whether the balances really changed
+    assertEquals(0, new BigDecimal("400.00").compareTo(realSource.getBalance()));
+    assertEquals(0, new BigDecimal("300.00").compareTo(realDestination.getBalance()));
+
+    ArgumentCaptor<TransactionHistory> captor = ArgumentCaptor.forClass(TransactionHistory.class);
+    verify(transactionHistoryRepository).save(captor.capture());
+    TransactionHistory saved = captor.getValue();
+
+    assertEquals(sourceNumber, saved.getSourceAccount());
+    assertEquals(destinationNumber, saved.getDestinationAccount());
+    assertEquals(0, new BigDecimal("100.00").compareTo(saved.getAmount()));
+    assertEquals(0, new BigDecimal("400.00").compareTo(saved.getSourceBalanceAfter()));
+    assertEquals(0, new BigDecimal("300.00").compareTo(saved.getDestinationBalanceAfter()));
+    assertEquals(TransactionType.TRANSFER, saved.getTransactionType());
+    assertNotNull(saved.getCreatedAt());
+}
 }
