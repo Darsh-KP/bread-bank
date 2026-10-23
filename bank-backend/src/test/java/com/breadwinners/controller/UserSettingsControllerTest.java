@@ -41,7 +41,7 @@ class UserSettingsControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(userSettingsController)
                 .setControllerAdvice(new GlobalExceptionHandler()) // <-- Pass an instance of your global exception handler class here!
@@ -50,7 +50,7 @@ class UserSettingsControllerTest {
 
 
     @Test
-    void getUserInformationPositive() throws Exception {
+    public void getUserInformationPositive() throws Exception {
         String username = "itsYaBreadBoi";
         UserResponse mockResponse = new UserResponse(
                 username,
@@ -74,7 +74,7 @@ class UserSettingsControllerTest {
     }
 
     @Test
-    void getUserInformationNegativeUserNotFoundThrowsBadRequest() throws Exception {
+    public void getUserInformationNegativeUserNotFoundThrowsBadRequest() throws Exception {
         String username = "ghostUser";
 
         // Simulate the service throwing your UserNotFoundException
@@ -92,7 +92,7 @@ class UserSettingsControllerTest {
     }
 
     @Test
-    void updateUserInformationPositivePhone() throws Exception {
+    public void updateUserInformationPositivePhone() throws Exception {
         String username = "itsYaBreadBoi";
         String field = "phone";
 
@@ -114,7 +114,7 @@ class UserSettingsControllerTest {
     }
 
     @Test
-    void updateUserInformationNegativeServiceThrowsException() throws Exception {
+    public void updateUserInformationNegativeServiceThrowsException() throws Exception {
         String username = "itsYaBreadBoi";
         String field = "email";
         String message = "Email address already taken by another user.";
@@ -136,6 +136,6 @@ class UserSettingsControllerTest {
                 .andExpect(status().isConflict()) // Expects 409
                 .andExpect(jsonPath("$.message").value(message));
 
-        verify(userSettingsService, times(1)).updateUserField(eq(username), any(UserInformationUpdateRequestDto.class));
+        verify(userSettingsService).updateUserField(eq(username), any(UserInformationUpdateRequestDto.class));
     }
 }
